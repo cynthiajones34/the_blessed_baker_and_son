@@ -30,7 +30,7 @@
 
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; justify-content: center; align-items: center; text-align: center; gap: 0.5rem; flex-direction: column;
+      display: flex; justify-content: space-between; align-items: center; min-width: 260px; max-width: 340px; flex: 0 1 300px;
       padding: 0.6rem 3rem;
       background: rgba(250,245,238,0.95); backdrop-filter: blur(10px);
       border-bottom: 1px solid rgba(199,167,108,0.2);
@@ -232,11 +232,11 @@
     .menu-category-note {
       font-size: 0.8rem; color: rgba(250,245,238,0.5); font-style: italic; margin-left: auto;
     }
-    .menu-items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; justify-items: center; }
+    .menu-items-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
     .menu-item {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(199,167,108,0.15);
       border-radius: 4px; padding: 1.3rem 1.5rem;
-      display: flex; justify-content: center; align-items: center; text-align: center; gap: 0.5rem; flex-direction: column;
+      display: flex; justify-content: space-between; align-items: center; min-width: 260px; max-width: 340px; flex: 0 1 300px;
       transition: background 0.2s;
     }
     .menu-item:hover { background: rgba(199,167,108,0.1); }
@@ -334,7 +334,7 @@
 
     footer {
       background: var(--chocolate); padding: 3rem 4rem;
-      display: flex; justify-content: center; align-items: center; text-align: center; gap: 0.5rem; flex-direction: column;
+      display: flex; justify-content: space-between; align-items: center; min-width: 260px; max-width: 340px; flex: 0 1 300px;
       border-top: 1px solid rgba(199,167,108,0.12);
     }
     .footer-logo img { height: 58px; width: auto; mix-blend-mode: screen; opacity: 0.8; }
