@@ -199,16 +199,14 @@
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
       max-width: 1100px; margin: 0 auto;
     }
-    .how-step { position: relative; }
+    .how-step { position: relative; border-left: 3px solid var(--gold); padding-left: 1.2rem; text-align: left; }
     .how-step-num {
-      width: 48px; height: 48px; border-radius: 50%; background: var(--terracotta);
-      color: var(--cream); font-family: var(--serif); font-size: 1.1rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; margin: 0 auto 1.1rem;
+      display: none;
     }
     .how-step h3 { font-family: var(--serif); font-size: 1rem; color: var(--chocolate); margin-bottom: 0.5rem; }
     .how-step p { font-size: 0.86rem; line-height: 1.7; color: var(--muted); }
     .how-step-arrow {
-      position: absolute; top: 24px; right: -1rem; color: var(--rose); font-size: 1.1rem;
+      position: absolute; top: 8px; right: -1rem; color: var(--gold); font-size: 1.1rem;
     }
     .how-step:last-child .how-step-arrow { display: none; }
     .how-thread-label { font-family: var(--serif); font-size: 1.05rem; color: var(--chocolate); text-align: center; margin: 2.5rem 0 1.5rem; letter-spacing: 0.02em; }
