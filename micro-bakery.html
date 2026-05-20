@@ -78,6 +78,9 @@
 
     /* ORDER FORM LAYOUT */
     .order-layout{display:flex;flex-direction:column;gap:3rem;}
+    .form-section{background:var(--white);border:1.5px solid rgba(199,167,108,0.3);border-radius:4px;padding:2.5rem;}
+    .form-section h2{font-family:var(--serif);font-size:1.4rem;color:var(--chocolate);margin-bottom:0.4rem;}
+    .section-divider{font-size:0.72rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--rose);padding:1.5rem 0 0.8rem;border-top:1px solid rgba(199,167,108,0.2);margin:1.5rem 0 0.8rem;}
 
     /* ITEM SELECTION */
     .items-section h2{
@@ -234,10 +237,23 @@
 
   <div id="orderArea">
     <div class="order-layout">
-      <!-- LEFT: Items -->
-      <div class="items-section">
-        <h2>Select Your Items</h2>
-        <p class="sub">Quantities below are per order. Cupcakes available by the full dozen or half dozen. No mixed dozens.</p>
+      <div class="form-section">
+        <h2>Your Order</h2>
+        <p class="sub" style="font-size:0.86rem;color:var(--muted);margin-bottom:2rem;">Complete your information and select your items below.</p>
+        <form id="orderForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <input type="hidden" name="order_type" value="micro-bakery-pickup" />
+          <input type="hidden" name="order_summary" id="orderSummaryInput" />
+          <input type="hidden" name="order_total" id="orderTotalInput" />
+          <div class="section-divider">Your Information</div>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" name="first_name" required /></div>
+            <div class="form-group"><label>Last Name</label><input type="text" name="last_name" required /></div>
+          </div>
+          <div class="form-group"><label>Email</label><input type="email" name="email" required /></div>
+          <div class="form-group"><label>Phone</label><input type="tel" name="phone" /></div>
+
+          <div class="section-divider">Select Your Items</div>
+          <p class="sub" style="font-size:0.86rem;color:var(--muted);margin-bottom:1.5rem;">Cupcakes available by the full dozen or half dozen. No mixed dozens.</p>
 
         <!-- Cupcakes -->
         <div class="item-category">
@@ -325,40 +341,25 @@
           </div>
         </div>
 
-        <!-- Contact Info -->
-        <div class="contact-section">
-          <h2>Your Information</h2>
-          <form id="orderForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-            <input type="hidden" name="order_type" value="micro-bakery-pickup" />
-            <input type="hidden" name="order_summary" id="orderSummaryInput" />
-            <input type="hidden" name="order_total" id="orderTotalInput" />
-            <div class="form-row">
-              <div class="form-group"><label>First Name</label><input type="text" name="first_name" required /></div>
-              <div class="form-group"><label>Last Name</label><input type="text" name="last_name" required /></div>
+          <div class="section-divider">Notes</div>
+          <div class="form-group"><label>Special Requests or Notes</label><textarea name="notes" placeholder="Allergies, flavor notes, etc."></textarea></div>
+          <br>
+          <div class="section-divider">Order Summary</div>
+          <div class="order-summary" style="margin-bottom:1.5rem;">
+            <div class="summary-items" id="summaryItems">
+              <p class="summary-empty">No items selected yet.</p>
             </div>
-            <div class="form-group"><label>Email</label><input type="email" name="email" required /></div>
-            <div class="form-group"><label>Phone</label><input type="tel" name="phone" /></div>
-            <div class="form-group"><label>Special Requests or Notes</label><textarea name="notes" placeholder="Allergies, flavor notes, etc."></textarea></div>
-            <br>
-            <div class="order-summary" style="margin-bottom:1.5rem;">
-              <h3>Order Summary</h3>
-              <div class="summary-items" id="summaryItems">
-                <p class="summary-empty">No items selected yet.</p>
-              </div>
-              <div class="summary-total">
-                <span>Estimated Total</span>
-                <span class="summary-total-price" id="summaryTotal">$0</span>
-              </div>
-              <p style="font-size:0.78rem;color:var(--muted);line-height:1.5">
-                Final total confirmed by Ina at order confirmation. Payment instructions sent via email.
-              </p>
+            <div class="summary-total">
+              <span>Estimated Total</span>
+              <span class="summary-total-price" id="summaryTotal">$0</span>
             </div>
-            <button type="submit" class="btn-primary" id="submitBtn" disabled>Add Items to Order First</button>
-          </form>
-        </div>
+            <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;margin-top:0.5rem;">
+              Final total confirmed by Ina at order confirmation. Payment instructions sent via email.
+            </p>
+          </div>
+          <button type="submit" class="btn-primary" id="submitBtn" disabled>Add Items to Order First</button>
+        </form>
       </div>
-
-
     </div>
   </div>
 
