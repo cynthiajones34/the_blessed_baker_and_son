@@ -39,7 +39,7 @@
       color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:0.5rem;transition:color 0.2s;
     }
     .nav-back:hover{color:var(--rose);}
-    .page-header{background:var(--chocolate);padding:9rem 4rem 5rem;text-align:center;}
+    .page-header{background:var(--chocolate);padding:8rem 4rem 2rem;min-height:280px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;}
     .page-header-tag{font-size:0.72rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
     .page-header h1{font-family:var(--serif);font-size:clamp(2rem,4vw,3.2rem);color:var(--white);font-weight:700;margin-bottom:1rem;}
     .page-header h1 em{font-style:italic;color:var(--gold);}
@@ -53,7 +53,7 @@
     .rule{display:flex;align-items:center;gap:0.7rem;font-size:0.88rem;color:var(--berry);}
     .rule-icon{font-size:1.2rem;}
 
-    .main{max-width:900px;margin:0 auto;padding:4rem 2rem 6rem;}
+    .main{max-width:1100px;margin:0 auto;padding:4rem 2rem 6rem;}
 
     .avail-notice{
       background:var(--white);border:1.5px solid rgba(199,167,108,0.35);
@@ -66,16 +66,7 @@
     .avail-text{font-size:0.9rem;color:var(--text);line-height:1.5;}
     .avail-text strong{font-weight:600;}
 
-    .schools-grid{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem;}
-    .school-tag{
-      background:var(--white);border:1.5px solid rgba(199,167,108,0.3);
-      border-radius:4px;padding:1.5rem;flex:1;min-width:180px;cursor:pointer;
-      transition:border-color 0.2s,background 0.2s;
-    }
-    .school-tag.selected{border-color:var(--terracotta);background:rgba(181,99,74,0.05);}
-    .school-tag h3{font-family:var(--serif);font-size:1rem;color:var(--chocolate);margin-bottom:0.2rem;}
-    .school-tag p{font-size:0.78rem;color:var(--muted);}
-    .school-tag .school-icon{font-size:1.4rem;margin-bottom:0.5rem;}
+
 
     .form-section{background:var(--white);border:1.5px solid rgba(199,167,108,0.3);border-radius:4px;padding:2.5rem;}
     .form-section h2{font-family:var(--serif);font-size:1.4rem;color:var(--chocolate);margin-bottom:0.4rem;}
@@ -142,8 +133,6 @@
       .nav-links li:not(:last-child):not(:nth-last-child(2)) { display: none; }
       .page-header { padding: 6rem 1.5rem 3rem; }
       .form-row { grid-template-columns: 1fr; }
-      .school-tags { flex-direction: column; }
-      .school-tag { min-width: unset; width: 100%; }
       footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2.5rem 1.5rem; }
       .footer-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
     }
@@ -178,33 +167,7 @@
 
   <div id="orderArea">
     <p style="font-size:0.72rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--rose);margin-bottom:1rem;">Step 1 of 2</p>
-    <h2 style="font-family:var(--serif);font-size:1.5rem;color:var(--chocolate);margin-bottom:0.4rem;">Select Your School</h2>
-    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:1.5rem;">Choose the school for your drop-off delivery.</p>
-
-    <div class="schools-grid">
-      <div class="school-tag" onclick="selectSchool(this,'Johnson\'s Learning Center')" data-school="Johnson's Learning Center">
-        <div class="school-icon">🏫</div>
-        <h3>Johnson's Learning Center</h3>
-        <p>Gresham Road</p>
-      </div>
-      <div class="school-tag" onclick="selectSchool(this,'Henderson Mill')" data-school="Henderson Mill">
-        <div class="school-icon">🏫</div>
-        <h3>Henderson Mill</h3>
-        <p>Lakeside Cluster</p>
-      </div>
-      <div class="school-tag" onclick="selectSchool(this,'Henderson')" data-school="Henderson">
-        <div class="school-icon">🏫</div>
-        <h3>Henderson</h3>
-        <p>Lakeside Cluster</p>
-      </div>
-      <div class="school-tag" onclick="selectSchool(this,'Lakeside')" data-school="Lakeside">
-        <div class="school-icon">🏫</div>
-        <h3>Lakeside</h3>
-        <p>Lakeside Cluster</p>
-      </div>
-    </div>
-
-    <div class="form-section" id="orderForm-wrap" style="display:none">
+    <div class="form-section" id="orderForm-wrap">
       <h2>Order Details</h2>
       <p class="sub">Ordering for: <strong id="selectedSchoolLabel"></strong></p>
 
@@ -212,7 +175,22 @@
 
       <form id="orderForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
         <input type="hidden" name="order_type" value="custom-dropoff" />
-        <input type="hidden" name="school" id="schoolInput" />
+        <div class="form-group">
+          <label>Select Your School</label>
+          <select name="school" id="schoolInput" required>
+            <option value="">Choose a school...</option>
+            <option>Briarlake</option>
+            <option>Evansdale</option>
+            <option>Hawthorne</option>
+            <option>Henderson</option>
+            <option>Henderson Mill</option>
+            <option>Johnson's Learning Center</option>
+            <option>Lakeside</option>
+            <option>Oak Grove</option>
+            <option>Pleasantdale</option>
+            <option>Sagamore Hills</option>
+          </select>
+        </div>
         <input type="hidden" name="order_summary" id="orderSummaryInput" />
         <input type="hidden" name="estimated_total" id="orderTotalInput" />
 
@@ -279,7 +257,6 @@
 
         <button type="submit" class="btn-primary" id="submitBtn">Submit Drop-Off Order Request</button>
       </form>
-    </div>
   </div>
 
   <div id="confirmScreen">
@@ -317,14 +294,7 @@
   }
   checkAvailability();
 
-  function selectSchool(el, name) {
-    document.querySelectorAll('.school-tag').forEach(t => t.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById('schoolInput').value = name;
-    document.getElementById('selectedSchoolLabel').textContent = name;
-    document.getElementById('orderForm-wrap').style.display = 'block';
-    document.getElementById('orderForm-wrap').scrollIntoView({behavior:'smooth',block:'start'});
-  }
+
 
   const prices = {
     'Red Velvet Cupcakes': 35, 'Key Lime Cupcakes': 35, 'Vanilla Cupcakes': 35,
