@@ -146,7 +146,7 @@
     /* INTRO BAND */
     .intro-band {
       background: var(--blush); padding: 3.5rem 4rem;
-      display: flex; align-items: center; justify-content: center; gap: 3.5rem;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
     }
     .intro-band-quote {
       font-family: var(--script); font-size: 3rem; color: var(--gold);
@@ -156,7 +156,7 @@
       width: 1px; height: 50px; background: rgba(180,120,90,0.3); flex: 0 0 auto;
     }
     .intro-band-text {
-      font-size: 1rem; color: var(--text); line-height: 1.8; max-width: 620px;
+      font-size: 1rem; color: var(--text); line-height: 1.8; max-width: 640px; text-align: center;
     }
     .intro-band-text strong { color: var(--rose); font-weight: 600; }
 
@@ -373,15 +373,13 @@
 
 <!-- INTRO BAND -->
 <div class="intro-band">
-  <div class="intro-band-quote">"Feel Blessed"</div>
-  <div class="intro-band-divider"></div>
   <div class="intro-band-text">
     <p class="hero-eyebrow" style="margin-bottom:0.8rem;">An Atlanta Cottage Micro-Bakery</p>
     <p style="font-family:var(--serif); font-size:1.5rem; font-weight:700; color:var(--chocolate); line-height:1.2; margin-bottom:0.3rem;">Baked with <em>love,</em><br>delivered with</p>
     <p style="font-family:var(--script); font-size:1.8rem; color:var(--gold); line-height:1; margin-bottom:1rem;">a blessing.</p>
     <p style="font-size:0.95rem; line-height:1.8; color:var(--muted); margin-bottom:1.2rem;">Every cupcake and cake jar from The Blessed Baker and Son is made to order with cream cheese frosting like you have never tasted before.</p>
     <p style="font-size:0.85rem; color:var(--berry); margin-bottom:1.2rem;"><strong style="display:block; font-family:var(--serif);">20+ Years of Blessed Baking</strong>Proudly serving the Lakeside High School Cluster and Atlanta families since 2005.</p>
-    <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+    <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
       <a href="micro-bakery.html" class="btn-primary">Order Pickup</a>
       <a href="custom-dropoff.html" class="btn-outline">Custom Drop-Off</a>
     </div>
