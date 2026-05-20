@@ -41,7 +41,7 @@
     }
     .nav-back:hover{color:var(--rose);}
     .page-header{
-      background:var(--chocolate);padding:9rem 4rem 5rem;text-align:center;
+      background:var(--chocolate);padding:5rem 4rem 3rem;text-align:center;
     }
     .page-header-tag{
       font-size:0.72rem;font-weight:500;letter-spacing:0.2em;
@@ -77,7 +77,7 @@
     .avail-text strong{font-weight:600;}
 
     /* ORDER FORM LAYOUT */
-    .order-layout{display:grid;grid-template-columns:1fr 380px;gap:3rem;align-items:start;}
+    .order-layout{display:flex;flex-direction:column;gap:3rem;}
 
     /* ITEM SELECTION */
     .items-section h2{
@@ -236,11 +236,11 @@
       <!-- LEFT: Items -->
       <div class="items-section">
         <h2>Select Your Items</h2>
-        <p class="sub">Quantities below are per order. Cupcakes sold by the dozen only. No mixed dozens.</p>
+        <p class="sub">Quantities below are per order. Cupcakes available by the full dozen or half dozen. No mixed dozens.</p>
 
         <!-- Cupcakes -->
         <div class="item-category">
-          <div class="item-category-title">🧁 Cupcakes (per dozen, no mixed dozen)</div>
+          <div class="item-category-title">🧁 Cupcakes (full dozen or half dozen, no mixed)</div>
           <div class="capacity-row">
             <span>Weekly cupcake capacity</span><span id="cupcakeCapText">checking...</span>
           </div>
@@ -250,24 +250,48 @@
             <div class="item-card-left"><div><div class="item-card-name">Red Velvet</div><div class="item-card-sub">$35/dozen</div></div></div>
             <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
           </div>
+          <div class="item-card" data-id="rv-half" data-name="Red Velvet Cupcakes (half doz)" data-price="20" data-type="cupcake">
+            <div class="item-card-left"><div><div class="item-card-name">Red Velvet (Half Dozen)</div><div class="item-card-sub">$20/half dozen</div></div></div>
+            <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+          </div>
           <div class="item-card" data-id="kl-cup" data-name="Key Lime Cupcakes (doz)" data-price="35" data-type="cupcake">
             <div class="item-card-left"><div><div class="item-card-name">Key Lime</div><div class="item-card-sub">$35/dozen</div></div></div>
+            <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+          </div>
+          <div class="item-card" data-id="kl-half" data-name="Key Lime Cupcakes (half doz)" data-price="20" data-type="cupcake">
+            <div class="item-card-left"><div><div class="item-card-name">Key Lime (Half Dozen)</div><div class="item-card-sub">$20/half dozen</div></div></div>
             <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
           </div>
           <div class="item-card" data-id="van-cup" data-name="Vanilla Cupcakes (doz)" data-price="35" data-type="cupcake">
             <div class="item-card-left"><div><div class="item-card-name">Vanilla</div><div class="item-card-sub">$35/dozen</div></div></div>
             <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
           </div>
+          <div class="item-card" data-id="van-half" data-name="Vanilla Cupcakes (half doz)" data-price="20" data-type="cupcake">
+            <div class="item-card-left"><div><div class="item-card-name">Vanilla (Half Dozen)</div><div class="item-card-sub">$20/half dozen</div></div></div>
+            <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+          </div>
           <div class="item-card" data-id="str-cup" data-name="Strawberry Cupcakes (doz)" data-price="35" data-type="cupcake">
             <div class="item-card-left"><div><div class="item-card-name">Strawberry</div><div class="item-card-sub">$35/dozen</div></div></div>
+            <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+          </div>
+          <div class="item-card" data-id="str-half" data-name="Strawberry Cupcakes (half doz)" data-price="20" data-type="cupcake">
+            <div class="item-card-left"><div><div class="item-card-name">Strawberry (Half Dozen)</div><div class="item-card-sub">$20/half dozen</div></div></div>
             <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
           </div>
           <div class="item-card" data-id="oreo-cup" data-name="Oreo Cookies N' Cream Cupcakes (doz)" data-price="40" data-type="cupcake">
             <div class="item-card-left"><div><div class="item-card-name">Oreo Cookies N' Cream</div><div class="item-card-sub">$40/dozen</div></div></div>
             <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
           </div>
+          <div class="item-card" data-id="oreo-half" data-name="Oreo Cookies N' Cream Cupcakes (half doz)" data-price="23" data-type="cupcake">
+            <div class="item-card-left"><div><div class="item-card-name">Oreo Cookies N' Cream (Half Dozen)</div><div class="item-card-sub">$23/half dozen</div></div></div>
+            <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+          </div>
           <div class="item-card" data-id="bis-cup" data-name="Biscoff Cookie Butter Cupcakes (doz)" data-price="40" data-type="cupcake">
             <div class="item-card-left"><div><div class="item-card-name">Biscoff Cookie Butter</div><div class="item-card-sub">$40/dozen</div></div></div>
+            <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+          </div>
+          <div class="item-card" data-id="bis-half" data-name="Biscoff Cookie Butter Cupcakes (half doz)" data-price="23" data-type="cupcake">
+            <div class="item-card-left"><div><div class="item-card-name">Biscoff Cookie Butter (Half Dozen)</div><div class="item-card-sub">$23/half dozen</div></div></div>
             <div class="qty-control"><button class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
           </div>
         </div>
@@ -313,27 +337,25 @@
             <div class="form-group"><label>Phone</label><input type="tel" name="phone" /></div>
             <div class="form-group"><label>Special Requests or Notes</label><textarea name="notes" placeholder="Allergies, flavor notes, etc."></textarea></div>
             <br>
+            <div class="order-summary" style="margin-bottom:1.5rem;">
+              <h3>Order Summary</h3>
+              <div class="summary-items" id="summaryItems">
+                <p class="summary-empty">No items selected yet.</p>
+              </div>
+              <div class="summary-total">
+                <span>Estimated Total</span>
+                <span class="summary-total-price" id="summaryTotal">$0</span>
+              </div>
+              <p style="font-size:0.78rem;color:var(--muted);line-height:1.5">
+                Final total confirmed by Tameka at order confirmation. Payment instructions sent via email.
+              </p>
+            </div>
             <button type="submit" class="btn-primary" id="submitBtn" disabled>Add Items to Order First</button>
           </form>
         </div>
       </div>
 
-      <!-- RIGHT: Summary -->
-      <div>
-        <div class="order-summary">
-          <h3>Order Summary</h3>
-          <div class="summary-items" id="summaryItems">
-            <p class="summary-empty">No items selected yet.</p>
-          </div>
-          <div class="summary-total">
-            <span>Estimated Total</span>
-            <span class="summary-total-price" id="summaryTotal">$0</span>
-          </div>
-          <p style="font-size:0.78rem;color:var(--muted);line-height:1.5">
-            Final total confirmed by Tameka at order confirmation. Payment instructions sent via email.
-          </p>
-        </div>
-      </div>
+
     </div>
   </div>
 
