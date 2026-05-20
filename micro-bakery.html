@@ -191,6 +191,19 @@
       font-family:var(--serif);font-size:1.8rem;color:var(--chocolate);margin-bottom:0.6rem;
     }
     #confirmScreen p{color:var(--muted);font-size:0.95rem;line-height:1.7;}
+
+    /* ── MOBILE RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 0.6rem 1.5rem; }
+      .nav-links li:not(:last-child):not(:nth-last-child(2)) { display: none; }
+      .page-header { padding: 6rem 1.5rem 3rem; }
+      .order-layout { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .order-summary { position: static; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2.5rem 1.5rem; }
+      .footer-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+    }
+    @media (max-width: 480px) { .page-header { padding: 5rem 1rem 2.5rem; } }
   </style>
 </head>
 <body>

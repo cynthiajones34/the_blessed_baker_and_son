@@ -342,6 +342,35 @@
 
     .form-group select option { background: var(--white); color: var(--text); }
     #customConfirm { display:none; text-align:center; padding:1.5rem 0; }
+
+    /* ── MOBILE RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 0.6rem 1.5rem; }
+      .nav-links li:not(:last-child):not(:nth-last-child(2)) { display: none; }
+      .hero { flex-direction: column; min-height: auto; }
+      .hero-right { width: 100%; padding: 2rem 1.5rem; order: -1; }
+      .hero-logo-wrap { width: 70%; max-width: 280px; }
+      .intro-band { flex-direction: column; padding: 3rem 1.5rem; gap: 1rem; text-align: center; }
+      .intro-band-divider { display: none; }
+      .intro-band-text { text-align: center; }
+      .how, .menu, .order-types, .custom { padding: 4rem 1.5rem; }
+      .how-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .how-step-arrow { display: none; }
+      .cta-band { grid-template-columns: 1fr; padding: 4rem 1.5rem; gap: 2.5rem; }
+      .menu-items-grid { flex-direction: column; align-items: stretch; }
+      .menu-item { max-width: 100%; }
+      .order-cards { grid-template-columns: 1fr; }
+      .custom { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2.5rem 1.5rem; }
+      .footer-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+      .section-title { font-size: clamp(1.6rem, 5vw, 2rem); }
+    }
+    @media (max-width: 480px) {
+      .hero-logo-wrap { width: 80%; }
+      .how, .menu, .order-types { padding: 3rem 1rem; }
+      .cta-band { padding: 3rem 1rem; }
+      .menu-item { min-width: unset; }
+    }
   </style>
 </head>
 <body>
