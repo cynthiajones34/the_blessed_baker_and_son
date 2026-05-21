@@ -337,7 +337,7 @@
           <div class="notice-bar">Minimum 12 jars per flavor. You may order multiple flavors per size. Oreo Cookies N’ Cream and Biscoff Cookie Butter are +$5 per set of 12. Final pricing confirmed by Ina.</div>
 
           <div class="item-category-sub-label">4 oz &mdash; $4 / jar</div>
-          <div class="item-card" data-id="jar-4oz-biscoff" data-name="4 oz Cake Jar &mdash; Biscoff Cookie Butter" data-price="4" data-type="jar">
+          <div class="item-card" data-id="jar-4oz-biscoff" data-name="4 oz Cake Jar &mdash; Biscoff Cookie Butter" data-price="4" data-premium="5" data-type="jar">
             <div class="item-card-left"><div><div class="item-card-name">Biscoff Cookie Butter</div><div class="item-card-sub">4 oz &middot; min. 12 &middot; +$5 per set of 12</div></div></div>
             <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
           </div>
@@ -345,7 +345,7 @@
             <div class="item-card-left"><div><div class="item-card-name">Key Lime</div><div class="item-card-sub">4 oz &middot; min. 12</div></div></div>
             <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
           </div>
-          <div class="item-card" data-id="jar-4oz-oreo" data-name="4 oz Cake Jar &mdash; Oreo Cookies N’ Cream" data-price="4" data-type="jar">
+          <div class="item-card" data-id="jar-4oz-oreo" data-name="4 oz Cake Jar &mdash; Oreo Cookies N’ Cream" data-price="4" data-premium="5" data-type="jar">
             <div class="item-card-left"><div><div class="item-card-name">Oreo Cookies N’ Cream</div><div class="item-card-sub">4 oz &middot; min. 12 &middot; +$5 per set of 12</div></div></div>
             <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
           </div>
@@ -363,7 +363,7 @@
           </div>
 
           <div class="item-category-sub-label" style="margin-top:1rem">8 oz &mdash; $8 / jar</div>
-          <div class="item-card" data-id="jar-8oz-biscoff" data-name="8 oz Cake Jar &mdash; Biscoff Cookie Butter" data-price="8" data-type="jar">
+          <div class="item-card" data-id="jar-8oz-biscoff" data-name="8 oz Cake Jar &mdash; Biscoff Cookie Butter" data-price="8" data-premium="5" data-type="jar">
             <div class="item-card-left"><div><div class="item-card-name">Biscoff Cookie Butter</div><div class="item-card-sub">8 oz &middot; min. 12 &middot; +$5 per set of 12</div></div></div>
             <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
           </div>
@@ -371,7 +371,7 @@
             <div class="item-card-left"><div><div class="item-card-name">Key Lime</div><div class="item-card-sub">8 oz &middot; min. 12</div></div></div>
             <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
           </div>
-          <div class="item-card" data-id="jar-8oz-oreo" data-name="8 oz Cake Jar &mdash; Oreo Cookies N’ Cream" data-price="8" data-type="jar">
+          <div class="item-card" data-id="jar-8oz-oreo" data-name="8 oz Cake Jar &mdash; Oreo Cookies N’ Cream" data-price="8" data-premium="5" data-type="jar">
             <div class="item-card-left"><div><div class="item-card-name">Oreo Cookies N’ Cream</div><div class="item-card-sub">8 oz &middot; min. 12 &middot; +$5 per set of 12</div></div></div>
             <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
           </div>
@@ -472,7 +472,7 @@
     qEl.textContent = q;
     if (q > 0) {
       card.classList.add('selected');
-      cart[card.dataset.id] = { name: card.dataset.name, price: parseFloat(card.dataset.price), qty: q, type: card.dataset.type };
+      cart[card.dataset.id] = { name: card.dataset.name, price: parseFloat(card.dataset.price), qty: q, type: card.dataset.type, premium: parseFloat(card.dataset.premium || '0') };
     } else {
       card.classList.remove('selected');
       delete cart[card.dataset.id];
@@ -496,7 +496,9 @@
     let html = '';
     let summary = [];
     items.forEach(item => {
-      const subtotal = item.price * item.qty;
+      const base = item.price * item.qty;
+      const premiumTotal = (item.premium || 0) * (item.qty / 12);
+      const subtotal = base + premiumTotal;
       total += subtotal;
       html += `<div class="summary-line"><span class="summary-line-name">${item.qty}x ${item.name}</span><span class="summary-line-price">$${subtotal}</span></div>`;
       summary.push(`${item.qty}x ${item.name} = $${subtotal}`);
