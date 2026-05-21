@@ -1132,40 +1132,42 @@
         if(o.items && o.items.toLowerCase().includes(f.toLowerCase())) cupcakeCounts[f]++;
       });
     });
-    const maxCup = Math.max(...Object.values(cupcakeCounts), 1);
-    document.getElementById('cupcakeReport').innerHTML = cupcakeFlavors.map(f=>`
+    const activeCupcakes = cupcakeFlavors.filter(f=>cupcakeCounts[f]>0);
+    const maxCup = Math.max(...activeCupcakes.map(f=>cupcakeCounts[f]), 1);
+    document.getElementById('cupcakeReport').innerHTML = activeCupcakes.length ? activeCupcakes.map(f=>`
       <div class="report-bar-row">
         <div class="report-bar-label">${f}</div>
         <div class="report-bar-track"><div class="report-bar-fill" style="width:${Math.round(cupcakeCounts[f]/maxCup*100)}%"></div></div>
         <div class="report-bar-val">${cupcakeCounts[f]}</div>
-      </div>`).join('');
-    const schools = ['Johnson\'s Learning Center','Henderson Mill','Henderson','Lakeside'];
+      </div>`).join('') : '<p style="font-size:0.82rem;color:var(--muted);font-style:italic">No data yet.</p>';
+    const schools = [...new Set(orders.filter(o=>o.school).map(o=>o.school))].sort();
     const schoolCounts = {};
     schools.forEach(s=>{ schoolCounts[s]=orders.filter(o=>o.school===s).length; });
-    const maxSch = Math.max(...Object.values(schoolCounts),1);
-    document.getElementById('schoolReport').innerHTML = schools.map(s=>`
+    const maxSch = Math.max(...schools.map(s=>schoolCounts[s]), 1);
+    document.getElementById('schoolReport').innerHTML = schools.length ? schools.map(s=>`
       <div class="report-bar-row">
         <div class="report-bar-label">${s}</div>
         <div class="report-bar-track"><div class="report-bar-fill" style="width:${Math.round(schoolCounts[s]/maxSch*100)}%"></div></div>
         <div class="report-bar-val">${schoolCounts[s]}</div>
-      </div>`).join('');
+      </div>`).join('') : '<p style="font-size:0.82rem;color:var(--muted);font-style:italic">No drop-off orders yet.</p>';
     const totalRev = orders.filter(o=>o.status==='paid'||o.status==='confirmed').reduce((s,o)=>s+parseInt((o.total||'0').replace(/[^0-9]/g,'')),0);
     const microRev = orders.filter(o=>o.type==='micro'&&(o.status==='paid'||o.status==='confirmed')).reduce((s,o)=>s+parseInt((o.total||'0').replace(/[^0-9]/g,'')),0);
     const dropRev = orders.filter(o=>o.type==='dropoff'&&(o.status==='paid'||o.status==='confirmed')).reduce((s,o)=>s+parseInt((o.total||'0').replace(/[^0-9]/g,'')),0);
-    document.getElementById('revenueReport').innerHTML = `
-      <div class="report-bar-row"><div class="report-bar-label">Micro-Bakery</div><div class="report-bar-track"><div class="report-bar-fill" style="width:${totalRev?Math.round(microRev/totalRev*100):0}%"></div></div><div class="report-bar-val">$${microRev}</div></div>
-      <div class="report-bar-row"><div class="report-bar-label">Drop-Off</div><div class="report-bar-track"><div class="report-bar-fill" style="width:${totalRev?Math.round(dropRev/totalRev*100):0}%"></div></div><div class="report-bar-val">$${dropRev}</div></div>
-      <div style="margin-top:1rem;font-family:var(--serif);font-size:1.4rem;color:var(--chocolate)">Total: $${totalRev}</div>`;
+    const revRows = [['Micro-Bakery',microRev],['Drop-Off',dropRev]].filter(r=>r[1]>0);
+    document.getElementById('revenueReport').innerHTML =
+      revRows.map(([label,amt])=>`<div class="report-bar-row"><div class="report-bar-label">${label}</div><div class="report-bar-track"><div class="report-bar-fill" style="width:${totalRev?Math.round(amt/totalRev*100):0}%"></div></div><div class="report-bar-val">$${amt}</div></div>`).join('')+
+      `<div style="margin-top:1rem;font-family:var(--serif);font-size:1.4rem;color:var(--chocolate)">Total: $${totalRev}</div>`;
     const statuses = ['pending','confirmed','paid','cancelled'];
     const stCounts = {};
     statuses.forEach(s=>{ stCounts[s]=orders.filter(o=>o.status===s).length; });
-    const maxSt = Math.max(...Object.values(stCounts),1);
-    document.getElementById('statusReport').innerHTML = statuses.map(s=>`
+    const activeStatuses = statuses.filter(s=>stCounts[s]>0);
+    const maxSt = Math.max(...activeStatuses.map(s=>stCounts[s]), 1);
+    document.getElementById('statusReport').innerHTML = activeStatuses.length ? activeStatuses.map(s=>`
       <div class="report-bar-row">
         <div class="report-bar-label" style="text-transform:capitalize">${s}</div>
         <div class="report-bar-track"><div class="report-bar-fill" style="width:${Math.round(stCounts[s]/maxSt*100)}%"></div></div>
         <div class="report-bar-val">${stCounts[s]}</div>
-      </div>`).join('');
+      </div>`).join('') : '<p style="font-size:0.82rem;color:var(--muted);font-style:italic">No orders yet.</p>';
   }
 
   // ── SETTINGS ──
