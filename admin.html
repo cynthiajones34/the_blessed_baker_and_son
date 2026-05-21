@@ -291,6 +291,12 @@
     .filter-reset{padding:0 0.9rem;height:36px;background:transparent;color:var(--muted);border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.76rem;cursor:pointer;transition:all 0.2s;}
     .filter-reset:hover{border-color:var(--rose);color:var(--rose);}
 
+    @media print {
+      .sidebar,.topbar,.filter-bar,.filter-actions,button,.action-btn,.save-btn { display:none!important; }
+      .app-main { margin-left:0; }
+      .panel { display:block!important; padding:0; }
+      .table-wrap { border:none; }
+    }
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); z-index: 200; }
       .app-main { margin-left: 0; padding: 1rem; }
@@ -549,6 +555,65 @@
 
       <!-- REPORTING -->
       <div class="panel" id="panel-reporting">
+        <!-- Download Reports Section -->
+        <div class="filter-bar" style="margin-bottom:1.5rem">
+          <h3 style="font-family:var(--serif);font-size:1.1rem;color:var(--chocolate);margin-bottom:1rem">Download Reports</h3>
+          <div class="filter-bar-row">
+            <div class="filter-group">
+              <label>From</label>
+              <input type="date" id="rep-dateFrom" class="filter-input" />
+            </div>
+            <div class="filter-group">
+              <label>To</label>
+              <input type="date" id="rep-dateTo" class="filter-input" />
+            </div>
+            <div class="filter-group">
+              <label>Customer</label>
+              <input type="text" id="rep-customer" class="filter-input wide" placeholder="Name…" />
+            </div>
+            <div class="filter-group">
+              <label>School / Location</label>
+              <select id="rep-location" class="filter-select">
+                <option value="">All Locations</option>
+                <option value="Johnson's Learning Center">Johnson's Learning Center</option>
+                <option value="Henderson Mill">Henderson Mill</option>
+                <option value="Henderson">Henderson</option>
+                <option value="Lakeside">Lakeside</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Product</label>
+              <input type="text" id="rep-product" class="filter-input wide" placeholder="Item keyword…" />
+            </div>
+            <div class="filter-group">
+              <label>Order Type</label>
+              <select id="rep-orderType" class="filter-select">
+                <option value="">All Types</option>
+                <option value="micro">Pick-Up (Micro-Bakery)</option>
+                <option value="dropoff">Drop-Off</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button class="filter-apply" onclick="applyRepFilters()">Apply</button>
+              <button class="filter-reset" onclick="resetRepFilters()">Reset</button>
+            </div>
+          </div>
+          <div style="margin-top:1rem;display:flex;gap:0.75rem">
+            <button class="save-btn" style="margin-top:0" onclick="downloadReportCSV()">Download CSV</button>
+            <button class="save-btn" style="margin-top:0;background:var(--chocolate)" onclick="downloadReportPDF()">Download PDF</button>
+          </div>
+        </div>
+        <!-- Report Summary Table -->
+        <div class="table-wrap" id="reportTableWrap" style="margin-bottom:2rem">
+          <div class="table-header"><h3>Filtered Orders</h3><span id="repOrderCount" style="font-size:0.82rem;color:var(--muted)">0 orders</span></div>
+          <table>
+            <thead><tr>
+              <th>Order ID</th><th>Type</th><th>Customer</th><th>Email</th><th>Phone</th><th>Items</th><th>Total</th><th>Delivery Date</th><th>School</th><th>Status</th>
+            </tr></thead>
+            <tbody id="repTableBody"></tbody>
+          </table>
+        </div>
+        <!-- Charts -->
         <div class="report-grid">
           <div class="report-card">
             <h3>Cupcake Orders by Flavor</h3>
@@ -611,24 +676,40 @@
           <!-- Days Off - Micro -->
           <div class="settings-card">
             <h3>Days Off - Micro-Bakery</h3>
-            <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem">Block dates when micro-bakery orders will not be accepted.</p>
+            <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem">Block a date range when micro-bakery orders will not be accepted.</p>
             <div class="dayoff-list" id="microDayoffList"></div>
-            <div class="dayoff-add">
-              <input type="date" id="microDayoffDate" />
-              <input type="text" id="microDayoffNote" placeholder="Reason (optional)" style="flex:1.5" />
-              <button class="dayoff-add-btn" onclick="addDayOff('micro')">Block Date</button>
+            <div class="dayoff-add" style="flex-wrap:wrap;gap:0.5rem">
+              <div style="display:flex;flex-direction:column;gap:0.2rem;flex:1">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">From</label>
+                <input type="date" id="microDayoffFrom" style="padding:0.5rem 0.6rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.84rem;color:var(--text);background:var(--cream);outline:none" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.2rem;flex:1">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">To</label>
+                <input type="date" id="microDayoffTo" style="padding:0.5rem 0.6rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.84rem;color:var(--text);background:var(--cream);outline:none" />
+              </div>
+              <div style="display:flex;align-items:flex-end">
+                <button class="dayoff-add-btn" onclick="addDayOffRange('micro')">Block Range</button>
+              </div>
             </div>
           </div>
 
           <!-- Days Off - Drop-Off -->
           <div class="settings-card">
             <h3>Days Off - Drop-Off Orders</h3>
-            <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem">Block dates when drop-off deliveries will not be available.</p>
+            <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem">Block a date range when drop-off deliveries will not be available.</p>
             <div class="dayoff-list" id="dropoffDayoffList"></div>
-            <div class="dayoff-add">
-              <input type="date" id="dropoffDayoffDate" />
-              <input type="text" id="dropoffDayoffNote" placeholder="Reason (optional)" style="flex:1.5" />
-              <button class="dayoff-add-btn" onclick="addDayOff('dropoff')">Block Date</button>
+            <div class="dayoff-add" style="flex-wrap:wrap;gap:0.5rem">
+              <div style="display:flex;flex-direction:column;gap:0.2rem;flex:1">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">From</label>
+                <input type="date" id="dropoffDayoffFrom" style="padding:0.5rem 0.6rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.84rem;color:var(--text);background:var(--cream);outline:none" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.2rem;flex:1">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">To</label>
+                <input type="date" id="dropoffDayoffTo" style="padding:0.5rem 0.6rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.84rem;color:var(--text);background:var(--cream);outline:none" />
+              </div>
+              <div style="display:flex;align-items:flex-end">
+                <button class="dayoff-add-btn" onclick="addDayOffRange('dropoff')">Block Range</button>
+              </div>
             </div>
           </div>
 
@@ -643,18 +724,69 @@
           </div>
 
           <!-- Manual Order Entry -->
-          <div class="settings-card">
+          <div class="settings-card" style="grid-column:1/-1">
             <h3>Add Manual Order</h3>
             <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem">Manually add a phone or in-person order to the system.</p>
-            <div style="display:grid;gap:0.6rem">
-              <input type="text" id="manualName" placeholder="Customer name" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)" />
-              <input type="email" id="manualEmail" placeholder="Email" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)" />
-              <select id="manualType" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)">
-                <option value="micro">Micro-Bakery Pickup</option>
-                <option value="dropoff">Custom Drop-Off</option>
-              </select>
-              <input type="text" id="manualItems" placeholder="Items (e.g. 2x Red Velvet dozen)" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)" />
-              <input type="text" id="manualTotal" placeholder="Total (e.g. $70)" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)" />
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem">
+              <div style="display:flex;flex-direction:column;gap:0.25rem">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Order Type</label>
+                <select id="manualType" onchange="toggleManualSchool()" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)">
+                  <option value="micro-bakery">Pick-Up (Micro-Bakery)</option>
+                  <option value="custom-dropoff">Drop-Off</option>
+                </select>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.25rem">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">First Name</label>
+                <input type="text" id="manualFirstName" placeholder="First name" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.25rem">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Last Name</label>
+                <input type="text" id="manualLastName" placeholder="Last name" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.25rem">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Email</label>
+                <input type="email" id="manualEmail" placeholder="Email address" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.25rem">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Phone</label>
+                <input type="tel" id="manualPhone" placeholder="Phone number" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.25rem">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Delivery Date</label>
+                <input type="date" id="manualDeliveryDate" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.25rem">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Delivery Window</label>
+                <select id="manualDeliveryWindow" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)">
+                  <option value="">Select window…</option>
+                  <option value="7:00–7:30 AM">7:00–7:30 AM</option>
+                  <option value="7:30–8:00 AM">7:30–8:00 AM</option>
+                  <option value="8:00–8:30 AM">8:00–8:30 AM</option>
+                  <option value="Friday Pickup">Friday Pickup</option>
+                </select>
+              </div>
+              <div id="manualSchoolWrap" style="display:none;flex-direction:column;gap:0.25rem">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">School</label>
+                <select id="manualSchool" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)">
+                  <option value="">Select school…</option>
+                  <option value="Johnson's Learning Center">Johnson's Learning Center</option>
+                  <option value="Henderson Mill">Henderson Mill</option>
+                  <option value="Henderson">Henderson</option>
+                  <option value="Lakeside">Lakeside</option>
+                </select>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.25rem;grid-column:1/-1">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Items</label>
+                <textarea id="manualItems" placeholder="e.g. 2x Red Velvet dozen, 1x Vanilla jar" rows="2" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream);resize:vertical"></textarea>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.25rem">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Total ($)</label>
+                <input type="text" id="manualTotal" placeholder="e.g. $70" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.25rem">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Notes</label>
+                <input type="text" id="manualNotes" placeholder="Any special notes" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)" />
+              </div>
             </div>
             <button class="save-btn" onclick="addManualOrder()">Add Order</button>
           </div>
@@ -725,10 +857,11 @@
   }
   function getSettings() {
     return JSON.parse(localStorage.getItem('bb_settings') || JSON.stringify({
-      microOpen: true, microClosedMsg: 'Orders are currently closed. Check back this weekend!',
+      microOpen: true, pickupOpen: true, microClosedMsg: 'Orders are currently closed. Check back this weekend!',
       cupcakeMax: 20, cupcakeOrdered: 0, jarMax: 50, jarOrdered: 0,
       dropoffOpen: true, dropoffClosedMsg: 'Drop-off orders are currently closed.',
-      microBlockedDates: [], dropoffBlockedDates: []
+      microBlockedDates: [], dropoffBlockedDates: [],
+      microBlockedRanges: [], dropoffBlockedRanges: []
     }));
   }
   function saveSettings(s) { localStorage.setItem('bb_settings', JSON.stringify(s)); }
@@ -742,11 +875,11 @@
     const titles = {
       dashboard:'Dashboard', calendar:'Calendar',
       microOrders:'Micro-Bakery Orders', dropoffOrders:'Custom Drop-Off Orders',
-      reporting:'Reporting', settings:'Settings and Controls'
+      reporting:'Reporting & Downloads', settings:'Settings and Controls'
     };
     document.getElementById('panelTitle').textContent = titles[id] || id;
     if(id==='calendar') renderCalendar();
-    if(id==='reporting') renderReporting();
+    if(id==='reporting') { renderReporting(); renderRepTable({}); }
     if(id==='settings') loadSettings();
     if(id==='microOrders') renderMicroOrders('all');
     if(id==='dropoffOrders') renderDropoffOrders('all');
@@ -1022,19 +1155,22 @@
   // ── SETTINGS ──
   function loadSettings() {
     const s = getSettings();
-    document.getElementById('microOpenToggle').checked = !!s.microOpen;
+    // pickupOpen mirrors microOpen — both must be kept in sync for micro-bakery.html compatibility
+    document.getElementById('microOpenToggle').checked = !!(s.pickupOpen !== undefined ? s.pickupOpen : s.microOpen);
     document.getElementById('dropoffOpenToggle').checked = !!s.dropoffOpen;
     document.getElementById('cupcakeMaxInput').value = s.cupcakeMax || 20;
     document.getElementById('jarMaxInput').value = s.jarMax || 50;
     document.getElementById('microClosedMsgInput').value = s.microClosedMsg || '';
     document.getElementById('dropoffClosedMsgInput').value = s.dropoffClosedMsg || '';
-    renderDayoffList('micro', s.microBlockedDates||[]);
-    renderDayoffList('dropoff', s.dropoffBlockedDates||[]);
+    renderDayoffRangeList('micro', s.microBlockedRanges || s.microBlockedDates || []);
+    renderDayoffRangeList('dropoff', s.dropoffBlockedRanges || s.dropoffBlockedDates || []);
   }
 
   function saveMicroSettings() {
     const s = getSettings();
-    s.microOpen = document.getElementById('microOpenToggle').checked;
+    const isOpen = document.getElementById('microOpenToggle').checked;
+    s.microOpen = isOpen;
+    s.pickupOpen = isOpen; // micro-bakery.html reads microOpen; keep pickupOpen in sync for future use
     s.cupcakeMax = parseInt(document.getElementById('cupcakeMaxInput').value);
     s.jarMax = parseInt(document.getElementById('jarMaxInput').value);
     s.microClosedMsg = document.getElementById('microClosedMsgInput').value;
@@ -1048,36 +1184,45 @@
     saveSettings(s); toast('Drop-off settings saved!');
   }
 
-  function renderDayoffList(type, dates) {
+  function renderDayoffRangeList(type, ranges) {
     const listId = type + 'DayoffList';
     const el = document.getElementById(listId);
     if(!el) return;
-    if(!dates||dates.length===0) { el.innerHTML='<p style="font-size:0.82rem;color:var(--muted);font-style:italic">No blocked dates.</p>'; return; }
-    el.innerHTML = dates.map((d,i)=>`
-      <div class="dayoff-item">
-        <span>${d.date}${d.note?' — '+d.note:''}</span>
-        <button class="dayoff-remove" onclick="removeDayOff('${type}',${i})">&#10005;</button>
-      </div>`).join('');
+    if(!ranges||ranges.length===0) { el.innerHTML='<p style="font-size:0.82rem;color:var(--muted);font-style:italic">No blocked date ranges.</p>'; return; }
+    el.innerHTML = ranges.map((r,i)=>{
+      // Support both old {date} format and new {from,to} format
+      const label = r.from ? (r.from === r.to ? r.from : r.from + ' → ' + r.to) : (r.date || '');
+      return `<div class="dayoff-item">
+        <span>${label}</span>
+        <button class="dayoff-remove" onclick="removeDayOffRange('${type}',${i})">&#10005;</button>
+      </div>`;
+    }).join('');
   }
 
-  function addDayOff(type) {
-    const dateInput = document.getElementById(type+'DayoffDate');
-    const noteInput = document.getElementById(type+'DayoffNote');
-    if(!dateInput.value) { toast('Please select a date.'); return; }
+  function addDayOffRange(type) {
+    const fromInput = document.getElementById(type+'DayoffFrom');
+    const toInput = document.getElementById(type+'DayoffTo');
+    if(!fromInput.value) { toast('Please select a From date.'); return; }
+    const toVal = toInput.value || fromInput.value;
+    if(toVal < fromInput.value) { toast('To date must be on or after From date.'); return; }
     const s = getSettings();
-    const key = type+'BlockedDates';
+    const key = type+'BlockedRanges';
     if(!s[key]) s[key]=[];
-    s[key].push({date:dateInput.value, note:noteInput.value});
+    s[key].push({from:fromInput.value, to:toVal});
     saveSettings(s);
-    dateInput.value=''; noteInput.value='';
-    renderDayoffList(type, s[key]);
-    toast('Date blocked!');
+    fromInput.value=''; toInput.value='';
+    renderDayoffRangeList(type, s[key]);
+    toast('Date range blocked!');
   }
 
-  function removeDayOff(type, idx) {
+  function removeDayOffRange(type, idx) {
     const s = getSettings();
-    const key = type+'BlockedDates';
-    if(s[key]) { s[key].splice(idx,1); saveSettings(s); renderDayoffList(type, s[key]); toast('Date unblocked.'); }
+    const key = type+'BlockedRanges';
+    if(!s[key]) s[key] = s[type+'BlockedDates'] || [];
+    s[key].splice(idx,1);
+    saveSettings(s);
+    renderDayoffRangeList(type, s[key]);
+    toast('Date range unblocked.');
   }
 
   function changePassword() {
@@ -1088,23 +1233,170 @@
     toast('Password updated!');
   }
 
-  function addManualOrder() {
-    const name = document.getElementById('manualName').value.trim();
+  function toggleManualSchool() {
+    const type = document.getElementById('manualType').value;
+    const wrap = document.getElementById('manualSchoolWrap');
+    if(wrap) wrap.style.display = (type === 'custom-dropoff') ? 'flex' : 'none';
+  }
+
+  async function addManualOrder() {
+    const firstName = document.getElementById('manualFirstName').value.trim();
+    const lastName = document.getElementById('manualLastName').value.trim();
     const email = document.getElementById('manualEmail').value.trim();
+    const phone = document.getElementById('manualPhone').value.trim();
     const type = document.getElementById('manualType').value;
     const items = document.getElementById('manualItems').value.trim();
     const total = document.getElementById('manualTotal').value.trim();
-    if(!name||!items) { toast('Name and items are required.'); return; }
-    const orders = getData();
-    const newId = Math.max(0,...orders.map(o=>o.id))+1;
-    orders.push({
-      id:newId,type,name,email,items,total,
-      date:new Date().toISOString().split('T')[0],
-      school:'',status:'pending',notes:'Manual entry',deliveryWindow:''
+    const deliveryDate = document.getElementById('manualDeliveryDate').value;
+    const deliveryWindow = document.getElementById('manualDeliveryWindow').value;
+    const school = document.getElementById('manualSchool') ? document.getElementById('manualSchool').value.trim() : '';
+    const notes = document.getElementById('manualNotes').value.trim();
+    const name = (firstName + ' ' + lastName).trim();
+    if(!name) { toast('First name is required.'); return; }
+    if(!items) { toast('Items are required.'); return; }
+    const orderData = {
+      type,
+      name,
+      email,
+      phone,
+      items,
+      total: total || '$0',
+      deliveryDate,
+      deliveryWindow,
+      notes: notes || 'Manual entry',
+      status: 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if(type === 'custom-dropoff' && school) orderData.school = school;
+    try {
+      await db.collection('orders').add(orderData);
+      toast('Order added to Firestore!');
+      ['manualFirstName','manualLastName','manualEmail','manualPhone','manualItems','manualTotal','manualNotes'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = '';
+      });
+      const dateEl = document.getElementById('manualDeliveryDate');
+      if(dateEl) dateEl.value = '';
+      const winEl = document.getElementById('manualDeliveryWindow');
+      if(winEl) winEl.value = '';
+      const schEl = document.getElementById('manualSchool');
+      if(schEl) schEl.value = '';
+      await loadOrders();
+      renderDashboard();
+    } catch(e) {
+      console.error('Manual order failed:', e);
+      toast('Failed to save order — check connection.');
+    }
+  }
+
+  // ── REPORTS PANEL ──
+  function getRepFilterVals() {
+    const g = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+    return {
+      dateFrom: g('rep-dateFrom'),
+      dateTo: g('rep-dateTo'),
+      customer: g('rep-customer').toLowerCase().trim(),
+      location: g('rep-location') || '',
+      product: g('rep-product') || '',
+      orderType: g('rep-orderType') || ''
+    };
+  }
+
+  function applyRepFilters() { renderRepTable(getRepFilterVals()); }
+  function resetRepFilters() {
+    ['rep-dateFrom','rep-dateTo','rep-customer','rep-location','rep-product','rep-orderType'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.value='';
     });
-    saveData(orders);
-    ['manualName','manualEmail','manualItems','manualTotal'].forEach(id=>{document.getElementById(id).value=''; });
-    toast('Order added!');
+    renderRepTable({});
+  }
+
+  function getFilteredRepOrders(f) {
+    f = f || {};
+    let orders = getData();
+    orders = applyOrderFilters(orders, f);
+    if(f.orderType) orders = orders.filter(o => o.type === f.orderType);
+    return orders;
+  }
+
+  function renderRepTable(f) {
+    const orders = getFilteredRepOrders(f);
+    const countEl = document.getElementById('repOrderCount');
+    if(countEl) countEl.textContent = orders.length + ' order' + (orders.length===1?'':'s');
+    const body = document.getElementById('repTableBody');
+    if(!body) return;
+    if(orders.length===0) {
+      body.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:2rem">No orders match the current filters.</td></tr>';
+      return;
+    }
+    body.innerHTML = orders.map(o=>`<tr>
+      <td style="font-size:0.78rem;color:var(--muted)">${o.id||''}</td>
+      <td><span class="badge ${o.type==='micro'?'badge-confirmed':'badge-paid'}">${o.type==='micro'?'Pick-Up':'Drop-Off'}</span></td>
+      <td><strong>${o.name}</strong></td>
+      <td style="font-size:0.78rem">${o.email||''}</td>
+      <td style="font-size:0.78rem">${o.phone||''}</td>
+      <td style="font-size:0.82rem;max-width:180px">${o.items}</td>
+      <td><strong>${o.total}</strong></td>
+      <td style="font-size:0.82rem">${o.date||''}</td>
+      <td style="font-size:0.82rem">${o.school||''}</td>
+      <td>${badgeHtml(o.status)}</td>
+    </tr>`).join('');
+  }
+
+  function downloadReportCSV() {
+    const f = getRepFilterVals();
+    const orders = getFilteredRepOrders(f);
+    const cols = ['Order ID','Type','Customer','Email','Phone','Items','Total','Delivery Date','School','Status'];
+    const rows = orders.map(o=>[
+      o.id||'', o.type==='micro'?'Pick-Up':'Drop-Off', o.name, o.email||'', o.phone||'',
+      '"'+(o.items||'').replace(/"/g,'""')+'"', o.total, o.date||'', o.school||'', o.status
+    ].join(','));
+    const csv = [cols.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'blessed-bakery-orders-' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('CSV downloaded!');
+  }
+
+  function downloadReportPDF() {
+    const f = getRepFilterVals();
+    const orders = getFilteredRepOrders(f);
+    const rows = orders.map(o=>`<tr>
+      <td>${o.id||''}</td>
+      <td>${o.type==='micro'?'Pick-Up':'Drop-Off'}</td>
+      <td>${o.name}</td>
+      <td>${o.email||''}</td>
+      <td>${o.phone||''}</td>
+      <td>${o.items||''}</td>
+      <td>${o.total}</td>
+      <td>${o.date||''}</td>
+      <td>${o.school||''}</td>
+      <td>${o.status}</td>
+    </tr>`).join('');
+    const win = window.open('','_blank');
+    win.document.write(`<!DOCTYPE html><html><head><title>Blessed Baker — Orders Report</title>
+    <style>
+      body{font-family:Georgia,serif;color:#3D2510;margin:2rem;}
+      h1{color:#7A5540;margin-bottom:0.25rem;}
+      p{color:#A88070;font-size:0.85rem;margin-bottom:1.5rem;}
+      table{width:100%;border-collapse:collapse;font-size:0.78rem;}
+      th{background:#7A5540;color:#fff;padding:0.5rem 0.6rem;text-align:left;}
+      td{padding:0.45rem 0.6rem;border-bottom:1px solid #e0d0c0;}
+      tr:nth-child(even) td{background:#fffbf6;}
+      @media print{@page{margin:1.5cm}}
+    </style></head><body>
+    <h1>The Blessed Baker and Son — Orders Report</h1>
+    <p>Generated: ${new Date().toLocaleString()} &nbsp;|&nbsp; ${orders.length} order${orders.length===1?'':'s'}</p>
+    <table><thead><tr>
+      <th>Order ID</th><th>Type</th><th>Customer</th><th>Email</th><th>Phone</th>
+      <th>Items</th><th>Total</th><th>Date</th><th>School</th><th>Status</th>
+    </tr></thead><tbody>${rows}</tbody></table>
+    <script>window.onload=function(){window.print();}<\/script>
+    </body></html>`);
+    win.document.close();
   }
 
   // ── INIT ──
