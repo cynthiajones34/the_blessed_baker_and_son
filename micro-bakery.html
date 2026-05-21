@@ -266,7 +266,7 @@
             <div class="form-group"><label>Last Name</label><input type="text" name="last_name" required /></div>
           </div>
           <div class="form-group"><label>Email</label><input type="email" name="email" required /></div>
-          <div class="form-group"><label>Phone</label><input type="tel" name="phone" /></div>
+          <div class="form-group"><label>Phone</label><input type="tel" name="phone" required /></div>
 
           <div class="section-divider">Select Your Items</div>
           <p class="sub" style="font-size:0.86rem;color:var(--muted);margin-bottom:1.5rem;">Cupcakes available by the full dozen or half dozen. No mixed dozens.</p>
@@ -333,27 +333,59 @@
 
         <!-- Cake Jars -->
         <div class="item-category">
-          <div class="item-category-title">🫙 Cake Jars (min. 12, all flavors, priced per jar)</div>
-          <div class="notice-bar">Cake jars are available in Red Velvet, Key Lime, Vanilla, Strawberry, Oreo Cookies N' Cream, and Biscoff Cookie Butter. Minimum order: 12 jars. Additional $5 per 12 ct for Cookies N' Cream and Cookie Butter.</div>
-          <div class="item-card" data-id="jar-4oz" data-name="Cake Jars 4 oz (per jar)" data-price="4" data-type="jar">
-            <div class="item-card-left"><div><div class="item-card-name">4 oz Cake Jar</div><div class="item-card-sub">Min. 12 jars. $4/jar starting price.</div></div></div>
-            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+          <div class="item-category-title">🫙 Cake Jars (min. 12 per flavor, priced per jar)</div>
+          <div class="notice-bar">Minimum 12 jars per flavor. You may order multiple flavors per size. Oreo Cookies N’ Cream and Biscoff Cookie Butter are +$5 per set of 12. Final pricing confirmed by Ina.</div>
+
+          <div class="item-category-sub-label">4 oz &mdash; $4 / jar</div>
+          <div class="item-card" data-id="jar-4oz-biscoff" data-name="4 oz Cake Jar &mdash; Biscoff Cookie Butter" data-price="4" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Biscoff Cookie Butter</div><div class="item-card-sub">4 oz &middot; min. 12 &middot; +$5 per set of 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
           </div>
-          <div class="item-card" data-id="jar-8oz" data-name="Cake Jars 8 oz (per jar)" data-price="8" data-type="jar">
-            <div class="item-card-left"><div><div class="item-card-name">8 oz Cake Jar</div><div class="item-card-sub">Min. 12 jars. $8/jar starting price.</div></div></div>
-            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+          <div class="item-card" data-id="jar-4oz-keylime" data-name="4 oz Cake Jar &mdash; Key Lime" data-price="4" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Key Lime</div><div class="item-card-sub">4 oz &middot; min. 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
           </div>
-          <div class="form-group" style="margin-top:0.8rem">
-            <label>Jar Flavor(s)</label>
-            <select name="jar_flavor">
-              <option value="">Select flavor...</option>
-              <option>Red Velvet</option>
-              <option>Key Lime</option>
-              <option>Vanilla</option>
-              <option>Strawberry</option>
-              <option>Oreo Cookies N' Cream (+$5/12ct)</option>
-              <option>Biscoff Cookie Butter (+$5/12ct)</option>
-            </select>
+          <div class="item-card" data-id="jar-4oz-oreo" data-name="4 oz Cake Jar &mdash; Oreo Cookies N’ Cream" data-price="4" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Oreo Cookies N’ Cream</div><div class="item-card-sub">4 oz &middot; min. 12 &middot; +$5 per set of 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
+          </div>
+          <div class="item-card" data-id="jar-4oz-redvelvet" data-name="4 oz Cake Jar &mdash; Red Velvet" data-price="4" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Red Velvet</div><div class="item-card-sub">4 oz &middot; min. 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
+          </div>
+          <div class="item-card" data-id="jar-4oz-strawberry" data-name="4 oz Cake Jar &mdash; Strawberry" data-price="4" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Strawberry</div><div class="item-card-sub">4 oz &middot; min. 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
+          </div>
+          <div class="item-card" data-id="jar-4oz-vanilla" data-name="4 oz Cake Jar &mdash; Vanilla" data-price="4" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Vanilla</div><div class="item-card-sub">4 oz &middot; min. 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
+          </div>
+
+          <div class="item-category-sub-label" style="margin-top:1rem">8 oz &mdash; $8 / jar</div>
+          <div class="item-card" data-id="jar-8oz-biscoff" data-name="8 oz Cake Jar &mdash; Biscoff Cookie Butter" data-price="8" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Biscoff Cookie Butter</div><div class="item-card-sub">8 oz &middot; min. 12 &middot; +$5 per set of 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
+          </div>
+          <div class="item-card" data-id="jar-8oz-keylime" data-name="8 oz Cake Jar &mdash; Key Lime" data-price="8" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Key Lime</div><div class="item-card-sub">8 oz &middot; min. 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
+          </div>
+          <div class="item-card" data-id="jar-8oz-oreo" data-name="8 oz Cake Jar &mdash; Oreo Cookies N’ Cream" data-price="8" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Oreo Cookies N’ Cream</div><div class="item-card-sub">8 oz &middot; min. 12 &middot; +$5 per set of 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
+          </div>
+          <div class="item-card" data-id="jar-8oz-redvelvet" data-name="8 oz Cake Jar &mdash; Red Velvet" data-price="8" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Red Velvet</div><div class="item-card-sub">8 oz &middot; min. 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
+          </div>
+          <div class="item-card" data-id="jar-8oz-strawberry" data-name="8 oz Cake Jar &mdash; Strawberry" data-price="8" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Strawberry</div><div class="item-card-sub">8 oz &middot; min. 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
+          </div>
+          <div class="item-card" data-id="jar-8oz-vanilla" data-name="8 oz Cake Jar &mdash; Vanilla" data-price="8" data-type="jar">
+            <div class="item-card-left"><div><div class="item-card-name">Vanilla</div><div class="item-card-sub">8 oz &middot; min. 12</div></div></div>
+            <div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div>
           </div>
         </div>
 
@@ -436,14 +468,11 @@
     const card = btn.closest('.item-card');
     const qEl = card.querySelector('.qty-num');
     let q = parseInt(qEl.textContent) + delta;
-    const type = card.dataset.type;
     if (q < 0) q = 0;
-    // Enforce jar minimum
-    if (type === 'jar' && q > 0 && q < 12) q = delta > 0 ? 12 : 0;
     qEl.textContent = q;
     if (q > 0) {
       card.classList.add('selected');
-      cart[card.dataset.id] = { name: card.dataset.name, price: parseFloat(card.dataset.price), qty: q, type };
+      cart[card.dataset.id] = { name: card.dataset.name, price: parseFloat(card.dataset.price), qty: q, type: card.dataset.type };
     } else {
       card.classList.remove('selected');
       delete cart[card.dataset.id];

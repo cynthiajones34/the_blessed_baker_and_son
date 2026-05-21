@@ -218,7 +218,7 @@
           <div class="form-group"><label>Last Name</label><input type="text" name="last_name" required /></div>
         </div>
         <div class="form-group"><label>Email</label><input type="email" name="email" required /></div>
-        <div class="form-group"><label>Phone</label><input type="tel" name="phone" /></div>
+        <div class="form-group"><label>Phone</label><input type="tel" name="phone" required /></div>
 
         <div class="section-divider">Delivery Details</div>
         <div class="form-row">
@@ -240,28 +240,32 @@
 
         <!-- Cupcakes -->
         <p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.8rem;font-style:italic">Cupcakes: per dozen, no mixed dozen</p>
-        <div class="item-row"><div><div class="item-row-name">Red Velvet Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$35</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
-        <div class="item-row"><div><div class="item-row-name">Key Lime Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$35</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
-        <div class="item-row"><div><div class="item-row-name">Vanilla Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$35</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
-        <div class="item-row"><div><div class="item-row-name">Strawberry Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$35</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
-        <div class="item-row"><div><div class="item-row-name">Oreo Cookies N' Cream Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$40</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
-        <div class="item-row"><div><div class="item-row-name">Biscoff Cookie Butter Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$40</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
+        <div class="item-row" data-price="35"><div><div class="item-row-name">Red Velvet Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$35</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
+        <div class="item-row" data-price="35"><div><div class="item-row-name">Key Lime Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$35</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
+        <div class="item-row" data-price="35"><div><div class="item-row-name">Vanilla Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$35</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
+        <div class="item-row" data-price="35"><div><div class="item-row-name">Strawberry Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$35</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
+        <div class="item-row" data-price="40"><div><div class="item-row-name">Oreo Cookies N' Cream Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$40</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
+        <div class="item-row" data-price="40"><div><div class="item-row-name">Biscoff Cookie Butter Cupcakes</div><div style="font-size:0.75rem;color:var(--muted)">per dozen</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$40</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
 
         <!-- Cakes -->
         <!-- Cake Jars -->
-        <p style="font-size:0.78rem;color:var(--muted);margin:1.2rem 0 0.8rem;font-style:italic">Cake jars (min. 12, priced per jar)</p>
-        <div class="item-row"><div><div class="item-row-name">4 oz Cake Jar</div><div style="font-size:0.75rem;color:var(--muted)">min. 12 jars</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">from $4</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
-        <div class="item-row"><div><div class="item-row-name">8 oz Cake Jar</div><div style="font-size:0.75rem;color:var(--muted)">min. 12 jars</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">from $8</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button></div></div></div>
+        <p style="font-size:0.78rem;color:var(--muted);margin:1.2rem 0 0.5rem;font-style:italic">Cake jars &mdash; min. 12 per flavor. You may order multiple flavors per size. Oreo N’ Cream &amp; Biscoff are +$5 per set of 12.</p>
 
-        <div class="form-group" style="margin-top:0.8rem">
-          <label>Jar Flavor(s)</label>
-          <select name="jar_flavor">
-            <option value="">Not ordering jars</option>
-            <option>Red Velvet</option><option>Key Lime</option><option>Vanilla</option>
-            <option>Strawberry</option><option>Oreo Cookies N' Cream (+$5/12ct)</option>
-            <option>Biscoff Cookie Butter (+$5/12ct)</option>
-          </select>
-        </div>
+        <p style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--rose);margin:0.8rem 0 0.4rem;">4 oz &mdash; $4 / jar</p>
+        <div class="item-row" data-price="4"><div><div class="item-row-name">4 oz &mdash; Biscoff Cookie Butter</div><div style="font-size:0.75rem;color:var(--muted)">min. 12 &middot; +$5 per set of 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$4/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
+        <div class="item-row" data-price="4"><div><div class="item-row-name">4 oz &mdash; Key Lime</div><div style="font-size:0.75rem;color:var(--muted)">min. 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$4/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
+        <div class="item-row" data-price="4"><div><div class="item-row-name">4 oz &mdash; Oreo Cookies N’ Cream</div><div style="font-size:0.75rem;color:var(--muted)">min. 12 &middot; +$5 per set of 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$4/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
+        <div class="item-row" data-price="4"><div><div class="item-row-name">4 oz &mdash; Red Velvet</div><div style="font-size:0.75rem;color:var(--muted)">min. 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$4/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
+        <div class="item-row" data-price="4"><div><div class="item-row-name">4 oz &mdash; Strawberry</div><div style="font-size:0.75rem;color:var(--muted)">min. 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$4/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
+        <div class="item-row" data-price="4"><div><div class="item-row-name">4 oz &mdash; Vanilla</div><div style="font-size:0.75rem;color:var(--muted)">min. 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$4/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
+
+        <p style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--rose);margin:1rem 0 0.4rem;">8 oz &mdash; $8 / jar</p>
+        <div class="item-row" data-price="8"><div><div class="item-row-name">8 oz &mdash; Biscoff Cookie Butter</div><div style="font-size:0.75rem;color:var(--muted)">min. 12 &middot; +$5 per set of 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$8/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
+        <div class="item-row" data-price="8"><div><div class="item-row-name">8 oz &mdash; Key Lime</div><div style="font-size:0.75rem;color:var(--muted)">min. 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$8/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
+        <div class="item-row" data-price="8"><div><div class="item-row-name">8 oz &mdash; Oreo Cookies N’ Cream</div><div style="font-size:0.75rem;color:var(--muted)">min. 12 &middot; +$5 per set of 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$8/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
+        <div class="item-row" data-price="8"><div><div class="item-row-name">8 oz &mdash; Red Velvet</div><div style="font-size:0.75rem;color:var(--muted)">min. 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$8/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
+        <div class="item-row" data-price="8"><div><div class="item-row-name">8 oz &mdash; Strawberry</div><div style="font-size:0.75rem;color:var(--muted)">min. 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$8/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
+        <div class="item-row" data-price="8"><div><div class="item-row-name">8 oz &mdash; Vanilla</div><div style="font-size:0.75rem;color:var(--muted)">min. 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$8/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
 
         <div class="form-group" style="margin-top:1rem">
           <label>Special Requests or Notes</label>
@@ -323,17 +327,8 @@
   function changeQty(btn, delta) {
     const row = btn.closest('.item-row');
     const qEl = row.querySelector('.qty-num');
-    const name = row.querySelector('.item-row-name').textContent.trim();
-    const isJar = name.includes('Cake Jar');
-    const step = isJar ? 12 : 1;
-    const min = isJar ? 12 : 0;
-    let q = parseInt(qEl.textContent);
-    if (q === 0 && delta > 0) {
-      q = min;
-    } else {
-      q += delta * step;
-    }
-    if (q < min) q = (delta < 0 && q <= 0) ? 0 : min;
+    let q = parseInt(qEl.textContent) + delta;
+    if (q < 0) q = 0;
     qEl.textContent = q;
     updateTotal();
   }
@@ -347,10 +342,8 @@
       const q = parseInt(qEl.textContent);
       if (q > 0) {
         const nameEl = row.querySelector('.item-row-name');
-        const priceEl = row.querySelector('.item-row-price');
         const name = nameEl ? nameEl.textContent.trim() : '';
-        const priceText = priceEl ? priceEl.textContent.replace(/[^0-9]/g,'') : '0';
-        const price = parseInt(priceText) || 0;
+        const price = parseFloat(row.dataset.price) || 0;
         const sub = price * q;
         total += sub;
         lines.push(q + 'x ' + name + ' = $' + sub);
