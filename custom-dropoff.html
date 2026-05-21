@@ -204,7 +204,7 @@
       <h2>Order Details</h2>
       <p class="sub">Ordering for: <strong id="selectedSchoolLabel"></strong></p>
 
-      <div class="notice-bar">Payment is due upon confirmation. Ina will send payment instructions by email. Unpaid orders will be cancelled.</div>
+      <div class="notice-bar">Payment is due upon confirmation. We will send payment instructions by email. Unpaid orders will be cancelled.</div>
 
       <form id="orderForm" action="https://formspree.io/f/maqkobdb" method="POST">
         <input type="hidden" name="order_type" value="custom-dropoff" />
@@ -265,7 +265,7 @@
 
         <!-- Cakes -->
         <!-- Cake Jars -->
-        <p style="font-size:0.78rem;color:var(--muted);margin:1.2rem 0 0.5rem;font-style:italic">Cake jars &mdash; min. 12 per flavor. You may order multiple flavors per size. Oreo N’ Cream &amp; Biscoff are +$5 per set of 12.</p>
+        <p style="font-size:0.78rem;color:var(--muted);margin:1.2rem 0 0.5rem;font-style:italic">Cake jars &mdash; min. 12 jars per flavor. You may order multiple flavors per size. <br>Oreo N’ Cream &amp; Biscoff are +$5 per set of 12.</p>
 
         <p style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--rose);margin:0.8rem 0 0.4rem;">4 oz &mdash; $4 / jar</p>
         <div class="item-row" data-price="4" data-premium="5"><div><div class="item-row-name">4 oz &mdash; Biscoff Cookie Butter</div><div style="font-size:0.75rem;color:var(--muted)">min. 12 &middot; +$5 per set of 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$4/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
@@ -295,7 +295,7 @@
             <span>Estimated Total</span>
             <span class="summary-total-price" id="estimatedTotal">$0</span>
           </div>
-          <p style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;line-height:1.5;">Final total confirmed by Ina. Payment instructions sent via email upon confirmation.</p>
+          <p style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;line-height:1.5;">Final total confirmed by The Blessed Baker and Son. Payment instructions sent via email upon confirmation.</p>
         </div>
 
         <button type="submit" class="btn-primary" id="submitBtn">Submit Drop-Off Order Request</button>
@@ -305,8 +305,8 @@
   <div class="modal-overlay" id="confirmModal">
     <div class="modal-box">
       <div class="modal-icon">🙏</div>
-      <h2>Request Received</h2>
-      <p>Thank you! Ina will review your drop-off request and reach out with payment instructions and confirmation. Minimum 2-business day lead time required.</p>
+      <h2>Error</h2>
+      <p>Minimum 2-business day lead time required.Please revise your oder.</p>
       <p style="margin-top:0.8rem;font-size:0.82rem">Questions? Email <a href="mailto:info@blessedbakerandson.com" style="color:var(--terracotta)">info@blessedbakerandson.com</a></p>
       <button class="modal-close" onclick="closeConfirm()">Close</button>
     </div>
