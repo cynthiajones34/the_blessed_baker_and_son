@@ -257,6 +257,7 @@
         <p class="sub" style="font-size:0.86rem;color:var(--muted);margin-bottom:2rem;">Complete your information and select your items below.</p>
         <form id="orderForm" action="https://formspree.io/f/mqejqlld" method="POST">
           <input type="hidden" name="order_type" value="micro-bakery-pickup" />
+          <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
           <input type="hidden" name="order_summary" id="orderSummaryInput" />
           <input type="hidden" name="order_total" id="orderTotalInput" />
           <div class="section-divider">Your Information</div>
