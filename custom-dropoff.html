@@ -307,8 +307,17 @@
   function changeQty(btn, delta) {
     const row = btn.closest('.item-row');
     const qEl = row.querySelector('.qty-num');
-    let q = parseInt(qEl.textContent) + delta;
-    if (q < 0) q = 0;
+    const name = row.querySelector('.item-row-name').textContent.trim();
+    const isJar = name.includes('Cake Jar');
+    const step = isJar ? 12 : 1;
+    const min = isJar ? 12 : 0;
+    let q = parseInt(qEl.textContent);
+    if (q === 0 && delta > 0) {
+      q = min;
+    } else {
+      q += delta * step;
+    }
+    if (q < min) q = (delta < 0 && q <= 0) ? 0 : min;
     qEl.textContent = q;
     updateTotal();
   }
