@@ -281,11 +281,9 @@
       </form>
   </div>
 
-  <div id="confirmScreen">
-    <div class="confirm-icon">🙏</div>
-    <h2>Request Received</h2>
-    <p>Thank you! Ina will review your drop-off request and reach out with payment instructions and confirmation. Please allow 24 hours for a response.</p>
-    <p style="margin-top:1rem;font-size:0.85rem">Questions? Email <a href="mailto:info@blessedbakerandson.com" style="color:var(--terracotta)">info@blessedbakerandson.com</a></p>
+  <div id="confirmScreen" style="display:none;text-align:center;padding:4rem 2rem;">
+    <div style="font-size:3rem;margin-bottom:1.2rem;">🙏</div>
+    <h2 style="font-family:var(--serif);font-size:1.8rem;color:var(--chocolate);">Thank you for your order.</h2>
   </div>
 </div>
 
@@ -366,31 +364,25 @@
   document.getElementById('orderForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const fd = new FormData(this);
-    fetch(this.action, {
-      method: 'POST',
-      body: fd,
-      headers: { 'Accept': 'application/json' }
-    }).then(r => {
-      if (r.ok) {
-        db.collection('orders').add({
-          type: 'custom-dropoff',
-          name: ((fd.get('first_name') || '') + ' ' + (fd.get('last_name') || '')).trim(),
-          email: fd.get('email') || '',
-          phone: fd.get('phone') || '',
-          items: fd.get('order_summary') || '',
-          total: fd.get('estimated_total') || '',
-          notes: fd.get('notes') || '',
-          school: fd.get('school') || '',
-          deliveryDate: fd.get('delivery_date') || '',
-          deliveryWindow: fd.get('delivery_window') || '',
-          status: 'pending',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).catch(err => console.error('Firestore write failed:', err));
-        document.getElementById('orderArea').style.display = 'none';
-        document.getElementById('confirmScreen').classList.add('show');
-      } else {
-        alert('Something went wrong. Please email info@blessedbakerandson.com');
-      }
+    const formAction = this.action;
+    db.collection('orders').add({
+      type: 'custom-dropoff',
+      name: ((fd.get('first_name') || '') + ' ' + (fd.get('last_name') || '')).trim(),
+      email: fd.get('email') || '',
+      phone: fd.get('phone') || '',
+      items: fd.get('order_summary') || '',
+      total: fd.get('estimated_total') || '',
+      notes: fd.get('notes') || '',
+      school: fd.get('school') || '',
+      deliveryDate: fd.get('delivery_date') || '',
+      deliveryWindow: fd.get('delivery_window') || '',
+      status: 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      fetch(formAction, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } }).catch(() => {});
+      document.getElementById('orderArea').style.display = 'none';
+      document.getElementById('availNotice').style.display = 'none';
+      document.getElementById('confirmScreen').style.display = 'block';
     }).catch(() => alert('Something went wrong. Please email info@blessedbakerandson.com'));
   });
 </script>
