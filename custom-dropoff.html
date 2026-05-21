@@ -402,6 +402,9 @@
     const fd = new FormData(this);
     const formAction = this.action;
 
+    // DEBUG - remove after testing
+    alert('Handler running - about to show confirmation');
+
     // Show confirmation immediately
     document.getElementById('orderArea').style.display = 'none';
     document.getElementById('availNotice').style.display = 'none';
