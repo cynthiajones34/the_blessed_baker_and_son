@@ -1122,8 +1122,8 @@
   function changeMonth(delta) { calDate.setMonth(calDate.getMonth()+delta); renderCalendar(); }
 
   // ── REPORTING ──
-  function renderReporting() {
-    const orders = getData();
+  function renderReporting(orders) {
+    if(!orders) orders = getData();
     const cupcakeFlavors = ['Red Velvet','Key Lime','Vanilla','Strawberry','Oreo Cookies N Cream','Biscoff Cookie Butter'];
     const cupcakeCounts = {};
     cupcakeFlavors.forEach(f=>{ cupcakeCounts[f]=0; });
@@ -1320,11 +1320,17 @@
     };
   }
 
-  function applyRepFilters() { renderRepTable(getRepFilterVals()); }
+  function applyRepFilters() {
+    const f = getRepFilterVals();
+    const filtered = getFilteredRepOrders(f);
+    renderReporting(filtered);
+    renderRepTable(f);
+  }
   function resetRepFilters() {
     ['rep-dateFrom','rep-dateTo','rep-customer','rep-location','rep-product','rep-orderType'].forEach(id => {
       const el = document.getElementById(id); if(el) el.value='';
     });
+    renderReporting();
     renderRepTable({});
   }
 
