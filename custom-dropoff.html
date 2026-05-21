@@ -354,12 +354,19 @@
     document.getElementById('orderTotalInput').value = '$' + total + ' (estimated)';
   }
 
-  // Set minimum date to 2 days from today
+  // Set minimum date to 2 business days from today (skip weekends)
   const dateInput = document.querySelector('input[type="date"]');
   if (dateInput) {
-    const minDate = new Date();
-    minDate.setDate(minDate.getDate() + 2);
-    dateInput.min = minDate.toISOString().split('T')[0];
+    let d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 1);
+    let bizDays = 0;
+    while (bizDays < 2) {
+      d.setDate(d.getDate() + 1);
+      const dow = d.getDay();
+      if (dow !== 0 && dow !== 6) bizDays++;
+    }
+    dateInput.min = d.toISOString().split('T')[0];
   }
 
   document.getElementById('orderForm').addEventListener('submit', function(e) {
