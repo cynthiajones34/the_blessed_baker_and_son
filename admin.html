@@ -263,6 +263,7 @@
 
     /* REPORTING */
     .report-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;}
+    .report-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2rem;margin-bottom:2rem;}
     .report-card{background:var(--white);border:1px solid rgba(199,167,108,0.2);border-radius:4px;padding:2rem;}
     .report-card h3{font-family:var(--serif);font-size:1.1rem;color:var(--chocolate);margin-bottom:1.2rem;}
     .report-bar-row{display:flex;align-items:center;gap:0.8rem;margin-bottom:0.7rem;}
@@ -330,7 +331,7 @@
       .sidebar { transform: translateX(-100%); z-index: 200; }
       .app-main { margin-left: 0; padding: 1rem; }
       .stat-grid { grid-template-columns: 1fr 1fr; }
-      .settings-grid, .report-grid { grid-template-columns: 1fr; }
+      .settings-grid, .report-grid, .report-grid-3 { grid-template-columns: 1fr; }
       .filter-bar-row { gap: 0.5rem; }
       .filter-input, .filter-select, .filter-input.wide { width: 100%; }
       .filter-group { width: 100%; }
@@ -631,11 +632,21 @@
           </div>
         </div>
         <!-- Charts -->
-        <div class="report-grid">
+        <div class="report-grid-3">
           <div class="report-card">
             <h3>Cupcake Orders by Flavor</h3>
             <div id="cupcakeReport"></div>
           </div>
+          <div class="report-card">
+            <h3>Jar Orders by Flavor</h3>
+            <div id="jarReport"></div>
+          </div>
+          <div class="report-card">
+            <h3>Orders by Date</h3>
+            <div id="dateReport"></div>
+          </div>
+        </div>
+        <div class="report-grid">
           <div class="report-card">
             <h3>Drop-Off Orders by School</h3>
             <div id="schoolReport"></div>
@@ -1140,6 +1151,39 @@
         <div class="report-bar-track"><div class="report-bar-fill" style="width:${Math.round(cupcakeCounts[f]/maxCup*100)}%"></div></div>
         <div class="report-bar-val">${cupcakeCounts[f]}</div>
       </div>`).join('') : '<p style="font-size:0.82rem;color:var(--muted);font-style:italic">No data yet.</p>';
+    // Jar orders by flavor
+    const jarFlavors = ['Biscoff Cookie Butter','Key Lime','Oreo Cookies N\'Cream','Oreo Cookies N\' Cream','Red Velvet','Strawberry','Vanilla'];
+    const jarFlavorLabels = ['Biscoff Cookie Butter','Key Lime','Oreo Cookies N\'Cream','Red Velvet','Strawberry','Vanilla'];
+    const jarCounts = {};
+    jarFlavorLabels.forEach(f=>{ jarCounts[f]=0; });
+    orders.forEach(o=>{
+      if(!o.items) return;
+      const items = o.items;
+      jarFlavorLabels.forEach(f=>{
+        // Match flavor + "oz" anywhere in items string (case-insensitive)
+        const key = f === "Oreo Cookies N'Cream" ? 'oreo' : f.toLowerCase().split(' ')[0];
+        if(items.toLowerCase().includes('oz') && items.toLowerCase().includes(key)) jarCounts[f]++;
+      });
+    });
+    const activeJars = jarFlavorLabels.filter(f=>jarCounts[f]>0);
+    const maxJar = Math.max(...activeJars.map(f=>jarCounts[f]), 1);
+    document.getElementById('jarReport').innerHTML = activeJars.length ? activeJars.map(f=>`
+      <div class="report-bar-row">
+        <div class="report-bar-label">${f}</div>
+        <div class="report-bar-track"><div class="report-bar-fill" style="width:${Math.round(jarCounts[f]/maxJar*100)}%"></div></div>
+        <div class="report-bar-val">${jarCounts[f]}</div>
+      </div>`).join('') : '<p style="font-size:0.82rem;color:var(--muted);font-style:italic">No jar orders yet.</p>';
+    // Orders by date
+    const dateCounts = {};
+    orders.forEach(o=>{ if(o.date){ dateCounts[o.date]=(dateCounts[o.date]||0)+1; } });
+    const sortedDates = Object.keys(dateCounts).sort();
+    const maxDate = Math.max(...sortedDates.map(d=>dateCounts[d]), 1);
+    document.getElementById('dateReport').innerHTML = sortedDates.length ? sortedDates.map(d=>`
+      <div class="report-bar-row">
+        <div class="report-bar-label">${d}</div>
+        <div class="report-bar-track"><div class="report-bar-fill" style="width:${Math.round(dateCounts[d]/maxDate*100)}%"></div></div>
+        <div class="report-bar-val">${dateCounts[d]}</div>
+      </div>`).join('') : '<p style="font-size:0.82rem;color:var(--muted);font-style:italic">No orders yet.</p>';
     const schools = [...new Set(orders.filter(o=>o.school).map(o=>o.school))].sort();
     const schoolCounts = {};
     schools.forEach(s=>{ schoolCounts[s]=orders.filter(o=>o.school===s).length; });
