@@ -430,7 +430,9 @@
     const title = document.getElementById('availTitle');
     const msg = document.getElementById('availMsg');
     const notice = document.getElementById('availNotice');
-    if (!settings.microOpen) {
+    const today = new Date().toISOString().split('T')[0];
+    const blockedToday = (settings.microBlockedRanges || []).some(r => today >= r.from && today <= (r.to || r.from));
+    if (!settings.microOpen || blockedToday) {
       dot.className = 'avail-dot closed';
       title.textContent = 'Orders Closed';
       msg.textContent = settings.microClosedMsg || 'Check back this weekend.';

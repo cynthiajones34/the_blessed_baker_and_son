@@ -300,7 +300,9 @@
     const title = document.getElementById('availTitle');
     const msg = document.getElementById('availMsg');
     const notice = document.getElementById('availNotice');
-    if (!settings.dropoffOpen) {
+    const today = new Date().toISOString().split('T')[0];
+    const blockedToday = (settings.dropoffBlockedRanges || []).some(r => today >= r.from && today <= (r.to || r.from));
+    if (!settings.dropoffOpen || blockedToday) {
       dot.className = 'avail-dot closed';
       title.textContent = 'Drop-Off Orders Closed';
       msg.textContent = settings.dropoffClosedMsg || 'Check back soon.';

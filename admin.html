@@ -493,7 +493,6 @@
         <div style="display:flex;gap:1rem;font-size:0.8rem;color:var(--muted)">
           <span><span style="display:inline-block;width:10px;height:10px;background:rgba(199,167,108,0.3);border-radius:2px;margin-right:4px"></span>Micro-Bakery Pickup</span>
           <span><span style="display:inline-block;width:10px;height:10px;background:rgba(90,139,201,0.25);border-radius:2px;margin-right:4px"></span>Drop-Off Order</span>
-          <span><span style="display:inline-block;width:10px;height:10px;background:rgba(201,90,90,0.15);border-radius:2px;margin-right:4px"></span>Blocked / Day Off</span>
         </div>
       </div>
 
@@ -1106,18 +1105,12 @@
     for(let d=1;d<=days;d++) {
       const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
       const isToday = d===today.getDate() && month===today.getMonth() && year===today.getFullYear();
-      const microBlocked = (s.microBlockedDates||[]).some(x=>x.date===dateStr);
-      const dropoffBlocked = (s.dropoffBlockedDates||[]).some(x=>x.date===dateStr);
-      const isBlocked = microBlocked || dropoffBlocked;
       const dayOrders = orders.filter(o=>o.date===dateStr);
       const microOrders = dayOrders.filter(o=>o.type==='micro');
       const dropOrders = dayOrders.filter(o=>o.type==='dropoff');
       let classes = 'cal-day';
       if(isToday) classes += ' today';
-      if(isBlocked) classes += ' blocked';
       let events = '';
-      if(microBlocked) events += `<div class="cal-event blocked-tag">Micro Closed</div>`;
-      if(dropoffBlocked) events += `<div class="cal-event blocked-tag">Drop-Off Closed</div>`;
       microOrders.forEach(o=>{ events += `<div class="cal-event micro" onclick="event.stopPropagation();showOrderDetail('${o.id}')">🧁 ${o.name.split(' ')[0]}</div>`; });
       dropOrders.forEach(o=>{ events += `<div class="cal-event dropoff" onclick="event.stopPropagation();showOrderDetail('${o.id}')">🏫 ${o.name.split(' ')[0]}</div>`; });
       const hasOrders = dayOrders.length > 0;
