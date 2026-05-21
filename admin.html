@@ -276,11 +276,29 @@
     .success-toast.show{display:block;}
 
     /* ── MOBILE RESPONSIVE ─────────────────────────────────────── */
+    /* FILTER BAR */
+    .filter-bar{background:var(--white);border:1px solid rgba(199,167,108,0.2);border-radius:4px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;}
+    .filter-bar-row{display:flex;flex-wrap:wrap;gap:0.75rem;align-items:flex-end;}
+    .filter-group{display:flex;flex-direction:column;gap:0.3rem;}
+    .filter-group label{font-size:0.67rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+    .filter-input,.filter-select{padding:0.48rem 0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.84rem;color:var(--text);background:var(--cream);outline:none;transition:border-color 0.2s;height:36px;}
+    .filter-input:focus,.filter-select:focus{border-color:var(--rose);}
+    .filter-input{width:130px;}.filter-input.wide{width:160px;}
+    .filter-select{width:175px;}
+    .filter-actions{display:flex;gap:0.5rem;align-items:flex-end;}
+    .filter-apply{padding:0 1.2rem;height:36px;background:var(--terracotta);color:var(--white);border:none;border-radius:2px;font-family:var(--sans);font-size:0.76rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;}
+    .filter-apply:hover{background:var(--berry);}
+    .filter-reset{padding:0 0.9rem;height:36px;background:transparent;color:var(--muted);border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.76rem;cursor:pointer;transition:all 0.2s;}
+    .filter-reset:hover{border-color:var(--rose);color:var(--rose);}
+
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); z-index: 200; }
       .app-main { margin-left: 0; padding: 1rem; }
       .stat-grid { grid-template-columns: 1fr 1fr; }
       .settings-grid, .report-grid { grid-template-columns: 1fr; }
+      .filter-bar-row { gap: 0.5rem; }
+      .filter-input, .filter-select, .filter-input.wide { width: 100%; }
+      .filter-group { width: 100%; }
     }
     @media (max-width: 480px) {
       .stat-grid { grid-template-columns: 1fr; }
@@ -331,6 +349,35 @@
 
       <!-- DASHBOARD -->
       <div class="panel active" id="panel-dashboard">
+        <div class="filter-bar">
+          <div class="filter-bar-row">
+            <div class="filter-group"><label>Date From</label><input type="date" class="filter-input" id="dash-dateFrom"></div>
+            <div class="filter-group"><label>Date To</label><input type="date" class="filter-input" id="dash-dateTo"></div>
+            <div class="filter-group"><label>Customer</label><input type="text" class="filter-input wide" id="dash-customer" placeholder="Search name..."></div>
+            <div class="filter-group"><label>Location</label>
+              <select class="filter-select" id="dash-location">
+                <option value="">All Locations</option>
+                <option>Briarlake</option><option>Evansdale</option><option>Hawthorne</option>
+                <option>Henderson</option><option>Henderson Mill</option>
+                <option>Johnson's Learning Center</option><option>Lakeside</option>
+                <option>Oak Grove</option><option>Pleasantdale</option><option>Sagamore Hills</option>
+              </select>
+            </div>
+            <div class="filter-group"><label>Product</label>
+              <select class="filter-select" id="dash-product">
+                <option value="">All Products</option>
+                <option>Red Velvet Cupcakes</option><option>Key Lime Cupcakes</option>
+                <option>Vanilla Cupcakes</option><option>Strawberry Cupcakes</option>
+                <option>Oreo Cookies N'Cream Cupcakes</option><option>Biscoff Cookie Butter Cupcakes</option>
+                <option>4 oz Cake Jar</option><option>8 oz Cake Jar</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button class="filter-apply" onclick="applyDashFilters()">Apply</button>
+              <button class="filter-reset" onclick="resetDashFilters()">Reset</button>
+            </div>
+          </div>
+        </div>
         <div class="stat-grid">
           <div class="stat-card">
             <div class="stat-card-label">Micro-Bakery Orders</div>
@@ -349,9 +396,8 @@
           </div>
           <div class="stat-card">
             <div class="stat-card-label">Order Status</div>
-            <div class="stat-card-value" style="font-size:1rem;margin-top:0.3rem">
-              <span class="stat-card-dot dot-green"></span><span id="stat-micro-status">Open</span><br>
-              <span class="stat-card-dot dot-green"></span><span id="stat-dropoff-status">Open</span>
+            <div id="stat-status-counts" style="font-size:0.85rem;margin-top:0.5rem;line-height:2;">
+              <span class="stat-card-dot dot-gold"></span>Loading...
             </div>
           </div>
         </div>
@@ -404,6 +450,25 @@
 
       <!-- MICRO-BAKERY ORDERS -->
       <div class="panel" id="panel-microOrders">
+        <div class="filter-bar">
+          <div class="filter-bar-row">
+            <div class="filter-group"><label>Date From</label><input type="date" class="filter-input" id="micro-dateFrom"></div>
+            <div class="filter-group"><label>Date To</label><input type="date" class="filter-input" id="micro-dateTo"></div>
+            <div class="filter-group"><label>Customer</label><input type="text" class="filter-input wide" id="micro-customer" placeholder="Search name..."></div>
+            <div class="filter-group"><label>Product</label>
+              <select class="filter-select" id="micro-product">
+                <option value="">All Products</option>
+                <option>Red Velvet Cupcakes</option><option>Key Lime Cupcakes</option>
+                <option>Vanilla Cupcakes</option><option>Strawberry Cupcakes</option>
+                <option>Oreo Cookies N'Cream Cupcakes</option><option>Biscoff Cookie Butter Cupcakes</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button class="filter-apply" onclick="applyMicroFilters()">Apply</button>
+              <button class="filter-reset" onclick="resetMicroFilters()">Reset</button>
+            </div>
+          </div>
+        </div>
         <div class="table-wrap">
           <div class="table-header">
             <h3>Micro-Bakery Pickup Orders</h3>
@@ -425,6 +490,35 @@
 
       <!-- DROP-OFF ORDERS -->
       <div class="panel" id="panel-dropoffOrders">
+        <div class="filter-bar">
+          <div class="filter-bar-row">
+            <div class="filter-group"><label>Date From</label><input type="date" class="filter-input" id="dropoff-dateFrom"></div>
+            <div class="filter-group"><label>Date To</label><input type="date" class="filter-input" id="dropoff-dateTo"></div>
+            <div class="filter-group"><label>Customer</label><input type="text" class="filter-input wide" id="dropoff-customer" placeholder="Search name..."></div>
+            <div class="filter-group"><label>Location</label>
+              <select class="filter-select" id="dropoff-location">
+                <option value="">All Locations</option>
+                <option>Briarlake</option><option>Evansdale</option><option>Hawthorne</option>
+                <option>Henderson</option><option>Henderson Mill</option>
+                <option>Johnson's Learning Center</option><option>Lakeside</option>
+                <option>Oak Grove</option><option>Pleasantdale</option><option>Sagamore Hills</option>
+              </select>
+            </div>
+            <div class="filter-group"><label>Product</label>
+              <select class="filter-select" id="dropoff-product">
+                <option value="">All Products</option>
+                <option>Red Velvet Cupcakes</option><option>Key Lime Cupcakes</option>
+                <option>Vanilla Cupcakes</option><option>Strawberry Cupcakes</option>
+                <option>Oreo Cookies N'Cream Cupcakes</option><option>Biscoff Cookie Butter Cupcakes</option>
+                <option>4 oz Cake Jar</option><option>8 oz Cake Jar</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button class="filter-apply" onclick="applyDropoffFilters()">Apply</button>
+              <button class="filter-reset" onclick="resetDropoffFilters()">Reset</button>
+            </div>
+          </div>
+        </div>
         <div class="table-wrap">
           <div class="table-header">
             <h3>Custom Drop-Off Orders</h3>
@@ -646,16 +740,56 @@
     return `<span class="badge badge-${status}">${status}</span>`;
   }
 
-  function renderDashboard() {
-    const orders = getData();
+  // ── FILTER HELPERS ──
+  function applyOrderFilters(orders, f) {
+    return orders.filter(o => {
+      if (f.dateFrom && o.date < f.dateFrom) return false;
+      if (f.dateTo && o.date > f.dateTo) return false;
+      if (f.customer && !o.name.toLowerCase().includes(f.customer)) return false;
+      if (f.location && o.school !== f.location) return false;
+      if (f.product && !o.items.toLowerCase().includes(f.product.toLowerCase())) return false;
+      return true;
+    });
+  }
+  function getFilterVals(prefix) {
+    const g = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+    return {
+      dateFrom: g(prefix+'-dateFrom'),
+      dateTo: g(prefix+'-dateTo'),
+      customer: g(prefix+'-customer').toLowerCase().trim(),
+      location: g(prefix+'-location') || '',
+      product: g(prefix+'-product') || ''
+    };
+  }
+  function clearFilterVals(prefix) {
+    ['dateFrom','dateTo','customer','location','product'].forEach(k => {
+      const el = document.getElementById(prefix+'-'+k);
+      if (el) el.value = '';
+    });
+  }
+
+  // ── DASHBOARD ──
+  function applyDashFilters() { renderDashboard(getFilterVals('dash')); }
+  function resetDashFilters() { clearFilterVals('dash'); renderDashboard({}); }
+
+  function renderDashboard(filters) {
+    filters = filters || {};
+    let orders = getData();
+    orders = applyOrderFilters(orders, filters);
     const s = getSettings();
     document.getElementById('stat-micro').textContent = orders.filter(o=>o.type==='micro').length;
     document.getElementById('stat-dropoff').textContent = orders.filter(o=>o.type==='dropoff' && o.status==='pending').length;
     const rev = orders.filter(o=>o.status==='confirmed'||o.status==='paid')
       .reduce((sum,o)=>sum+parseInt((o.total||'0').replace(/[^0-9]/g,'')),0);
     document.getElementById('stat-revenue').textContent = '$' + rev;
-    document.getElementById('stat-micro-status').textContent = s.microOpen ? 'Micro Open' : 'Micro Closed';
-    document.getElementById('stat-dropoff-status').textContent = s.dropoffOpen ? 'Drop-Off Open' : 'Drop-Off Closed';
+    const statusInfo = [
+      {key:'pending', color:'var(--berry)'}, {key:'confirmed', color:'#2d7a4d'},
+      {key:'paid', color:'#2d5a8b'}, {key:'cancelled', color:'var(--rose)'}
+    ];
+    const sc = document.getElementById('stat-status-counts');
+    if (sc) sc.innerHTML = statusInfo.map(si =>
+      `<span class="stat-card-dot" style="background:${si.color}"></span>${si.key.charAt(0).toUpperCase()+si.key.slice(1)}: <strong>${orders.filter(o=>o.status===si.key).length}</strong>`
+    ).join('<br>');
     renderOrdersTable(orders, 'ordersTableBody', true);
   }
 
@@ -685,15 +819,22 @@
   function filterOrders(type, btn) {
     document.querySelectorAll('#panel-dashboard .filter-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    const orders = getData().filter(o => type==='all' || o.type===type);
+    let orders = getData();
+    orders = applyOrderFilters(orders, getFilterVals('dash'));
+    if (type !== 'all') orders = orders.filter(o => o.type === type);
     renderOrdersTable(orders, 'ordersTableBody', true);
   }
 
-  function renderMicroOrders(filter) {
+  function applyMicroFilters() { renderMicroOrders('all', getFilterVals('micro')); }
+  function resetMicroFilters() { clearFilterVals('micro'); renderMicroOrders('all', {}); }
+
+  function renderMicroOrders(typeFilter, filters) {
+    filters = filters || {};
     let orders = getData().filter(o=>o.type==='micro');
-    if(filter && filter!=='all') {
-      orders = orders.filter(o => o.items.toLowerCase().includes(filter));
+    if (typeFilter && typeFilter!=='all') {
+      orders = orders.filter(o => o.items.toLowerCase().includes(typeFilter));
     }
+    orders = applyOrderFilters(orders, filters);
     const body = document.getElementById('microTableBody');
     if(orders.length===0) { body.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">No micro-bakery orders.</td></tr>'; return; }
     body.innerHTML = orders.map(o=>`
@@ -715,12 +856,17 @@
   function filterMicro(f, btn) {
     document.querySelectorAll('#panel-microOrders .filter-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    renderMicroOrders(f);
+    renderMicroOrders(f, getFilterVals('micro'));
   }
 
-  function renderDropoffOrders(school) {
+  function applyDropoffFilters() { renderDropoffOrders('all', getFilterVals('dropoff')); }
+  function resetDropoffFilters() { clearFilterVals('dropoff'); renderDropoffOrders('all', {}); }
+
+  function renderDropoffOrders(school, filters) {
+    filters = filters || {};
     let orders = getData().filter(o=>o.type==='dropoff');
-    if(school && school!=='all') orders = orders.filter(o=>o.school && o.school.includes(school));
+    if (school && school!=='all') orders = orders.filter(o=>o.school && o.school.includes(school));
+    orders = applyOrderFilters(orders, filters);
     const body = document.getElementById('dropoffTableBody');
     if(orders.length===0) { body.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem">No drop-off orders.</td></tr>'; return; }
     body.innerHTML = orders.map(o=>`
@@ -743,7 +889,7 @@
   function filterDropoff(school, btn) {
     document.querySelectorAll('#panel-dropoffOrders .filter-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    renderDropoffOrders(school);
+    renderDropoffOrders(school, getFilterVals('dropoff'));
   }
 
   function updateStatus(id, status) {
