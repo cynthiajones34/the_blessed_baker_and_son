@@ -295,9 +295,9 @@
       </form>
   </div>
 
-  <div id="confirmScreen" style="display:none;text-align:center;padding:4rem 2rem;">
+  <div id="confirmScreen">
     <div style="font-size:3rem;margin-bottom:1.2rem;">🙏</div>
-    <h2 style="font-family:var(--serif);font-size:1.8rem;color:var(--chocolate);">Thank you for your order.</h2>
+    <h2>Thank you for your order.</h2>
   </div>
 </div>
 
@@ -405,7 +405,7 @@
     // Show confirmation immediately
     document.getElementById('orderArea').style.display = 'none';
     document.getElementById('availNotice').style.display = 'none';
-    document.getElementById('confirmScreen').style.display = 'block';
+    document.getElementById('confirmScreen').classList.add('show');
 
     // Write to Firestore in background
     db.collection('orders').add({
