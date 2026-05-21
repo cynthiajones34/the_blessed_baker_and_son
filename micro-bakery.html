@@ -403,10 +403,8 @@
   </div>
 
   <div id="confirmScreen" style="display:none;text-align:center;padding:4rem 2rem;">
-    <div style="font-size:2.8rem;margin-bottom:1rem;">🙏</div>
-    <h2 style="font-family:var(--serif);font-size:1.7rem;color:var(--chocolate);margin-bottom:0.6rem;">Order Received</h2>
-    <p style="color:var(--muted);font-size:0.92rem;line-height:1.7;">Thank you! Ina will review your order and send payment instructions and pickup details to your email shortly. God bless!</p>
-    <p style="margin-top:0.8rem;font-size:0.82rem;color:var(--muted);">Questions? Email <a href="mailto:info@blessedbakerandson.com" style="color:var(--terracotta)">info@blessedbakerandson.com</a></p>
+    <div style="font-size:3rem;margin-bottom:1.2rem;">🙏</div>
+    <h2 style="font-family:var(--serif);font-size:1.8rem;color:var(--chocolate);">Thank you for your order.</h2>
   </div>
 </div>
 
@@ -524,6 +522,7 @@
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).catch(err => console.error('Firestore write failed:', err));
         document.getElementById('orderArea').style.display = 'none';
+        document.getElementById('availNotice').style.display = 'none';
         document.getElementById('confirmScreen').style.display = 'block';
       } else {
         alert('Something went wrong. Please email info@blessedbakerandson.com');
