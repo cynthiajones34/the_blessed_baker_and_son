@@ -304,6 +304,21 @@
       .stat-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCMdIrsXocnbnTVDp1fHeE7x-IDZDpNuPs",
+      authDomain: "the-blessed-baker-and-son.firebaseapp.com",
+      projectId: "the-blessed-baker-and-son",
+      storageBucket: "the-blessed-baker-and-son.firebasestorage.app",
+      messagingSenderId: "525937615827",
+      appId: "1:525937615827:web:a3ed16be6959c2459ac526"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
 
@@ -673,11 +688,40 @@
   }
 
   // ── DATA ──
-  function getData() {
-    return JSON.parse(localStorage.getItem('bb_orders') || '[]');
+  let ordersCache = [];
+
+  function getData() { return ordersCache; }
+
+  function normalizeOrder(doc) {
+    const d = doc.data();
+    const typeRaw = d.type || '';
+    const type = typeRaw === 'micro-bakery' ? 'micro' : typeRaw === 'custom-dropoff' ? 'dropoff' : typeRaw;
+    const dateStr = d.deliveryDate || (d.createdAt ? d.createdAt.toDate().toISOString().split('T')[0] : '');
+    return {
+      id: doc.id,
+      firestoreId: doc.id,
+      type,
+      name: d.name || '',
+      email: d.email || '',
+      phone: d.phone || '',
+      items: d.items || '',
+      total: d.total || '$0',
+      date: dateStr,
+      school: d.school || '',
+      deliveryWindow: d.deliveryWindow || '',
+      status: d.status || 'pending',
+      notes: d.notes || ''
+    };
   }
-  function saveData(orders) {
-    localStorage.setItem('bb_orders', JSON.stringify(orders));
+
+  async function loadOrders() {
+    try {
+      const snap = await db.collection('orders').orderBy('createdAt', 'desc').get();
+      ordersCache = snap.docs.map(normalizeOrder);
+    } catch(e) {
+      console.error('Firestore load failed:', e);
+      ordersCache = [];
+    }
   }
   function getSettings() {
     return JSON.parse(localStorage.getItem('bb_settings') || JSON.stringify({
@@ -688,19 +732,6 @@
     }));
   }
   function saveSettings(s) { localStorage.setItem('bb_settings', JSON.stringify(s)); }
-
-  // ── SEED DEMO DATA ──
-  function seedData() {
-    if (getData().length > 0) return;
-    const demo = [
-      { id:1, type:'micro', name:'Keisha Williams', email:'keisha@email.com', items:'2x Red Velvet Cupcakes (doz)', total:'$70', date:'2026-05-16', school:'', status:'confirmed', notes:'' },
-      { id:2, type:'micro', name:'Brenda Scott', email:'brenda@email.com', items:'1x Biscoff Cookie Butter (doz), 1x Vanilla (doz)', total:'$75', date:'2026-05-16', school:'', status:'pending', notes:'' },
-      { id:3, type:'dropoff', name:'Ms. Carter', email:'carter@henderson.edu', items:'3x Strawberry Cupcakes (doz)', total:'$105', date:'2026-05-21', school:'Henderson Mill', status:'pending', notes:'Delivery window: 11:30-12:30', deliveryWindow:'11:30 AM to 12:30 PM' },
-      { id:4, type:'dropoff', name:'Coach Johnson', email:'johnson@lakeside.edu', items:'2x Oreo Cookies N Cream (doz)', total:'$80', date:'2026-05-22', school:'Lakeside', status:'confirmed', notes:'', deliveryWindow:'2:30 PM to 4:30 PM' },
-      { id:5, type:'micro', name:'Angela Davis', email:'angela@email.com', items:'1x Key Lime Cake (9in)', total:'$60', date:'2026-05-16', school:'', status:'paid', notes:'' },
-    ];
-    saveData(demo);
-  }
 
   // ── UI ──
   function showPanel(id, el) {
@@ -886,9 +917,14 @@
   }
 
   function updateStatus(id, status) {
-    const orders = getData();
-    const o = orders.find(x=>x.id===id);
-    if(o) { o.status = status; saveData(orders); toast('Order updated to: ' + status); renderDashboard(); }
+    db.collection('orders').doc(id).update({ status })
+      .then(() => {
+        const o = ordersCache.find(x => x.id === id);
+        if (o) o.status = status;
+        toast('Order updated to: ' + status);
+        renderDashboard();
+      })
+      .catch(e => { console.error('Update failed:', e); toast('Update failed — check connection.'); });
   }
 
   // ── CALENDAR ──
@@ -1072,9 +1108,9 @@
   }
 
   // ── INIT ──
-  function init() {
-    seedData();
+  async function init() {
     document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    await loadOrders();
     renderDashboard();
   }
 </script>

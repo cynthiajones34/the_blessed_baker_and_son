@@ -209,6 +209,21 @@
     }
     @media (max-width: 480px) { .page-header { padding: 5rem 1rem 2.5rem; } }
   </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCMdIrsXocnbnTVDp1fHeE7x-IDZDpNuPs",
+      authDomain: "the-blessed-baker-and-son.firebaseapp.com",
+      projectId: "the-blessed-baker-and-son",
+      storageBucket: "the-blessed-baker-and-son.firebasestorage.app",
+      messagingSenderId: "525937615827",
+      appId: "1:525937615827:web:a3ed16be6959c2459ac526"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
 
@@ -240,7 +255,7 @@
       <div class="form-section">
         <h2>Your Order</h2>
         <p class="sub" style="font-size:0.86rem;color:var(--muted);margin-bottom:2rem;">Complete your information and select your items below.</p>
-        <form id="orderForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <form id="orderForm" action="https://formspree.io/f/mqejqlld" method="POST">
           <input type="hidden" name="order_type" value="micro-bakery-pickup" />
           <input type="hidden" name="order_summary" id="orderSummaryInput" />
           <input type="hidden" name="order_total" id="orderTotalInput" />
@@ -467,12 +482,24 @@
   document.getElementById('orderForm').addEventListener('submit', function(e) {
     e.preventDefault();
     if (Object.keys(cart).length === 0) return;
+    const fd = new FormData(this);
     fetch(this.action, {
       method: 'POST',
-      body: new FormData(this),
+      body: fd,
       headers: { 'Accept': 'application/json' }
     }).then(r => {
       if (r.ok) {
+        db.collection('orders').add({
+          type: 'micro-bakery',
+          name: ((fd.get('first_name') || '') + ' ' + (fd.get('last_name') || '')).trim(),
+          email: fd.get('email') || '',
+          phone: fd.get('phone') || '',
+          items: fd.get('order_summary') || '',
+          total: fd.get('order_total') || '',
+          notes: fd.get('notes') || '',
+          status: 'pending',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(err => console.error('Firestore write failed:', err));
         document.getElementById('orderArea').style.display = 'none';
         document.getElementById('confirmScreen').classList.add('show');
       } else {
