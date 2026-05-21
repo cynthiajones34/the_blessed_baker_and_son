@@ -355,7 +355,8 @@
       .intro-band-text { text-align: center; }
       .how, .menu, .order-types, .custom { padding: 4rem 1.5rem; }
       .how-grid { grid-template-columns: 1fr; gap: 2rem; }
-      .how-step-arrow { display: none; }
+      .how-step-arrow { display: block; position: static; text-align: center; margin: 0.2rem 0; font-size: 0; color: var(--gold); }
+      .how-step-arrow::after { content: "↓"; font-size: 1.1rem; }
       .cta-band { grid-template-columns: 1fr; padding: 4rem 1.5rem; gap: 2.5rem; }
       .menu-items-grid { flex-direction: column; align-items: stretch; }
       .menu-item { max-width: 100%; }
