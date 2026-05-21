@@ -630,16 +630,6 @@
             <button class="save-btn" style="margin-top:0;background:var(--chocolate)" onclick="downloadReportPDF()">Download PDF</button>
           </div>
         </div>
-        <!-- Report Summary Table -->
-        <div class="table-wrap" id="reportTableWrap" style="margin-bottom:2rem">
-          <div class="table-header"><h3>Filtered Orders</h3><span id="repOrderCount" style="font-size:0.82rem;color:var(--muted)">0 orders</span></div>
-          <table>
-            <thead><tr>
-              <th>Order ID</th><th>Type</th><th>Customer</th><th>Email</th><th>Phone</th><th>Items</th><th>Total</th><th>Delivery Date</th><th>School</th><th>Status</th>
-            </tr></thead>
-            <tbody id="repTableBody"></tbody>
-          </table>
-        </div>
         <!-- Charts -->
         <div class="report-grid">
           <div class="report-card">
@@ -658,6 +648,16 @@
             <h3>Order Status Breakdown</h3>
             <div id="statusReport"></div>
           </div>
+        </div>
+        <!-- Report Summary Table -->
+        <div class="table-wrap" id="reportTableWrap" style="margin-bottom:2rem">
+          <div class="table-header"><h3>Filtered Orders</h3><span id="repOrderCount" style="font-size:0.82rem;color:var(--muted)">0 orders</span></div>
+          <table>
+            <thead><tr>
+              <th>Order ID</th><th>Type</th><th>Customer</th><th>Email</th><th>Phone</th><th>Items</th><th>Total</th><th>Delivery Date</th><th>School</th><th>Status</th>
+            </tr></thead>
+            <tbody id="repTableBody"></tbody>
+          </table>
         </div>
       </div>
 
