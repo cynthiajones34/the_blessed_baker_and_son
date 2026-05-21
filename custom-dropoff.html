@@ -140,6 +140,14 @@
       .footer-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
     }
     @media (max-width: 480px) { .page-header { padding: 5rem 1rem 2.5rem; } }
+    .order-summary{background:var(--blush);border:1px solid rgba(199,167,108,0.2);border-radius:4px;padding:1.2rem 1.5rem;margin-top:0.5rem;}
+    .summary-empty{font-size:0.85rem;color:var(--muted);font-style:italic;}
+    .summary-line{display:flex;justify-content:space-between;align-items:baseline;padding:0.3rem 0;font-size:0.88rem;border-bottom:1px solid rgba(199,167,108,0.12);}
+    .summary-line:last-child{border-bottom:none;}
+    .summary-line-name{color:var(--text);}
+    .summary-line-price{font-family:var(--serif);color:var(--gold);font-weight:600;white-space:nowrap;margin-left:1rem;}
+    .summary-total{display:flex;justify-content:space-between;align-items:baseline;padding-top:0.8rem;margin-top:0.5rem;border-top:1.5px solid rgba(199,167,108,0.25);font-weight:600;}
+    .summary-total-price{font-family:var(--serif);font-size:1.2rem;color:var(--chocolate);}
   </style>
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -272,9 +280,14 @@
           <textarea name="notes" placeholder="Team colors, allergies, custom themes, etc."></textarea>
         </div>
 
-        <div style="background:var(--blush);border-radius:4px;padding:1.2rem;margin-top:1.5rem;font-size:0.86rem;color:var(--berry);">
-          <strong>Estimated Total: </strong><span id="estimatedTotal">$0</span><br>
-          <span style="font-size:0.78rem;color:var(--muted)">Final total confirmed by Ina. Payment instructions sent via email upon confirmation.</span>
+        <div class="section-divider">Order Summary</div>
+        <div class="order-summary">
+          <div id="summaryItems"><p class="summary-empty">No items selected yet.</p></div>
+          <div class="summary-total">
+            <span>Estimated Total</span>
+            <span class="summary-total-price" id="estimatedTotal">$0</span>
+          </div>
+          <p style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;line-height:1.5;">Final total confirmed by Ina. Payment instructions sent via email upon confirmation.</p>
         </div>
 
         <button type="submit" class="btn-primary" id="submitBtn">Submit Drop-Off Order Request</button>
@@ -353,6 +366,17 @@
     document.getElementById('estimatedTotal').textContent = '$' + total;
     document.getElementById('orderSummaryInput').value = lines.join('; ');
     document.getElementById('orderTotalInput').value = '$' + total + ' (estimated)';
+    const summaryItems = document.getElementById('summaryItems');
+    if (summaryItems) {
+      if (lines.length === 0) {
+        summaryItems.innerHTML = '<p class="summary-empty">No items selected yet.</p>';
+      } else {
+        summaryItems.innerHTML = lines.map(l => {
+          const parts = l.split(' = ');
+          return `<div class="summary-line"><span class="summary-line-name">${parts[0]}</span><span class="summary-line-price">${parts[1]}</span></div>`;
+        }).join('');
+      }
+    }
   }
 
   // Set minimum date to 2 days from today
