@@ -140,15 +140,6 @@
       .footer-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
     }
     @media (max-width: 480px) { .page-header { padding: 5rem 1rem 2.5rem; } }
-
-    .order-summary{background:var(--blush);border:1px solid rgba(199,167,108,0.2);border-radius:4px;padding:1.2rem 1.5rem;margin-top:0.5rem;}
-    .summary-empty{font-size:0.85rem;color:var(--muted);font-style:italic;}
-    .summary-line{display:flex;justify-content:space-between;align-items:baseline;padding:0.3rem 0;font-size:0.88rem;border-bottom:1px solid rgba(199,167,108,0.12);}
-    .summary-line:last-child{border-bottom:none;}
-    .summary-line-name{color:var(--text);}
-    .summary-line-price{font-family:var(--serif);color:var(--gold);font-weight:600;white-space:nowrap;margin-left:1rem;}
-    .summary-total{display:flex;justify-content:space-between;align-items:baseline;padding-top:0.8rem;margin-top:0.5rem;border-top:1.5px solid rgba(199,167,108,0.25);font-weight:600;}
-    .summary-total-price{font-family:var(--serif);font-size:1.2rem;color:var(--chocolate);}
   </style>
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -163,7 +154,7 @@
       appId: "1:525937615827:web:a3ed16be6959c2459ac526"
     };
     firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
+    const db = firebase.firestore();
   </script>
 </head>
 <body>
@@ -197,7 +188,7 @@
       <h2>Order Details</h2>
       <p class="sub">Ordering for: <strong id="selectedSchoolLabel"></strong></p>
 
-      <div class="notice-bar">Payment is due upon confirmation. We will send payment instructions by email. Unpaid orders will be cancelled.</div>
+      <div class="notice-bar">Payment is due upon confirmation. Ina will send payment instructions by email. Unpaid orders will be cancelled.</div>
 
       <form id="orderForm" action="https://formspree.io/f/maqkobdb" method="POST">
         <input type="hidden" name="order_type" value="custom-dropoff" />
@@ -233,7 +224,7 @@
         <div class="form-row">
           <div class="form-group">
             <label>Requested Delivery Date</label>
-            <input type="date" name="delivery_date" id="deliveryDateInput" required />
+            <input type="date" name="delivery_date" required />
           </div>
           <div class="form-group">
             <label>Delivery Window</label>
@@ -258,7 +249,7 @@
 
         <!-- Cakes -->
         <!-- Cake Jars -->
-        <p style="font-size:0.78rem;color:var(--muted);margin:1.2rem 0 0.5rem;font-style:italic">Cake jars &mdash; min. 12 jars per flavor. You may order multiple flavors per size. <br>Oreo N’ Cream &amp; Biscoff are +$5 per set of 12.</p>
+        <p style="font-size:0.78rem;color:var(--muted);margin:1.2rem 0 0.5rem;font-style:italic">Cake jars &mdash; min. 12 per flavor. You may order multiple flavors per size. Oreo N’ Cream &amp; Biscoff are +$5 per set of 12.</p>
 
         <p style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--rose);margin:0.8rem 0 0.4rem;">4 oz &mdash; $4 / jar</p>
         <div class="item-row" data-price="4" data-premium="5"><div><div class="item-row-name">4 oz &mdash; Biscoff Cookie Butter</div><div style="font-size:0.75rem;color:var(--muted)">min. 12 &middot; +$5 per set of 12</div></div><div style="display:flex;align-items:center;gap:1rem"><span class="item-row-price">$4/jar</span><div class="qty-control"><button type="button" class="qty-btn" onclick="changeQty(this,-12)">-</button><span class="qty-num">0</span><button type="button" class="qty-btn" onclick="changeQty(this,12)">+</button></div></div></div>
@@ -281,14 +272,9 @@
           <textarea name="notes" placeholder="Team colors, allergies, custom themes, etc."></textarea>
         </div>
 
-        <div class="section-divider">Order Summary</div>
-        <div class="order-summary">
-          <div id="summaryItems"><p class="summary-empty">No items selected yet.</p></div>
-          <div class="summary-total">
-            <span>Estimated Total</span>
-            <span class="summary-total-price" id="estimatedTotal">$0</span>
-          </div>
-          <p style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;line-height:1.5;">Final total confirmed by The Blessed Baker and Son. Payment instructions sent via email upon confirmation.</p>
+        <div style="background:var(--blush);border-radius:4px;padding:1.2rem;margin-top:1.5rem;font-size:0.86rem;color:var(--berry);">
+          <strong>Estimated Total: </strong><span id="estimatedTotal">$0</span><br>
+          <span style="font-size:0.78rem;color:var(--muted)">Final total confirmed by Ina. Payment instructions sent via email upon confirmation.</span>
         </div>
 
         <button type="submit" class="btn-primary" id="submitBtn">Submit Drop-Off Order Request</button>
@@ -296,8 +282,10 @@
   </div>
 
   <div id="confirmScreen">
-    <div style="font-size:3rem;margin-bottom:1.2rem;">🙏</div>
-    <h2>Thank you for your order.</h2>
+    <div class="confirm-icon">🙏</div>
+    <h2>Request Received</h2>
+    <p>Thank you! Ina will review your drop-off request and reach out with payment instructions and confirmation. Please allow 24 hours for a response.</p>
+    <p style="margin-top:1rem;font-size:0.85rem">Questions? Email <a href="mailto:info@blessedbakerandson.com" style="color:var(--terracotta)">info@blessedbakerandson.com</a></p>
   </div>
 </div>
 
@@ -365,73 +353,45 @@
     document.getElementById('estimatedTotal').textContent = '$' + total;
     document.getElementById('orderSummaryInput').value = lines.join('; ');
     document.getElementById('orderTotalInput').value = '$' + total + ' (estimated)';
-    const summaryItems = document.getElementById('summaryItems');
-    if (summaryItems) {
-      if (lines.length === 0) {
-        summaryItems.innerHTML = '<p class="summary-empty">No items selected yet.</p>';
-      } else {
-        summaryItems.innerHTML = lines.map(l => {
-          const parts = l.split(' = ');
-          return `<div class="summary-line"><span class="summary-line-name">${parts[0]}</span><span class="summary-line-price">${parts[1]}</span></div>`;
-        }).join('');
-      }
-    }
   }
 
-  // Minimum delivery date: 2 clear business days after today
-  // e.g. order Thursday → earliest delivery Tuesday (Fri + Mon = 2 clear days)
-  function getMinDeliveryDate() {
-    let d = new Date();
-    d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + 1); // start from tomorrow
-    let bizDays = 0;
-    while (bizDays < 2) {
-      d.setDate(d.getDate() + 1);
-      const dow = d.getDay();
-      if (dow !== 0 && dow !== 6) bizDays++;
-    }
-    return d;
-  }
-  const dateInput = document.getElementById('deliveryDateInput');
+  // Set minimum date to 2 days from today
+  const dateInput = document.querySelector('input[type="date"]');
   if (dateInput) {
-    dateInput.min = getMinDeliveryDate().toISOString().split('T')[0];
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() + 2);
+    dateInput.min = minDate.toISOString().split('T')[0];
   }
 
   document.getElementById('orderForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const fd = new FormData(this);
-    const formAction = this.action;
-
-    // DEBUG - remove after testing
-    alert('Handler running - about to show confirmation');
-
-    // Show confirmation immediately
-    document.getElementById('orderArea').style.display = 'none';
-    document.getElementById('availNotice').style.display = 'none';
-    document.getElementById('confirmScreen').classList.add('show');
-
-    // Write to Firestore in background
-    db.collection('orders').add({
-      type: 'custom-dropoff',
-      name: ((fd.get('first_name') || '') + ' ' + (fd.get('last_name') || '')).trim(),
-      email: fd.get('email') || '',
-      phone: fd.get('phone') || '',
-      items: fd.get('order_summary') || '',
-      total: fd.get('estimated_total') || '',
-      notes: fd.get('notes') || '',
-      school: fd.get('school') || '',
-      deliveryDate: fd.get('delivery_date') || '',
-      deliveryWindow: fd.get('delivery_window') || '',
-      status: 'pending',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).catch(err => console.error('Firestore write failed:', err));
-
-    // Send email notification in background
-    fetch(formAction, {
+    fetch(this.action, {
       method: 'POST',
       body: fd,
       headers: { 'Accept': 'application/json' }
-    }).catch(() => {});
+    }).then(r => {
+      if (r.ok) {
+        db.collection('orders').add({
+          type: 'custom-dropoff',
+          name: ((fd.get('first_name') || '') + ' ' + (fd.get('last_name') || '')).trim(),
+          email: fd.get('email') || '',
+          phone: fd.get('phone') || '',
+          items: fd.get('order_summary') || '',
+          total: fd.get('estimated_total') || '',
+          notes: fd.get('notes') || '',
+          school: fd.get('school') || '',
+          deliveryDate: fd.get('delivery_date') || '',
+          deliveryWindow: fd.get('delivery_window') || '',
+          status: 'pending',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(err => console.error('Firestore write failed:', err));
+        document.getElementById('orderArea').style.display = 'none';
+        document.getElementById('confirmScreen').classList.add('show');
+      } else {
+        alert('Something went wrong. Please email info@blessedbakerandson.com');
+      }
+    }).catch(() => alert('Something went wrong. Please email info@blessedbakerandson.com'));
   });
 </script>
 </body>
