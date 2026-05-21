@@ -177,13 +177,13 @@
     }
     .toggle input{opacity:0;width:0;height:0;}
     .toggle-slider{
-      position:absolute;inset:0;background:#ddd;border-radius:24px;transition:0.3s;
+      position:absolute;inset:0;background:#999;border-radius:24px;transition:0.3s;
     }
     .toggle-slider::before{
       content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;
       background:white;border-radius:50%;transition:0.3s;
     }
-    .toggle input:checked + .toggle-slider{background:var(--green);}
+    .toggle input:checked + .toggle-slider{background:#4a9e5c;}
     .toggle input:checked + .toggle-slider::before{transform:translateX(20px);}
     .num-input{
       width:80px;padding:0.4rem 0.6rem;border:1.5px solid rgba(199,167,108,0.35);
@@ -231,6 +231,35 @@
     .cal-event.micro{background:rgba(199,167,108,0.25);color:var(--berry);}
     .cal-event.dropoff{background:rgba(90,139,201,0.2);color:#2d5a8b;}
     .cal-event.blocked-tag{background:rgba(201,90,90,0.15);color:var(--red);}
+    .cal-event{cursor:pointer;}
+    .cal-event:hover{opacity:0.8;}
+
+    /* MODAL */
+    .modal-overlay{
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;
+      align-items:center;justify-content:center;
+    }
+    .modal-overlay.open{display:flex;}
+    .modal-box{
+      background:var(--white);border-radius:6px;padding:2.5rem;
+      width:100%;max-width:560px;max-height:80vh;overflow-y:auto;
+      box-shadow:0 20px 60px rgba(0,0,0,0.25);position:relative;
+    }
+    .modal-close{
+      position:absolute;top:1rem;right:1rem;background:none;border:none;
+      font-size:1.4rem;cursor:pointer;color:var(--muted);line-height:1;
+    }
+    .modal-close:hover{color:var(--text);}
+    .modal-title{font-family:var(--serif);font-size:1.3rem;color:var(--chocolate);margin-bottom:1.5rem;}
+    .modal-order-card{
+      border:1px solid rgba(199,167,108,0.2);border-radius:4px;padding:1.2rem;
+      margin-bottom:1rem;cursor:pointer;transition:background 0.15s;
+    }
+    .modal-order-card:hover{background:var(--blush);}
+    .modal-order-card:last-child{margin-bottom:0;}
+    .modal-field{display:flex;gap:0.5rem;margin-bottom:0.4rem;font-size:0.86rem;}
+    .modal-field-label{font-weight:600;color:var(--muted);min-width:110px;flex:0 0 auto;}
+    .modal-field-value{color:var(--text);}
 
     /* REPORTING */
     .report-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;}
@@ -447,7 +476,6 @@
           <div class="cal-header">
             <div>
               <div class="cal-month" id="calMonthLabel"></div>
-              <div style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem">Click a date to block/unblock it for orders</div>
             </div>
             <div class="cal-nav">
               <button class="cal-nav-btn" onclick="changeMonth(-1)">&#8592;</button>
@@ -1090,20 +1118,15 @@
       let events = '';
       if(microBlocked) events += `<div class="cal-event blocked-tag">Micro Closed</div>`;
       if(dropoffBlocked) events += `<div class="cal-event blocked-tag">Drop-Off Closed</div>`;
-      microOrders.forEach(o=>{ events += `<div class="cal-event micro">🧁 ${o.name.split(' ')[0]}</div>`; });
-      dropOrders.forEach(o=>{ events += `<div class="cal-event dropoff">🏫 ${o.name.split(' ')[0]}</div>`; });
-      html += `<div class="${classes}" onclick="calDayClick('${dateStr}')"><div class="cal-day-num">${d}</div>${events}</div>`;
+      microOrders.forEach(o=>{ events += `<div class="cal-event micro" onclick="event.stopPropagation();showOrderDetail('${o.id}')">🧁 ${o.name.split(' ')[0]}</div>`; });
+      dropOrders.forEach(o=>{ events += `<div class="cal-event dropoff" onclick="event.stopPropagation();showOrderDetail('${o.id}')">🏫 ${o.name.split(' ')[0]}</div>`; });
+      const hasOrders = dayOrders.length > 0;
+      html += `<div class="${classes}"${hasOrders?` onclick="showDayOrders('${dateStr}')" style="cursor:pointer"`:''}>
+        <div class="cal-day-num">${d}</div>${events}</div>`;
     }
     grid.innerHTML = html;
   }
   function changeMonth(delta) { calDate.setMonth(calDate.getMonth()+delta); renderCalendar(); }
-  function calDayClick(dateStr) {
-    const s = getSettings();
-    const mi = (s.microBlockedDates||[]).findIndex(x=>x.date===dateStr);
-    if(mi>-1) { s.microBlockedDates.splice(mi,1); toast('Date unblocked for Micro-Bakery'); }
-    else { s.microBlockedDates = (s.microBlockedDates||[]); s.microBlockedDates.push({date:dateStr,note:''}) ; toast('Date blocked for Micro-Bakery'); }
-    saveSettings(s); renderCalendar();
-  }
 
   // ── REPORTING ──
   function renderReporting() {
@@ -1405,6 +1428,58 @@
     await loadOrders();
     renderDashboard();
   }
+
+  // ── MODAL ──
+  function openModal(html) {
+    document.getElementById('modalContent').innerHTML = html;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+  document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+  function showOrderDetail(orderId) {
+    const o = getData().find(x => x.id === orderId || x.firestoreId === orderId);
+    if(!o) return;
+    openModal(`
+      <div class="modal-title">${o.type==='micro'?'Pick-Up':'Drop-Off'} Order — ${o.name}</div>
+      <div class="modal-field"><span class="modal-field-label">Status</span><span class="modal-field-value">${badgeHtml(o.status)}</span></div>
+      <div class="modal-field"><span class="modal-field-label">Email</span><span class="modal-field-value">${o.email||'—'}</span></div>
+      <div class="modal-field"><span class="modal-field-label">Phone</span><span class="modal-field-value">${o.phone||'—'}</span></div>
+      <div class="modal-field"><span class="modal-field-label">Delivery Date</span><span class="modal-field-value">${o.date||'—'}</span></div>
+      ${o.school?`<div class="modal-field"><span class="modal-field-label">School</span><span class="modal-field-value">${o.school}</span></div>`:''}
+      ${o.deliveryWindow?`<div class="modal-field"><span class="modal-field-label">Window</span><span class="modal-field-value">${o.deliveryWindow}</span></div>`:''}
+      <div class="modal-field"><span class="modal-field-label">Items</span><span class="modal-field-value">${o.items||'—'}</span></div>
+      <div class="modal-field"><span class="modal-field-label">Total</span><span class="modal-field-value"><strong>${o.total||'—'}</strong></span></div>
+      ${o.notes?`<div class="modal-field"><span class="modal-field-label">Notes</span><span class="modal-field-value">${o.notes}</span></div>`:''}
+      <div class="modal-field"><span class="modal-field-label">Order ID</span><span class="modal-field-value" style="font-size:0.75rem;color:var(--muted)">${o.id||'—'}</span></div>
+    `);
+  }
+
+  function showDayOrders(dateStr) {
+    const orders = getData().filter(o => o.date === dateStr);
+    if(orders.length === 0) return;
+    const cards = orders.map(o => `
+      <div class="modal-order-card" onclick="closeModal();setTimeout(()=>showOrderDetail('${o.id}'),100)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+          <strong>${o.name}</strong>${badgeHtml(o.status)}
+        </div>
+        <div style="font-size:0.82rem;color:var(--muted)">${o.type==='micro'?'Pick-Up':'Drop-Off'}${o.school?' · '+o.school:''}</div>
+        <div style="font-size:0.82rem;margin-top:0.3rem;color:var(--text)">${o.items||''}</div>
+        <div style="font-size:0.82rem;font-weight:600;margin-top:0.3rem">${o.total}</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem">Click to view full details</div>
+      </div>`).join('');
+    openModal(`<div class="modal-title">Orders for ${dateStr}</div>${cards}`);
+  }
 </script>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
 </body>
 </html>
