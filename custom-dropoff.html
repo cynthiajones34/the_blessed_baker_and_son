@@ -163,7 +163,7 @@
       appId: "1:525937615827:web:a3ed16be6959c2459ac526"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    var db = firebase.firestore();
   </script>
 </head>
 <body>
@@ -402,6 +402,12 @@
     const fd = new FormData(this);
     const formAction = this.action;
 
+    // Show confirmation immediately
+    document.getElementById('orderArea').style.display = 'none';
+    document.getElementById('availNotice').style.display = 'none';
+    document.getElementById('confirmScreen').style.display = 'block';
+
+    // Write to Firestore in background
     db.collection('orders').add({
       type: 'custom-dropoff',
       name: ((fd.get('first_name') || '') + ' ' + (fd.get('last_name') || '')).trim(),
@@ -415,20 +421,14 @@
       deliveryWindow: fd.get('delivery_window') || '',
       status: 'pending',
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-      // Fire Formspree in background for email notification
-      fetch(formAction, {
-        method: 'POST',
-        body: fd,
-        headers: { 'Accept': 'application/json' }
-      }).catch(() => {});
-      document.getElementById('orderArea').style.display = 'none';
-      document.getElementById('availNotice').style.display = 'none';
-      document.getElementById('confirmScreen').style.display = 'block';
-    }).catch(err => {
-      console.error('Order submission failed:', err);
-      alert('Something went wrong. Please email info@blessedbakerandson.com');
-    });
+    }).catch(err => console.error('Firestore write failed:', err));
+
+    // Send email notification in background
+    fetch(formAction, {
+      method: 'POST',
+      body: fd,
+      headers: { 'Accept': 'application/json' }
+    }).catch(() => {});
   });
 </script>
 </body>
