@@ -400,34 +400,35 @@
   document.getElementById('orderForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const fd = new FormData(this);
+    const formAction = this.action;
 
-    fetch(this.action, {
-      method: 'POST',
-      body: fd,
-      headers: { 'Accept': 'application/json' }
-    }).then(r => {
-      if (r.ok) {
-        db.collection('orders').add({
-          type: 'custom-dropoff',
-          name: ((fd.get('first_name') || '') + ' ' + (fd.get('last_name') || '')).trim(),
-          email: fd.get('email') || '',
-          phone: fd.get('phone') || '',
-          items: fd.get('order_summary') || '',
-          total: fd.get('estimated_total') || '',
-          notes: fd.get('notes') || '',
-          school: fd.get('school') || '',
-          deliveryDate: fd.get('delivery_date') || '',
-          deliveryWindow: fd.get('delivery_window') || '',
-          status: 'pending',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).catch(err => console.error('Firestore write failed:', err));
-        document.getElementById('orderArea').style.display = 'none';
-        document.getElementById('availNotice').style.display = 'none';
-        document.getElementById('confirmScreen').style.display = 'block';
-      } else {
-        alert('Something went wrong. Please email info@blessedbakerandson.com');
-      }
-    }).catch(() => alert('Something went wrong. Please email info@blessedbakerandson.com'));
+    db.collection('orders').add({
+      type: 'custom-dropoff',
+      name: ((fd.get('first_name') || '') + ' ' + (fd.get('last_name') || '')).trim(),
+      email: fd.get('email') || '',
+      phone: fd.get('phone') || '',
+      items: fd.get('order_summary') || '',
+      total: fd.get('estimated_total') || '',
+      notes: fd.get('notes') || '',
+      school: fd.get('school') || '',
+      deliveryDate: fd.get('delivery_date') || '',
+      deliveryWindow: fd.get('delivery_window') || '',
+      status: 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      // Fire Formspree in background for email notification
+      fetch(formAction, {
+        method: 'POST',
+        body: fd,
+        headers: { 'Accept': 'application/json' }
+      }).catch(() => {});
+      document.getElementById('orderArea').style.display = 'none';
+      document.getElementById('availNotice').style.display = 'none';
+      document.getElementById('confirmScreen').style.display = 'block';
+    }).catch(err => {
+      console.error('Order submission failed:', err);
+      alert('Something went wrong. Please email info@blessedbakerandson.com');
+    });
   });
 </script>
 </body>
