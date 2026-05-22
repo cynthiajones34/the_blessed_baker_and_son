@@ -210,45 +210,47 @@
     .how-thread-label { font-family: var(--sans); font-size: 0.75rem; color: var(--rose); text-align: center; margin: 2.5rem 0 1.5rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; }
 
     /* MENU */
-    .menu { background: var(--cream); padding: 7rem 4rem; color: var(--text); }
-    .menu .section-tag { text-align: center; color: var(--rose); }
-    .menu .section-title { text-align: center; color: var(--text); }
-    .menu .section-title em { color: var(--terracotta); }
-    .menu .section-sub { text-align: center; color: var(--muted); }
+    .menu { background: var(--white); padding: 7rem 4rem; }
+    .menu-inner { max-width: 860px; margin: 0 auto; }
+    .menu .section-tag, .menu .section-title, .menu .section-sub { text-align: center; }
 
-    .menu-categories { max-width: 1100px; margin: 0 auto; }
-    .menu-category { margin-bottom: 3.5rem; }
+    .menu-category { margin-bottom: 4rem; }
     .menu-category-header {
-      display: flex; align-items: center; gap: 1.2rem; margin-bottom: 1.5rem;
-      padding-bottom: 0.8rem; border-bottom: 1px solid rgba(180,120,90,0.2);
+      display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem;
     }
-    .menu-category-icon { font-size: 1.5rem; }
     .menu-category-title {
-      font-family: var(--serif); font-size: 1.3rem; color: var(--chocolate); font-weight: 600;
+      font-family: var(--script); font-size: 2rem; color: var(--chocolate);
     }
-    .menu-category-note {
-      font-size: 0.8rem; color: var(--muted); font-style: italic; margin-left: auto;
+    .menu-category-note { font-size: 0.78rem; color: var(--muted); font-style: italic; }
+    .menu-category-rule {
+      height: 1px; background: rgba(180,120,90,0.25); margin-bottom: 1.5rem;
     }
-    .menu-items-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
     .menu-item {
-      background: var(--white); border: 1px solid rgba(180,120,90,0.18);
-      border-radius: 4px; padding: 1.3rem 1.5rem;
-      display: flex; justify-content: space-between; align-items: center; min-width: 260px; max-width: 340px; flex: 0 1 300px;
-      transition: background 0.2s;
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 0.9rem 0; border-bottom: 1px solid rgba(180,120,90,0.1);
+      transition: padding-left 0.2s;
     }
-    .menu-item:hover { background: var(--blush); }
+    .menu-item:hover { padding-left: 0.5rem; }
+    .menu-item:last-child { border-bottom: none; }
     .menu-item-name { font-size: 0.95rem; color: var(--text); }
+    .menu-item-dots {
+      flex: 1; border-bottom: 1px dotted rgba(180,120,90,0.3);
+      margin: 0 1rem; position: relative; top: -3px;
+    }
     .menu-item-price {
-      font-family: var(--serif); font-size: 1.1rem; color: var(--gold);
-      font-weight: 600; white-space: nowrap;
+      font-family: var(--serif); font-size: 1rem;
+      color: var(--terracotta); font-weight: 600; white-space: nowrap;
     }
-    .menu-item-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+    .menu-item-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.1rem; }
     .menu-note {
-      font-size: 0.8rem; color: var(--muted); font-style: italic;
-      margin-top: 0.8rem; text-align: center;
+      font-size: 0.8rem; color: var(--muted); font-style: italic; margin-top: 1rem;
+      text-align: center; padding-top: 1rem; border-top: 1px solid rgba(180,120,90,0.15);
     }
-    .menu-cta { text-align: center; margin-top: 3rem; }
-    .menu-cta p { color: var(--muted); font-size: 0.86rem; margin-top: 0.8rem; }
+    .menu-cta {
+      text-align: center; margin-top: 3.5rem; padding-top: 3rem;
+      border-top: 1px solid rgba(180,120,90,0.2);
+    }
+    .menu-cta p { color: var(--muted); font-size: 0.86rem; margin-top: 1rem; font-style: italic; }
 
     /* ORDER TYPES */
     .order-types { background: var(--white); padding: 7rem 4rem; text-align: center; }
@@ -497,44 +499,47 @@
 
 <!-- MENU -->
 <section class="menu fade-up" id="menu">
-  <h2 class="section-title">Our <em>Menu</em></h2>
-  <p class="section-sub">All items are made fresh to order.<br>Flavors rotate weekly, announced Saturday.</p>
+  <div class="menu-inner">
+    <p class="section-tag">Price List</p>
+    <h2 class="section-title">Our <em>Menu</em></h2>
+    <p class="section-sub">All items are made to order. Flavors rotate weekly, announced each Saturday.</p>
 
-  <div class="menu-categories">
-    <!-- CUPCAKES -->
     <div class="menu-category">
       <div class="menu-category-header">
-        <span class="menu-category-icon">🧁</span>
         <span class="menu-category-title">Cupcakes</span>
-        <span class="menu-category-note">Price per dozen. No mixed dozen.</span>
+        <span class="menu-category-note">per dozen &nbsp;&#183;&nbsp; no mixed dozen</span>
       </div>
-      <div class="menu-items-grid">
-        <div class="menu-item"><span class="menu-item-name">Red Velvet</span><span class="menu-item-price">$35</span></div>
-        <div class="menu-item"><span class="menu-item-name">Key Lime</span><span class="menu-item-price">$35</span></div>
-        <div class="menu-item"><span class="menu-item-name">Vanilla</span><span class="menu-item-price">$35</span></div>
-        <div class="menu-item"><span class="menu-item-name">Strawberry</span><span class="menu-item-price">$35</span></div>
-        <div class="menu-item"><span class="menu-item-name">Oreo Cookies N' Cream</span><span class="menu-item-price">$40</span></div>
-        <div class="menu-item"><span class="menu-item-name">Biscoff Cookie Butter</span><span class="menu-item-price">$40</span></div>
-      </div>
+      <div class="menu-category-rule"></div>
+      <div class="menu-item"><span class="menu-item-name">Red Velvet</span><span class="menu-item-dots"></span><span class="menu-item-price">$35</span></div>
+      <div class="menu-item"><span class="menu-item-name">Key Lime</span><span class="menu-item-dots"></span><span class="menu-item-price">$35</span></div>
+      <div class="menu-item"><span class="menu-item-name">Vanilla</span><span class="menu-item-dots"></span><span class="menu-item-price">$35</span></div>
+      <div class="menu-item"><span class="menu-item-name">Strawberry</span><span class="menu-item-dots"></span><span class="menu-item-price">$35</span></div>
+      <div class="menu-item"><span class="menu-item-name">Oreo Cookies N' Cream</span><span class="menu-item-dots"></span><span class="menu-item-price">$40</span></div>
+      <div class="menu-item"><span class="menu-item-name">Biscoff Cookie Butter</span><span class="menu-item-dots"></span><span class="menu-item-price">$40</span></div>
     </div>
-    <!-- CAKE JARS -->
+
     <div class="menu-category">
       <div class="menu-category-header">
-        <span class="menu-category-icon">🫙</span>
         <span class="menu-category-title">Cake Jars</span>
-        <span class="menu-category-note">Available in all cake flavors. Min. order: 12. Priced per jar.</span>
+        <span class="menu-category-note">min. 12 &nbsp;&#183;&nbsp; all flavors &nbsp;&#183;&nbsp; priced per jar</span>
       </div>
-      <div class="menu-items-grid">
-        <div class="menu-item">
-          <div><span class="menu-item-name">4 oz Jar</span><div class="menu-item-sub">All flavors available</div></div>
-          <span class="menu-item-price">from $4</span>
-        </div>
-        <div class="menu-item">
-          <div><span class="menu-item-name">8 oz Jar</span><div class="menu-item-sub">All flavors available</div></div>
-          <span class="menu-item-price">from $8</span>
-        </div>
+      <div class="menu-category-rule"></div>
+      <div class="menu-item">
+        <div><span class="menu-item-name">4 oz Jar</span><div class="menu-item-sub">Red Velvet, Key Lime, Vanilla, Strawberry, Oreo, Cookie Butter</div></div>
+        <span class="menu-item-dots"></span>
+        <span class="menu-item-price">from $4</span>
+      </div>
+      <div class="menu-item">
+        <div><span class="menu-item-name">8 oz Jar</span><div class="menu-item-sub">All flavors available</div></div>
+        <span class="menu-item-dots"></span>
+        <span class="menu-item-price">from $8</span>
       </div>
       <p class="menu-note">Additional $5 per 12 ct for Cookies N' Cream and Cookie Butter flavors.</p>
+    </div>
+
+    <div class="menu-cta">
+      <a href="micro-bakery.html" class="btn-primary">Order Pickup This Week</a>
+      <p>Flavors rotate weekly. Follow on Instagram for weekly announcements.</p>
     </div>
   </div>
 </section>
