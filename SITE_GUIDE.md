@@ -30,7 +30,7 @@
 - Customer places order on the site → email arrives via Formspree → order appears in admin panel.
 
 **Custom School Drop-Off**
-- Serves the Lakeside High School cluster: Briarlake, Evansdale, Hawthorne, Henderson, Henderson Mill, Johnson's Learning Center, Lakeside, Oak Grove, Pleasantdale, Sagamore Hills.
+- Serves schools managed in the admin panel (default: Lakeside High School cluster).
 - Minimum 2-day lead time required.
 - Delivery windows: 11:30 AM–12:30 PM or 2:30 PM–4:30 PM.
 - Customer selects school, date, and window when ordering.
@@ -112,6 +112,27 @@ Filter orders by any combination of date, customer, location, product, and order
 #### Blocked Date Ranges
 Add a From date, To date (or same date for single day), and an optional message. The customer sees the message instead of the standard closed message on those dates.
 
+#### Drop-Off Schools
+Manage which schools appear in the drop-off order form.
+- The current school list is displayed with a remove (✕) button per school.
+- Type a school name and click **Add School** to add it — the dropdown on the customer page updates immediately.
+- Removing a school removes it from the customer dropdown on next page load.
+
+#### Menu Pricing
+Update prices for all item tiers. Changes take effect for all customers on next page load.
+
+| Field | Default | Applies To |
+|---|---|---|
+| Standard Cupcake — Full Dozen | $35 | Red Velvet, Key Lime, Vanilla, Strawberry |
+| Premium Cupcake — Full Dozen | $40 | Oreo, Biscoff |
+| Standard Cupcake — Half Dozen | $20 | Red Velvet, Key Lime, Vanilla, Strawberry |
+| Premium Cupcake — Half Dozen | $23 | Oreo, Biscoff |
+| 4 oz Cake Jar | $4 | All flavors |
+| 8 oz Cake Jar | $8 | All flavors |
+| Premium Jar Surcharge per 12 | $5 | Oreo, Biscoff jars |
+
+Click **Save Pricing** to write to Firestore.
+
 #### Manual Order Entry
 Add orders placed by phone or in person directly into the system. Supports both micro-bakery and drop-off order types.
 
@@ -144,6 +165,8 @@ Same as above, plus:
 ---
 
 ## 4. Menu & Pricing
+
+Prices are managed in **Admin Panel → Settings and Controls → Menu Pricing** and stored in Firestore. The values below are the defaults.
 
 ### Cupcakes
 
@@ -265,7 +288,17 @@ A reserved document (ID: `_settings_`) inside the `orders` collection. Written b
   dropoffOpen:          Boolean,
   dropoffClosedMsg:     String,
   microBlockedRanges:   Array,     // [{from, to, message?}]
-  dropoffBlockedRanges: Array      // [{from, to, message?}]
+  dropoffBlockedRanges: Array,     // [{from, to, message?}]
+  schools:              Array,     // ["Briarlake", "Evansdale", ...]
+  pricing: {
+    cupcakeDoz:         Number,    // standard dozen (default: 35)
+    cupcakeDozPremium:  Number,    // Oreo/Biscoff dozen (default: 40)
+    cupcakeHalf:        Number,    // standard half dozen (default: 20)
+    cupcakeHalfPremium: Number,    // Oreo/Biscoff half dozen (default: 23)
+    jar4oz:             Number,    // 4 oz jar per unit (default: 4)
+    jar8oz:             Number,    // 8 oz jar per unit (default: 8)
+    jarPremium:         Number     // surcharge per 12 premium jars (default: 5)
+  }
 }
 ```
 
