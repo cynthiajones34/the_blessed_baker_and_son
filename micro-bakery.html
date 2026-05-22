@@ -187,6 +187,19 @@
     /* CONFIRM */
 
 
+    footer {
+      background: #EDE3D8; padding: 3rem 4rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid rgba(199,167,108,0.12);
+    }
+    .footer-links { display: flex; gap: 2rem; list-style: none; }
+    .footer-links a {
+      font-size: 0.73rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none; transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-copy { font-size: 0.73rem; color: var(--muted); }
+
     /* ── MOBILE RESPONSIVE ─────────────────────────────────────── */
     @media (max-width: 768px) {
       nav { padding: 0.6rem 1.5rem; }
@@ -577,5 +590,17 @@
     }).catch(() => alert('Something went wrong. Please email info@blessedbakerandson.com'));
   });
 </script>
+
+<footer>
+  <ul class="footer-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="micro-bakery.html">Order Pickup</a></li>
+    <li><a href="custom-dropoff.html">Custom Drop-Off</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="terms.html">Terms</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <p class="footer-copy">2026 The Blessed Baker and Son &nbsp;|&nbsp; Designed by The Builders' Ops Studio</p>
+</footer>
 </body>
 </html>
