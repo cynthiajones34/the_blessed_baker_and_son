@@ -448,9 +448,49 @@
     const rem = Math.max(0, settings.cupcakeMax - settings.cupcakeOrdered);
     document.getElementById('cupcakeCapText').textContent = rem + ' dozen remaining';
   }
+  function applyPricing(s) {
+    const p = s.pricing;
+    if (!p) return;
+    // Map item-id → price and whether it's premium
+    const priceMap = {
+      'bis-cup':   { price: p.cupcakeDozPremium,  label: `$${p.cupcakeDozPremium}/dozen` },
+      'kl-cup':    { price: p.cupcakeDoz,          label: `$${p.cupcakeDoz}/dozen` },
+      'oreo-cup':  { price: p.cupcakeDozPremium,  label: `$${p.cupcakeDozPremium}/dozen` },
+      'rv-cup':    { price: p.cupcakeDoz,          label: `$${p.cupcakeDoz}/dozen` },
+      'str-cup':   { price: p.cupcakeDoz,          label: `$${p.cupcakeDoz}/dozen` },
+      'van-cup':   { price: p.cupcakeDoz,          label: `$${p.cupcakeDoz}/dozen` },
+      'bis-half':  { price: p.cupcakeHalfPremium, label: `$${p.cupcakeHalfPremium}/half doz` },
+      'kl-half':   { price: p.cupcakeHalf,         label: `$${p.cupcakeHalf}/half doz` },
+      'oreo-half': { price: p.cupcakeHalfPremium, label: `$${p.cupcakeHalfPremium}/half doz` },
+      'rv-half':   { price: p.cupcakeHalf,         label: `$${p.cupcakeHalf}/half doz` },
+      'str-half':  { price: p.cupcakeHalf,         label: `$${p.cupcakeHalf}/half doz` },
+      'van-half':  { price: p.cupcakeHalf,         label: `$${p.cupcakeHalf}/half doz` },
+      'jar-4oz-biscoff':    { price: p.jar4oz, premium: p.jarPremium, label: `$${p.jar4oz}/jar` },
+      'jar-4oz-keylime':    { price: p.jar4oz, label: `$${p.jar4oz}/jar` },
+      'jar-4oz-oreo':       { price: p.jar4oz, premium: p.jarPremium, label: `$${p.jar4oz}/jar` },
+      'jar-4oz-redvelvet':  { price: p.jar4oz, label: `$${p.jar4oz}/jar` },
+      'jar-4oz-strawberry': { price: p.jar4oz, label: `$${p.jar4oz}/jar` },
+      'jar-4oz-vanilla':    { price: p.jar4oz, label: `$${p.jar4oz}/jar` },
+      'jar-8oz-biscoff':    { price: p.jar8oz, premium: p.jarPremium, label: `$${p.jar8oz}/jar` },
+      'jar-8oz-keylime':    { price: p.jar8oz, label: `$${p.jar8oz}/jar` },
+      'jar-8oz-oreo':       { price: p.jar8oz, premium: p.jarPremium, label: `$${p.jar8oz}/jar` },
+      'jar-8oz-redvelvet':  { price: p.jar8oz, label: `$${p.jar8oz}/jar` },
+      'jar-8oz-strawberry': { price: p.jar8oz, label: `$${p.jar8oz}/jar` },
+      'jar-8oz-vanilla':    { price: p.jar8oz, label: `$${p.jar8oz}/jar` },
+    };
+    document.querySelectorAll('.item-card[data-id]').forEach(card => {
+      const m = priceMap[card.dataset.id];
+      if (!m) return;
+      card.dataset.price = m.price;
+      if (m.premium !== undefined) card.dataset.premium = m.premium;
+      const sub = card.querySelector('.item-card-sub');
+      if (sub) sub.textContent = m.label;
+    });
+  }
   // Load settings from Firestore, then check availability
   db.collection('orders').doc('_settings_').get().then(doc => {
     if (doc.exists) Object.assign(settings, doc.data());
+    applyPricing(settings);
   }).catch(e => {
     console.warn('Could not load settings from Firestore, using defaults:', e);
   }).finally(() => {

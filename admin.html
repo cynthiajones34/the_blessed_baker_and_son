@@ -845,6 +845,53 @@
             </div>
           </div>
 
+          <!-- Drop-Off Schools -->
+          <div class="settings-card">
+            <h3>Drop-Off Schools</h3>
+            <div class="dayoff-list" id="schoolList"></div>
+            <div class="dayoff-add" style="flex-wrap:wrap;gap:0.5rem;margin-top:1rem">
+              <input type="text" id="newSchoolInput" placeholder="School name" style="flex:1;padding:0.5rem 0.6rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.84rem;color:var(--text);background:var(--cream);outline:none" />
+              <div style="display:flex;align-items:flex-end">
+                <button class="dayoff-add-btn" onclick="addSchool()">Add School</button>
+              </div>
+            </div>
+            <button class="save-btn" onclick="saveSchools()">Save Schools</button>
+          </div>
+
+          <!-- Menu Pricing -->
+          <div class="settings-card" style="grid-column:1/-1">
+            <h3>Menu Pricing</h3>
+            <div class="setting-row">
+              <div><div class="setting-label">Standard Cupcake — Full Dozen</div></div>
+              <input type="number" class="num-input" id="priceStdDoz" min="0" step="0.01" value="35" />
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Premium Cupcake — Full Dozen</div><div class="setting-sub">Oreo, Biscoff</div></div>
+              <input type="number" class="num-input" id="pricePremDoz" min="0" step="0.01" value="40" />
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Standard Cupcake — Half Dozen</div></div>
+              <input type="number" class="num-input" id="priceStdHalf" min="0" step="0.01" value="20" />
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Premium Cupcake — Half Dozen</div><div class="setting-sub">Oreo, Biscoff</div></div>
+              <input type="number" class="num-input" id="pricePremHalf" min="0" step="0.01" value="23" />
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">4 oz Cake Jar</div></div>
+              <input type="number" class="num-input" id="priceJar4oz" min="0" step="0.01" value="4" />
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">8 oz Cake Jar</div></div>
+              <input type="number" class="num-input" id="priceJar8oz" min="0" step="0.01" value="8" />
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-label">Premium Jar Surcharge per 12</div><div class="setting-sub">Oreo, Biscoff</div></div>
+              <input type="number" class="num-input" id="priceJarPremium" min="0" step="0.01" value="5" />
+            </div>
+            <button class="save-btn" onclick="savePricing()">Save Pricing</button>
+          </div>
+
           <!-- Password Change -->
           <div class="settings-card">
             <h3>Change Password</h3>
@@ -993,7 +1040,9 @@
     cupcakeMax: 20, cupcakeOrdered: 0, jarMax: 50, jarOrdered: 0,
     dropoffOpen: true, dropoffClosedMsg: 'Drop-off orders are currently closed.',
     microBlockedDates: [], dropoffBlockedDates: [],
-    microBlockedRanges: [], dropoffBlockedRanges: []
+    microBlockedRanges: [], dropoffBlockedRanges: [],
+    schools: ['Briarlake','Evansdale','Hawthorne','Henderson','Henderson Mill',"Johnson's Learning Center",'Lakeside','Oak Grove','Pleasantdale','Sagamore Hills'],
+    pricing: { cupcakeDoz:35, cupcakeDozPremium:40, cupcakeHalf:20, cupcakeHalfPremium:23, jar4oz:4, jar8oz:8, jarPremium:5 }
   };
   let settingsCache = null;
 
@@ -1605,6 +1654,15 @@
     document.getElementById('dropoffClosedMsgInput').value = s.dropoffClosedMsg || '';
     renderDayoffRangeList('micro', s.microBlockedRanges || s.microBlockedDates || []);
     renderDayoffRangeList('dropoff', s.dropoffBlockedRanges || s.dropoffBlockedDates || []);
+    renderSchoolList(s.schools || SETTINGS_DEFAULTS.schools);
+    const p = s.pricing || SETTINGS_DEFAULTS.pricing;
+    document.getElementById('priceStdDoz').value   = p.cupcakeDoz;
+    document.getElementById('pricePremDoz').value  = p.cupcakeDozPremium;
+    document.getElementById('priceStdHalf').value  = p.cupcakeHalf;
+    document.getElementById('pricePremHalf').value = p.cupcakeHalfPremium;
+    document.getElementById('priceJar4oz').value   = p.jar4oz;
+    document.getElementById('priceJar8oz').value   = p.jar8oz;
+    document.getElementById('priceJarPremium').value = p.jarPremium;
   }
 
   async function saveMicroSettings() {
@@ -1669,6 +1727,62 @@
     await saveSettings(s);
     renderDayoffRangeList(type, s[key]);
     toast('Date range unblocked.');
+  }
+
+  function renderSchoolList(schools) {
+    const el = document.getElementById('schoolList');
+    if (!el) return;
+    if (!schools || schools.length === 0) {
+      el.innerHTML = '<p style="font-size:0.82rem;color:var(--muted);font-style:italic">No schools added.</p>';
+      return;
+    }
+    el.innerHTML = [...schools].sort().map((s, i) =>
+      `<div class="dayoff-item"><span>${s}</span><button class="dayoff-remove" onclick="removeSchool(${schools.indexOf(s)})">&#10005;</button></div>`
+    ).join('');
+  }
+
+  async function addSchool() {
+    const input = document.getElementById('newSchoolInput');
+    const name = input.value.trim();
+    if (!name) { toast('Enter a school name.'); return; }
+    const s = await getSettings();
+    if (!s.schools) s.schools = [];
+    if (s.schools.includes(name)) { toast('School already in list.'); return; }
+    s.schools.push(name);
+    await saveSettings(s);
+    input.value = '';
+    renderSchoolList(s.schools);
+    toast('School added!');
+  }
+
+  async function removeSchool(idx) {
+    const s = await getSettings();
+    if (!s.schools) return;
+    s.schools.splice(idx, 1);
+    await saveSettings(s);
+    renderSchoolList(s.schools);
+    toast('School removed.');
+  }
+
+  async function saveSchools() {
+    const s = await getSettings();
+    await saveSettings(s);
+    toast('Schools saved!');
+  }
+
+  async function savePricing() {
+    const s = await getSettings();
+    s.pricing = {
+      cupcakeDoz:      parseFloat(document.getElementById('priceStdDoz').value) || 35,
+      cupcakeDozPremium: parseFloat(document.getElementById('pricePremDoz').value) || 40,
+      cupcakeHalf:     parseFloat(document.getElementById('priceStdHalf').value) || 20,
+      cupcakeHalfPremium: parseFloat(document.getElementById('pricePremHalf').value) || 23,
+      jar4oz:          parseFloat(document.getElementById('priceJar4oz').value) || 4,
+      jar8oz:          parseFloat(document.getElementById('priceJar8oz').value) || 8,
+      jarPremium:      parseFloat(document.getElementById('priceJarPremium').value) || 5
+    };
+    await saveSettings(s);
+    toast('Pricing saved!');
   }
 
   function changePassword() {

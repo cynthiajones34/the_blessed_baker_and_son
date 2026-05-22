@@ -317,8 +317,50 @@
       msg.textContent = 'We are currently accepting school drop-off requests. Minimum 2-day lead time required.';
     }
   }
+  function applySettings(s) {
+    // Apply pricing
+    const p = s.pricing;
+    if (p) {
+      document.querySelectorAll('.item-row').forEach(row => {
+        const isPremium = row.dataset.premium !== undefined;
+        const name = row.querySelector('.item-row-name') ? row.querySelector('.item-row-name').textContent : '';
+        const priceEl = row.querySelector('.item-row-price');
+        const is4oz = row.dataset.price === '4' || (name && name.includes('4 oz'));
+        const is8oz = row.dataset.price === '8' || (name && name.includes('8 oz'));
+        const isCupcake = !is4oz && !is8oz;
+        if (isCupcake) {
+          const price = isPremium ? p.cupcakeDozPremium : p.cupcakeDoz;
+          row.dataset.price = price;
+          if (priceEl) priceEl.textContent = '$' + price;
+        } else {
+          const price = is4oz ? p.jar4oz : p.jar8oz;
+          row.dataset.price = price;
+          if (isPremium) row.dataset.premium = p.jarPremium;
+          if (priceEl) priceEl.textContent = '$' + price + '/jar';
+        }
+      });
+    }
+    // Populate schools dropdown from settings
+    const schools = s.schools;
+    if (schools && schools.length > 0) {
+      const select = document.getElementById('schoolInput');
+      if (select) {
+        const current = select.value;
+        // Keep only the placeholder option, rebuild the rest
+        select.innerHTML = '<option value="">Choose a school...</option>';
+        [...schools].sort().forEach(school => {
+          const opt = document.createElement('option');
+          opt.value = school;
+          opt.textContent = school;
+          select.appendChild(opt);
+        });
+        if (current) select.value = current;
+      }
+    }
+  }
   db.collection('orders').doc('_settings_').get().then(doc => {
     if (doc.exists) Object.assign(settings, doc.data());
+    applySettings(settings);
   }).catch(e => {
     console.warn('Could not load settings from Firestore, using defaults:', e);
   }).finally(() => {
