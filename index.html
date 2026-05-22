@@ -308,25 +308,50 @@
     .custom-feature::before { content: 'star'; font-family: 'Material Symbols Outlined'; color: var(--gold); font-size: 1rem; }
 
     /* CTA BAND */
-    .cta-band {
-      background: var(--blush); padding: 7rem 4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+    .story-section {
+      padding: 8rem 5rem; display: grid;
+      grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start;
+      background: var(--blush);
     }
-
-    .cta-band h2 {
-      font-family: var(--serif); font-size: clamp(2rem, 3vw, 2.6rem);
-      font-weight: 700; color: var(--chocolate); line-height: 1.2; margin-bottom: 1.6rem;
+    .story-tag {
+      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--rose); margin-bottom: 0.5rem; display: block;
     }
-    .cta-band h2 em { font-style: italic; color: var(--terracotta); }
-    .cta-band p { font-size: 1rem; line-height: 1.85; color: var(--muted); margin-bottom: 1.2rem; }
-    .cta-band .story-tag { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rose); margin-bottom: 1.2rem; }
-    .btn-cta-white {
-      background: transparent; color: var(--terracotta);
-      padding: 0.9rem 2rem; font-family: var(--sans); font-size: 0.82rem;
-      font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-      border: 1.5px solid var(--terracotta); border-radius: 2px; cursor: pointer; text-decoration: none;
-      display: inline-block; transition: all 0.2s;
+    .story-eyebrow {
+      font-family: var(--script); font-size: 1.8rem; color: var(--gold);
+      display: block; margin-bottom: 0.8rem; line-height: 1;
     }
-    .btn-cta-white:hover { background: var(--blush); }
+    .story-left h2 {
+      font-family: var(--serif); font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+      font-weight: 700; color: var(--chocolate); line-height: 1.2; margin-bottom: 2rem;
+    }
+    .story-left h2 em { font-style: italic; color: var(--terracotta); }
+    .story-left p {
+      font-size: 1rem; line-height: 1.95; color: var(--muted);
+      margin-bottom: 1.4rem; font-weight: 300;
+    }
+    .story-pull {
+      border-top: 1px solid rgba(180,120,90,0.3);
+      border-bottom: 1px solid rgba(180,120,90,0.3);
+      padding: 1.8rem 0; margin-top: 0.5rem;
+      font-family: var(--serif); font-size: 1.1rem;
+      font-style: italic; color: var(--berry); line-height: 1.7;
+    }
+    .story-visual { display: flex; flex-direction: column; padding-top: 1rem; }
+    .story-card {
+      padding: 1.8rem 0; display: flex; align-items: flex-start; gap: 1.2rem;
+      border-bottom: 1px solid rgba(180,120,90,0.15);
+    }
+    .story-card:first-child { border-top: 1px solid rgba(180,120,90,0.15); }
+    .story-card-icon { font-size: 1.3rem; flex: 0 0 auto; margin-top: 0.1rem; }
+    .story-card h3 {
+      font-family: var(--serif); font-size: 1rem;
+      color: var(--chocolate); margin-bottom: 0.4rem; font-weight: 600;
+    }
+    .story-card p {
+      font-size: 0.88rem; color: var(--muted);
+      line-height: 1.7; margin: 0; font-weight: 300;
+    }
 
     footer {
       background: #EDE3D8; padding: 3rem 4rem;
@@ -359,7 +384,7 @@
       .how-grid { grid-template-columns: 1fr; gap: 2rem; }
       .how-step-arrow { display: block; position: static; text-align: center; margin: 0.2rem 0; font-size: 0; color: var(--gold); }
       .how-step-arrow::after { content: "↓"; font-size: 1.1rem; }
-      .cta-band { grid-template-columns: 1fr; padding: 4rem 1.5rem; gap: 2.5rem; }
+      .story-section { grid-template-columns: 1fr; padding: 5rem 1.5rem; gap: 3rem; }
       .menu-items-grid { flex-direction: column; align-items: center; }
       .menu-item { max-width: 92vw; width: auto; flex-basis: auto; }
       .order-cards { grid-template-columns: 1fr; }
@@ -371,7 +396,7 @@
     @media (max-width: 480px) {
       .hero-logo-wrap { width: 80%; }
       .how, .menu, .order-types { padding: 3rem 1rem; }
-      .cta-band { padding: 3rem 1rem; }
+      .story-section { padding: 3rem 1rem; }
       .menu-item { min-width: unset; }
     }
 
@@ -565,11 +590,12 @@
 </section>
 
 <!-- CTA BAND -->
-<div class="cta-band fade-up" id="story">
-  <div>
-    <p class="story-tag">The Story Behind the Name</p>
+<section class="story-section fade-up" id="story">
+  <div class="story-left">
+    <span class="story-tag">The Story Behind the Name</span>
+    <span class="story-eyebrow">Our Story</span>
     <h2>Born from a son's <em>belief</em> in his mother's gift</h2>
-    <p>It started the way the best businesses often do, not with a business plan, but with a child's pure enthusiasm. Ina's son loved her cupcakes so much he became her first delivery guy, selling them to his classmates at school. The kids loved the cupcakes so much they ate the paper liners too.</p>
+    <p>It started the way the best businesses often do, not with a business plan, but with a child's pure enthusiasm. Tameka's son loved her cupcakes so much he became her first delivery guy, selling them to his classmates at school. The kids loved the cupcakes so much they ate the paper liners too.</p>
     <p>That story became the name. The Blessed Baker and Son. It is a family business rooted in faith, joy, and that signature cream cheese frosting that nobody else seems to make quite right.</p>
     <div class="story-pull">
       "Customers consistently tell me they feel blessed by the cupcakes. I pray over the ingredients and my work. It is my calling."
@@ -577,10 +603,10 @@
   </div>
   <div class="story-visual">
     <div class="story-card">
-      <div class="story-card-icon">🧁</div>
+      <div class="story-card-icon">🙏</div>
       <div>
         <h3>Made with Faith</h3>
-        <p>Ina puts her faith into the ingredients, and you can taste the difference.</p>
+        <p>Tameka puts her faith into the ingredients, and you can taste the difference.</p>
       </div>
     </div>
     <div class="story-card">
@@ -591,21 +617,21 @@
       </div>
     </div>
     <div class="story-card">
-      <div class="story-card-icon">🧁</div>
+      <div class="story-card-icon">📅</div>
       <div>
         <h3>Weekend Ordering, Friday Pickup</h3>
         <p>Menu drops Saturday. Orders close at noon Sunday. Pickup Friday. Small-batch intentional baking at its best.</p>
       </div>
     </div>
     <div class="story-card">
-      <div class="story-card-icon">🧁</div>
+      <div class="story-card-icon">🏫</div>
       <div>
         <h3>Lakeside High School Cluster</h3>
-        <p>Serving Johnson's Learning Center, Briarlake, Evansdale, Hawthorne, Henderson Mill, Oak Grove, Pleasantdale, Sagamore Hills, Henderson, and Lakeside with custom drop-off orders.</p>
+        <p>Serving Johnson's Learning Center, Briarlake, Evansdale, Hawthorne, Henderson Mill, Oak Grove, Pleasantdale, Sagamore Hills, Henderson Middle, and Lakeside High School with custom drop-off orders.</p>
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <footer>
   <ul class="footer-links">
