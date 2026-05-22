@@ -372,6 +372,17 @@
       .cta-band { padding: 3rem 1rem; }
       .menu-item { min-width: unset; }
     }
+
+    /* ── SCROLL ANIMATION ──────────────────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -414,7 +425,7 @@
 </section>
 
 <!-- INTRO BAND -->
-<div class="intro-band">
+<div class="intro-band fade-up">
   <div class="intro-band-text">
     <p class="hero-eyebrow" style="margin-bottom:0.8rem; justify-content:center;">An Atlanta Cottage Micro-Bakery</p>
     <p style="font-family:var(--serif); font-size:1.5rem; font-weight:700; color:var(--chocolate); line-height:1.2; margin-bottom:0.3rem;">Baked with <em>love,</em><br>delivered with</p>
@@ -425,7 +436,7 @@
 </div>
 
 <!-- HOW IT WORKS -->
-<section class="how" id="how">
+<section class="how fade-up" id="how">
   <h2 class="section-title" style="text-align:center">How to <em>Order</em></h2>
   <p class="section-sub">Fresh, made-to-order baked goods with a simple weekly rhythm.<br>Here is how it works.</p>
 
@@ -485,7 +496,7 @@
 </section>
 
 <!-- MENU -->
-<section class="menu" id="menu">
+<section class="menu fade-up" id="menu">
   <h2 class="section-title">Our <em>Menu</em></h2>
   <p class="section-sub">All items are made fresh to order.<br>Flavors rotate weekly, announced Saturday.</p>
 
@@ -529,7 +540,7 @@
 </section>
 
 <!-- ORDER TYPES -->
-<section class="order-types" id="order">
+<section class="order-types fade-up" id="order">
   <p class="section-tag">Place an Order</p>
   <h2 class="section-title">Choose Your <em>Order Type</em></h2>
   <p class="section-sub">Two ways to order. Pick the one that fits your needs.</p>
@@ -550,7 +561,7 @@
 </section>
 
 <!-- CTA BAND -->
-<div class="cta-band" id="story">
+<div class="cta-band fade-up" id="story">
   <div>
     <p class="story-tag">The Story Behind the Name</p>
     <h2>Born from a son's <em>belief</em> in his mother's gift</h2>
@@ -604,5 +615,18 @@
   <p class="footer-copy">2026 The Blessed Baker and Son &nbsp;|&nbsp; Designed by The Builders' Studio</p>
 </footer>
 
+<script>
+  // Scroll animation — subtle fade + rise
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
 </body>
 </html>
