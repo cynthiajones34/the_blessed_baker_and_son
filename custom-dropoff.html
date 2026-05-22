@@ -289,11 +289,12 @@
 </div>
 
 <script>
-  function getSettings() {
-    const s = localStorage.getItem('bb_settings');
-    return s ? JSON.parse(s) : { dropoffOpen: true, dropoffClosedMsg: 'Drop-off orders are currently closed.' };
-  }
-  const settings = getSettings();
+  const SETTINGS_DEFAULTS = {
+    dropoffOpen: true,
+    dropoffClosedMsg: 'Drop-off orders are currently closed.',
+    dropoffBlockedRanges: []
+  };
+  let settings = { ...SETTINGS_DEFAULTS };
 
   function checkAvailability() {
     const dot = document.getElementById('availDot');
@@ -316,7 +317,13 @@
       msg.textContent = 'We are currently accepting school drop-off requests. Minimum 2-day lead time required.';
     }
   }
-  checkAvailability();
+  db.collection('settings').doc('store').get().then(doc => {
+    if (doc.exists) Object.assign(settings, doc.data());
+  }).catch(e => {
+    console.warn('Could not load settings from Firestore, using defaults:', e);
+  }).finally(() => {
+    checkAvailability();
+  });
 
 
 
