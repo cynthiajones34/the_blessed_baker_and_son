@@ -409,20 +409,17 @@
 </div>
 
 <script>
-  // ── SETTINGS (loaded from localStorage, set by admin) ──
-  function getSettings() {
-    const s = localStorage.getItem('bb_settings');
-    return s ? JSON.parse(s) : {
-      microOpen: true,
-      microClosedMsg: 'Orders are currently closed.',
-      cupcakeMax: 20,
-      cupcakeOrdered: 0,
-      jarMax: 50,
-      jarOrdered: 0,
-      blockedDates: []
-    };
-  }
-  const settings = getSettings();
+  // ── SETTINGS (loaded from Firestore, set by admin) ──
+  const SETTINGS_DEFAULTS = {
+    microOpen: true,
+    microClosedMsg: 'Orders are currently closed.',
+    cupcakeMax: 20,
+    cupcakeOrdered: 0,
+    jarMax: 50,
+    jarOrdered: 0,
+    microBlockedRanges: []
+  };
+  let settings = { ...SETTINGS_DEFAULTS };
 
   // ── AVAILABILITY ──
   function checkAvailability() {
@@ -451,7 +448,14 @@
     const rem = Math.max(0, settings.cupcakeMax - settings.cupcakeOrdered);
     document.getElementById('cupcakeCapText').textContent = rem + ' dozen remaining';
   }
-  checkAvailability();
+  // Load settings from Firestore, then check availability
+  db.collection('settings').doc('store').get().then(doc => {
+    if (doc.exists) Object.assign(settings, doc.data());
+  }).catch(e => {
+    console.warn('Could not load settings from Firestore, using defaults:', e);
+  }).finally(() => {
+    checkAvailability();
+  });
 
   // ── CART ──
   const cart = {};

@@ -988,16 +988,36 @@
       ordersCache = [];
     }
   }
-  function getSettings() {
-    return JSON.parse(localStorage.getItem('bb_settings') || JSON.stringify({
-      microOpen: true, pickupOpen: true, microClosedMsg: 'Orders are currently closed. Check back this weekend!',
-      cupcakeMax: 20, cupcakeOrdered: 0, jarMax: 50, jarOrdered: 0,
-      dropoffOpen: true, dropoffClosedMsg: 'Drop-off orders are currently closed.',
-      microBlockedDates: [], dropoffBlockedDates: [],
-      microBlockedRanges: [], dropoffBlockedRanges: []
-    }));
+  const SETTINGS_DEFAULTS = {
+    microOpen: true, pickupOpen: true, microClosedMsg: 'Orders are currently closed. Check back this weekend!',
+    cupcakeMax: 20, cupcakeOrdered: 0, jarMax: 50, jarOrdered: 0,
+    dropoffOpen: true, dropoffClosedMsg: 'Drop-off orders are currently closed.',
+    microBlockedDates: [], dropoffBlockedDates: [],
+    microBlockedRanges: [], dropoffBlockedRanges: []
+  };
+  let settingsCache = null;
+
+  async function getSettings() {
+    if (settingsCache) return settingsCache;
+    try {
+      const doc = await db.collection('settings').doc('store').get();
+      settingsCache = doc.exists ? { ...SETTINGS_DEFAULTS, ...doc.data() } : { ...SETTINGS_DEFAULTS };
+    } catch(e) {
+      console.warn('Firestore settings read failed, using defaults:', e);
+      settingsCache = { ...SETTINGS_DEFAULTS };
+    }
+    return settingsCache;
   }
-  function saveSettings(s) { localStorage.setItem('bb_settings', JSON.stringify(s)); }
+
+  async function saveSettings(s) {
+    settingsCache = s;
+    try {
+      await db.collection('settings').doc('store').set(s);
+    } catch(e) {
+      console.error('Firestore settings write failed:', e);
+      toast('Warning: settings may not have saved. Check connection.');
+    }
+  }
 
   // ── UI ──
   function showPanel(id, el) {
@@ -1066,7 +1086,7 @@
     filters = filters || {};
     let orders = getData();
     orders = applyOrderFilters(orders, filters);
-    const s = getSettings();
+    const s = settingsCache || SETTINGS_DEFAULTS;
     document.getElementById('stat-micro').textContent = orders.filter(o=>o.type==='micro').length;
     document.getElementById('stat-dropoff').textContent = orders.filter(o=>o.type==='dropoff' && o.status==='pending').length;
     const rev = orders.filter(o=>o.status==='confirmed'||o.status==='paid')
@@ -1275,7 +1295,7 @@
   }
 
   function renderCapacityTracker() {
-    const s = getSettings();
+    const s = settingsCache || SETTINGS_DEFAULTS;
     const cupcakeMax = s.cupcakeMax || 20;
     const jarMax = s.jarMax || 50;
     const today = new Date();
@@ -1440,7 +1460,7 @@
   // ── CALENDAR ──
   let calDate = new Date();
   function renderCalendar() {
-    const s = getSettings();
+    const s = settingsCache || SETTINGS_DEFAULTS;
     const orders = getData();
     const label = document.getElementById('calMonthLabel');
     const grid = document.getElementById('calGrid');
@@ -1575,9 +1595,8 @@
   }
 
   // ── SETTINGS ──
-  function loadSettings() {
-    const s = getSettings();
-    // pickupOpen mirrors microOpen — both must be kept in sync for micro-bakery.html compatibility
+  async function loadSettings() {
+    const s = await getSettings();
     document.getElementById('microOpenToggle').checked = !!(s.pickupOpen !== undefined ? s.pickupOpen : s.microOpen);
     document.getElementById('dropoffOpenToggle').checked = !!s.dropoffOpen;
     document.getElementById('cupcakeMaxInput').value = s.cupcakeMax || 20;
@@ -1588,22 +1607,22 @@
     renderDayoffRangeList('dropoff', s.dropoffBlockedRanges || s.dropoffBlockedDates || []);
   }
 
-  function saveMicroSettings() {
-    const s = getSettings();
+  async function saveMicroSettings() {
+    const s = await getSettings();
     const isOpen = document.getElementById('microOpenToggle').checked;
     s.microOpen = isOpen;
-    s.pickupOpen = isOpen; // micro-bakery.html reads microOpen; keep pickupOpen in sync for future use
+    s.pickupOpen = isOpen;
     s.cupcakeMax = parseInt(document.getElementById('cupcakeMaxInput').value);
     s.jarMax = parseInt(document.getElementById('jarMaxInput').value);
     s.microClosedMsg = document.getElementById('microClosedMsgInput').value;
-    saveSettings(s); toast('Micro-bakery settings saved!');
+    await saveSettings(s); toast('Micro-bakery settings saved!');
   }
 
-  function saveDropoffSettings() {
-    const s = getSettings();
+  async function saveDropoffSettings() {
+    const s = await getSettings();
     s.dropoffOpen = document.getElementById('dropoffOpenToggle').checked;
     s.dropoffClosedMsg = document.getElementById('dropoffClosedMsgInput').value;
-    saveSettings(s); toast('Drop-off settings saved!');
+    await saveSettings(s); toast('Drop-off settings saved!');
   }
 
   function renderDayoffRangeList(type, ranges) {
@@ -1622,32 +1641,32 @@
     }).join('');
   }
 
-  function addDayOffRange(type) {
+  async function addDayOffRange(type) {
     const fromInput = document.getElementById(type+'DayoffFrom');
     const toInput = document.getElementById(type+'DayoffTo');
     const msgInput = document.getElementById(type+'DayoffMsg');
     if(!fromInput.value) { toast('Please select a From date.'); return; }
     const toVal = toInput.value || fromInput.value;
     if(toVal < fromInput.value) { toast('To date must be on or after From date.'); return; }
-    const s = getSettings();
+    const s = await getSettings();
     const key = type+'BlockedRanges';
     if(!s[key]) s[key]=[];
     const rangeObj = {from: fromInput.value, to: toVal};
     if(msgInput && msgInput.value.trim()) rangeObj.message = msgInput.value.trim();
     s[key].push(rangeObj);
-    saveSettings(s);
+    await saveSettings(s);
     fromInput.value=''; toInput.value='';
     if(msgInput) msgInput.value='';
     renderDayoffRangeList(type, s[key]);
     toast('Date range blocked!');
   }
 
-  function removeDayOffRange(type, idx) {
-    const s = getSettings();
+  async function removeDayOffRange(type, idx) {
+    const s = await getSettings();
     const key = type+'BlockedRanges';
     if(!s[key]) s[key] = s[type+'BlockedDates'] || [];
     s[key].splice(idx,1);
-    saveSettings(s);
+    await saveSettings(s);
     renderDayoffRangeList(type, s[key]);
     toast('Date range unblocked.');
   }
