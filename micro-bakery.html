@@ -431,11 +431,12 @@
     const msg = document.getElementById('availMsg');
     const notice = document.getElementById('availNotice');
     const today = new Date().toISOString().split('T')[0];
-    const blockedToday = (settings.microBlockedRanges || []).some(r => today >= r.from && today <= (r.to || r.from));
+    const blockedRange = (settings.microBlockedRanges || []).find(r => today >= r.from && today <= (r.to || r.from));
+    const blockedToday = !!blockedRange;
     if (!settings.microOpen || blockedToday) {
       dot.className = 'avail-dot closed';
       title.textContent = 'Orders Closed';
-      msg.textContent = settings.microClosedMsg || 'Check back this weekend.';
+      msg.textContent = (blockedRange && blockedRange.message) || settings.microClosedMsg || 'Check back this weekend.';
       notice.className = 'avail-notice closed';
       document.getElementById('orderArea').style.opacity = '0.4';
       document.getElementById('orderArea').style.pointerEvents = 'none';

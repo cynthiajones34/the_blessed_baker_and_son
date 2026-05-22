@@ -272,6 +272,53 @@
     .report-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--rose),var(--terracotta));}
     .report-bar-val{font-size:0.82rem;font-weight:600;color:var(--berry);width:40px;text-align:right;}
 
+    /* BULK ACTION BAR */
+    .bulk-bar{
+      display:none;align-items:center;gap:1rem;padding:0.7rem 1.5rem;
+      background:rgba(199,167,108,0.1);border-top:1px solid rgba(199,167,108,0.2);
+    }
+    .bulk-bar.visible{display:flex;}
+    .bulk-bar select{
+      padding:0.4rem 0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;
+      font-family:var(--sans);font-size:0.84rem;color:var(--text);background:var(--cream);outline:none;
+    }
+    .bulk-bar-btn{
+      background:var(--terracotta);color:var(--white);border:none;border-radius:2px;
+      padding:0.4rem 1rem;font-size:0.8rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:background 0.15s;
+    }
+    .bulk-bar-btn:hover{background:var(--berry);}
+    .bulk-bar-count{font-size:0.82rem;color:var(--muted);}
+    input[type=checkbox].row-check{accent-color:var(--terracotta);width:15px;height:15px;cursor:pointer;}
+
+    /* CAPACITY TRACKER */
+    .capacity-section{margin-bottom:2rem;}
+    .capacity-card{background:var(--white);border:1px solid rgba(199,167,108,0.2);border-radius:4px;padding:1.5rem;}
+    .capacity-card h3{font-family:var(--serif);font-size:1.1rem;color:var(--chocolate);margin-bottom:1.2rem;}
+    .cap-row{margin-bottom:1rem;}
+    .cap-label-row{display:flex;justify-content:space-between;font-size:0.84rem;margin-bottom:0.4rem;}
+    .cap-label{color:var(--text);font-weight:500;}
+    .cap-nums{color:var(--muted);font-size:0.8rem;}
+    .cap-track{height:10px;background:var(--blush);border-radius:5px;overflow:hidden;}
+    .cap-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--rose),var(--terracotta));transition:width 0.3s;}
+    .cap-fill.over{background:linear-gradient(90deg,#d94040,#b32020);}
+
+    /* WEEKLY SUMMARY */
+    .weekly-section{margin-bottom:2rem;}
+    .weekly-card{background:var(--white);border:1px solid rgba(199,167,108,0.2);border-radius:4px;padding:1.5rem;}
+    .weekly-card h3{font-family:var(--serif);font-size:1.1rem;color:var(--chocolate);margin-bottom:0.4rem;}
+    .weekly-sub{font-size:0.78rem;color:var(--muted);margin-bottom:1rem;}
+    .weekly-list{list-style:none;}
+    .weekly-item{display:flex;align-items:center;gap:0.8rem;padding:0.55rem 0;border-bottom:1px solid rgba(199,167,108,0.08);font-size:0.85rem;}
+    .weekly-item:last-child{border-bottom:none;}
+    .weekly-name{font-weight:600;min-width:140px;}
+    .weekly-type{font-size:0.75rem;color:var(--muted);}
+    .weekly-date{font-size:0.75rem;color:var(--muted);min-width:80px;}
+    .weekly-total{font-weight:600;min-width:50px;text-align:right;}
+    .weekly-footer{margin-top:0.8rem;font-size:0.82rem;color:var(--muted);border-top:1px solid rgba(199,167,108,0.12);padding-top:0.6rem;}
+
+    /* REPEAT BADGE */
+    .repeat-icon{font-size:0.8rem;margin-left:0.3rem;cursor:help;color:var(--berry);}
+
     /* DAY OFF MANAGER */
     .dayoff-list{margin-top:1rem;}
     .dayoff-item{
@@ -453,6 +500,31 @@
           </div>
         </div>
 
+        <!-- Capacity Tracker -->
+        <div class="capacity-section" id="capacitySection">
+          <div class="capacity-card">
+            <h3>Capacity Tracker — This Week</h3>
+            <div class="cap-row" id="capCupcakeRow">
+              <div class="cap-label-row"><span class="cap-label">Cupcakes (dozens)</span><span class="cap-nums" id="capCupcakeNums">0 / 20</span></div>
+              <div class="cap-track"><div class="cap-fill capacityBar" id="capCupcakeFill" style="width:0%"></div></div>
+            </div>
+            <div class="cap-row" id="capJarRow">
+              <div class="cap-label-row"><span class="cap-label">Cake Jars</span><span class="cap-nums" id="capJarNums">0 / 50</span></div>
+              <div class="cap-track"><div class="cap-fill capacityBar" id="capJarFill" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Summary -->
+        <div class="weekly-section" id="weeklySumSection">
+          <div class="weekly-card">
+            <h3>This Week <span style="font-size:0.85rem;font-weight:400;color:var(--muted)" id="weeklyDateRange"></span></h3>
+            <div class="weekly-sub">Orders with delivery dates in the next 7 days</div>
+            <ul class="weekly-list" id="weeklySum"></ul>
+            <div class="weekly-footer" id="weeklyFooter"></div>
+          </div>
+        </div>
+
         <div class="table-wrap">
           <div class="table-header">
             <h3>Recent Orders</h3>
@@ -528,8 +600,20 @@
               <button class="filter-btn" onclick="filterMicro('jar',this)">Cake Jars</button>
             </div>
           </div>
+          <div class="bulk-bar" id="microBulkBar">
+            <span class="bulk-bar-count" id="microBulkCount">0 selected</span>
+            <select id="microBulkStatus">
+              <option value="">— Set Status —</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="paid">Paid</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button class="bulk-bar-btn" onclick="bulkUpdate('micro')">Update Selected</button>
+          </div>
           <table>
             <thead><tr>
+              <th><input type="checkbox" class="row-check" id="microSelectAll" onchange="toggleSelectAll('micro',this.checked)" title="Select all"></th>
               <th>Customer</th><th>Email</th><th>Items</th><th>Est. Total</th><th>Pickup</th><th>Status</th><th>Actions</th>
             </tr></thead>
             <tbody id="microTableBody"></tbody>
@@ -572,8 +656,20 @@
           <div class="table-header">
             <h3>Custom Drop-Off Orders</h3>
           </div>
+          <div class="bulk-bar" id="dropoffBulkBar">
+            <span class="bulk-bar-count" id="dropoffBulkCount">0 selected</span>
+            <select id="dropoffBulkStatus">
+              <option value="">— Set Status —</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="paid">Paid</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button class="bulk-bar-btn" onclick="bulkUpdate('dropoff')">Update Selected</button>
+          </div>
           <table>
             <thead><tr>
+              <th><input type="checkbox" class="row-check" id="dropoffSelectAll" onchange="toggleSelectAll('dropoff',this.checked)" title="Select all"></th>
               <th>Customer</th><th>School</th><th>Delivery Date</th><th>Window</th><th>Items</th><th>Est. Total</th><th>Status</th><th>Actions</th>
             </tr></thead>
             <tbody id="dropoffTableBody"></tbody>
@@ -657,6 +753,10 @@
             <h3>Order Status Breakdown</h3>
             <div id="statusReport"></div>
           </div>
+          <div class="report-card">
+            <h3>Top Customers</h3>
+            <div id="topCustomers"></div>
+          </div>
         </div>
         <!-- Report Summary Table -->
         <div class="table-wrap" id="reportTableWrap" style="margin-bottom:2rem">
@@ -723,6 +823,10 @@
                 <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">To</label>
                 <input type="date" id="microDayoffTo" style="padding:0.5rem 0.6rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.84rem;color:var(--text);background:var(--cream);outline:none" />
               </div>
+              <div style="display:flex;flex-direction:column;gap:0.2rem;flex:2;min-width:180px">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Custom Closed Message (optional)</label>
+                <input type="text" id="microDayoffMsg" placeholder="e.g. Closed for spring break!" style="padding:0.5rem 0.6rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.84rem;color:var(--text);background:var(--cream);outline:none" />
+              </div>
               <div style="display:flex;align-items:flex-end">
                 <button class="dayoff-add-btn" onclick="addDayOffRange('micro')">Block Range</button>
               </div>
@@ -742,6 +846,10 @@
               <div style="display:flex;flex-direction:column;gap:0.2rem;flex:1">
                 <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">To</label>
                 <input type="date" id="dropoffDayoffTo" style="padding:0.5rem 0.6rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.84rem;color:var(--text);background:var(--cream);outline:none" />
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.2rem;flex:2;min-width:180px">
+                <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Custom Closed Message (optional)</label>
+                <input type="text" id="dropoffDayoffMsg" placeholder="e.g. Closed for the holiday!" style="padding:0.5rem 0.6rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.84rem;color:var(--text);background:var(--cream);outline:none" />
               </div>
               <div style="display:flex;align-items:flex-end">
                 <button class="dayoff-add-btn" onclick="addDayOffRange('dropoff')">Block Range</button>
@@ -878,7 +986,8 @@
       school: d.school || '',
       deliveryWindow: d.deliveryWindow || '',
       status: d.status || 'pending',
-      notes: d.notes || ''
+      notes: d.notes || '',
+      adminNotes: d.adminNotes || ''
     };
   }
 
@@ -984,6 +1093,13 @@
       `<span class="stat-card-dot" style="background:${si.color}"></span>${si.key.charAt(0).toUpperCase()+si.key.slice(1)}: <strong>${orders.filter(o=>o.status===si.key).length}</strong>`
     ).join('<br>');
     renderOrdersTable(orders, 'ordersTableBody', true);
+    renderCapacityTracker();
+    renderWeeklySummary();
+  }
+
+  function isRepeatCustomer(email) {
+    if(!email) return false;
+    return getData().filter(x => x.email && x.email.toLowerCase() === email.toLowerCase()).length > 1;
   }
 
   function renderOrdersTable(orders, bodyId, showType) {
@@ -993,20 +1109,24 @@
       body.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">No orders found.</td></tr>`;
       return;
     }
-    body.innerHTML = orders.map(o => `
+    body.innerHTML = orders.map(o => {
+      const repeat = isRepeatCustomer(o.email);
+      return `
       <tr data-type="${o.type}" data-school="${o.school||''}">
-        <td><strong>${o.name}</strong><br><span style="font-size:0.75rem;color:var(--muted)">${o.email}</span></td>
+        <td><strong>${o.name}${repeat?'<span class="repeat-icon repeatCustomer" title="Repeat customer">🔁</span>':''}</strong><br><span style="font-size:0.75rem;color:var(--muted)">${o.email}</span></td>
         ${showType ? `<td><span class="badge ${o.type==='micro'?'badge-confirmed':'badge-paid'}">${o.type==='micro'?'Pickup':'Drop-Off'}</span></td>` : ''}
         <td style="font-size:0.82rem;max-width:200px">${o.items}</td>
         <td><strong>${o.total}</strong></td>
         <td style="font-size:0.82rem">${o.school ? o.school+'<br><span style="color:var(--muted)">'+o.deliveryWindow+'</span>' : 'Pickup Friday'}</td>
         <td>${badgeHtml(o.status)}</td>
         <td>
-          <button class="action-btn" onclick="updateStatus(${o.id},'confirmed')">Confirm</button>
-          <button class="action-btn" onclick="updateStatus(${o.id},'paid')">Paid</button>
-          <button class="action-btn danger" onclick="updateStatus(${o.id},'cancelled')">Cancel</button>
+          <button class="action-btn" onclick="showOrderDetail('${o.id}')">View</button>
+          <button class="action-btn" onclick="updateStatus('${o.id}','confirmed')">Confirm</button>
+          <button class="action-btn" onclick="updateStatus('${o.id}','paid')">Paid</button>
+          <button class="action-btn danger" onclick="updateStatus('${o.id}','cancelled')">Cancel</button>
         </td>
-      </tr>`).join('');
+      </tr>`;
+    }).join('');
   }
 
   function filterOrders(type, btn) {
@@ -1029,21 +1149,29 @@
     }
     orders = applyOrderFilters(orders, filters);
     const body = document.getElementById('microTableBody');
-    if(orders.length===0) { body.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">No micro-bakery orders.</td></tr>'; return; }
-    body.innerHTML = orders.map(o=>`
+    const allSel = document.getElementById('microSelectAll');
+    if(allSel) allSel.checked = false;
+    updateBulkBar('micro');
+    if(orders.length===0) { body.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem">No micro-bakery orders.</td></tr>'; return; }
+    body.innerHTML = orders.map(o=>{
+      const repeat = isRepeatCustomer(o.email);
+      return `
       <tr>
-        <td><strong>${o.name}</strong><br><span style="font-size:0.75rem;color:var(--muted)">${o.email}</span></td>
+        <td><input type="checkbox" class="row-check micro-check" data-id="${o.id}" onchange="updateBulkBar('micro')"></td>
+        <td><strong>${o.name}${repeat?'<span class="repeat-icon repeatCustomer" title="Repeat customer">🔁</span>':''}</strong><br><span style="font-size:0.75rem;color:var(--muted)">${o.email}</span></td>
         <td style="font-size:0.78rem">${o.email}</td>
         <td style="font-size:0.82rem;max-width:200px">${o.items}</td>
         <td><strong>${o.total}</strong></td>
         <td style="font-size:0.82rem">Friday ${o.date ? '('+o.date+')' : ''}</td>
         <td>${badgeHtml(o.status)}</td>
         <td>
-          <button class="action-btn" onclick="updateStatus(${o.id},'confirmed')">Confirm</button>
-          <button class="action-btn" onclick="updateStatus(${o.id},'paid')">Paid</button>
-          <button class="action-btn danger" onclick="updateStatus(${o.id},'cancelled')">Cancel</button>
+          <button class="action-btn" onclick="showOrderDetail('${o.id}')">View</button>
+          <button class="action-btn" onclick="updateStatus('${o.id}','confirmed')">Confirm</button>
+          <button class="action-btn" onclick="updateStatus('${o.id}','paid')">Paid</button>
+          <button class="action-btn danger" onclick="updateStatus('${o.id}','cancelled')">Cancel</button>
         </td>
-      </tr>`).join('');
+      </tr>`;
+    }).join('');
   }
 
   function filterMicro(f, btn) {
@@ -1061,10 +1189,16 @@
     if (school && school!=='all') orders = orders.filter(o=>o.school && o.school.includes(school));
     orders = applyOrderFilters(orders, filters);
     const body = document.getElementById('dropoffTableBody');
-    if(orders.length===0) { body.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem">No drop-off orders.</td></tr>'; return; }
-    body.innerHTML = orders.map(o=>`
+    const allSel = document.getElementById('dropoffSelectAll');
+    if(allSel) allSel.checked = false;
+    updateBulkBar('dropoff');
+    if(orders.length===0) { body.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem">No drop-off orders.</td></tr>'; return; }
+    body.innerHTML = orders.map(o=>{
+      const repeat = isRepeatCustomer(o.email);
+      return `
       <tr>
-        <td><strong>${o.name}</strong><br><span style="font-size:0.75rem;color:var(--muted)">${o.email}</span></td>
+        <td><input type="checkbox" class="row-check dropoff-check" data-id="${o.id}" onchange="updateBulkBar('dropoff')"></td>
+        <td><strong>${o.name}${repeat?'<span class="repeat-icon repeatCustomer" title="Repeat customer">🔁</span>':''}</strong><br><span style="font-size:0.75rem;color:var(--muted)">${o.email}</span></td>
         <td>${o.school}</td>
         <td style="font-size:0.82rem">${o.date}</td>
         <td style="font-size:0.78rem">${o.deliveryWindow||''}</td>
@@ -1072,11 +1206,13 @@
         <td><strong>${o.total}</strong></td>
         <td>${badgeHtml(o.status)}</td>
         <td>
-          <button class="action-btn" onclick="updateStatus(${o.id},'confirmed')">Confirm</button>
-          <button class="action-btn" onclick="updateStatus(${o.id},'paid')">Paid</button>
-          <button class="action-btn danger" onclick="updateStatus(${o.id},'cancelled')">Cancel</button>
+          <button class="action-btn" onclick="showOrderDetail('${o.id}')">View</button>
+          <button class="action-btn" onclick="updateStatus('${o.id}','confirmed')">Confirm</button>
+          <button class="action-btn" onclick="updateStatus('${o.id}','paid')">Paid</button>
+          <button class="action-btn danger" onclick="updateStatus('${o.id}','cancelled')">Cancel</button>
         </td>
-      </tr>`).join('');
+      </tr>`;
+    }).join('');
   }
 
   function filterDropoff(school, btn) {
@@ -1094,6 +1230,223 @@
         renderDashboard();
       })
       .catch(e => { console.error('Update failed:', e); toast('Update failed — check connection.'); });
+  }
+
+  // ── BULK UPDATE ──
+  function toggleSelectAll(type, checked) {
+    document.querySelectorAll('.' + type + '-check').forEach(cb => { cb.checked = checked; });
+    updateBulkBar(type);
+  }
+
+  function updateBulkBar(type) {
+    const checks = document.querySelectorAll('.' + type + '-check:checked');
+    const bar = document.getElementById(type + 'BulkBar');
+    const countEl = document.getElementById(type + 'BulkCount');
+    if(!bar) return;
+    if(checks.length > 0) {
+      bar.classList.add('visible');
+      if(countEl) countEl.textContent = checks.length + ' selected';
+    } else {
+      bar.classList.remove('visible');
+    }
+  }
+
+  async function bulkUpdate(type) {
+    const checks = document.querySelectorAll('.' + type + '-check:checked');
+    const status = document.getElementById(type + 'BulkStatus').value;
+    if(!status) { toast('Please select a status.'); return; }
+    if(checks.length === 0) { toast('No orders selected.'); return; }
+    const ids = Array.from(checks).map(cb => cb.dataset.id);
+    try {
+      await Promise.all(ids.map(id => db.collection('orders').doc(id).update({ status })));
+      ids.forEach(id => {
+        const o = ordersCache.find(x => x.id === id);
+        if(o) o.status = status;
+      });
+      toast(ids.length + ' order(s) updated to: ' + status);
+      if(type === 'micro') renderMicroOrders('all', getFilterVals('micro'));
+      else renderDropoffOrders('all', getFilterVals('dropoff'));
+    } catch(e) {
+      console.error('Bulk update failed:', e);
+      toast('Bulk update failed — check connection.');
+    }
+  }
+
+  // ── CAPACITY TRACKER ──
+  function parseItemQty(items, keyword) {
+    // Try to find "Nx" or "N dozen" etc. for keyword
+    const str = (items || '').toLowerCase();
+    let total = 0;
+    // Match patterns like "2x", "2 x", "2 dozen", "x2" before/after keyword
+    const rx = /(\d+)\s*(?:x|dozen|doz|jars?|jar)?/gi;
+    let m;
+    while((m = rx.exec(str)) !== null) {
+      total += parseInt(m[1]) || 0;
+    }
+    return total;
+  }
+
+  function renderCapacityTracker() {
+    const s = getSettings();
+    const cupcakeMax = s.cupcakeMax || 20;
+    const jarMax = s.jarMax || 50;
+    const today = new Date();
+    const weekStart = new Date(today); weekStart.setDate(today.getDate() - today.getDay());
+    const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
+    const ws = weekStart.toISOString().split('T')[0];
+    const we = weekEnd.toISOString().split('T')[0];
+    const weekOrders = getData().filter(o => o.date >= ws && o.date <= we);
+    // Count cupcake dozens (orders containing cupcake items — count each order as 1 dozen-unit)
+    let cupcakeOrdered = 0, jarOrdered = 0;
+    weekOrders.forEach(o => {
+      const items = (o.items || '').toLowerCase();
+      if(items.includes('cupcake')) {
+        // Try to extract quantity
+        const m = items.match(/(\d+)\s*x?\s*(?:dozen|doz)?.*cupcake|cupcake.*?(\d+)/i);
+        cupcakeOrdered += m ? parseInt(m[1]||m[2]||1) : 1;
+      }
+      if(items.includes('oz') || items.includes('jar')) {
+        const m = items.match(/(\d+)/);
+        jarOrdered += m ? parseInt(m[1]) : 1;
+      }
+    });
+    const cupcakePct = Math.min(Math.round(cupcakeOrdered / cupcakeMax * 100), 100);
+    const jarPct = Math.min(Math.round(jarOrdered / jarMax * 100), 100);
+    const cupcakeNumsEl = document.getElementById('capCupcakeNums');
+    const cupcakeFillEl = document.getElementById('capCupcakeFill');
+    const jarNumsEl = document.getElementById('capJarNums');
+    const jarFillEl = document.getElementById('capJarFill');
+    if(cupcakeNumsEl) cupcakeNumsEl.textContent = cupcakeOrdered + ' / ' + cupcakeMax;
+    if(cupcakeFillEl) {
+      cupcakeFillEl.style.width = cupcakePct + '%';
+      cupcakeFillEl.classList.toggle('over', cupcakePct >= 80);
+    }
+    if(jarNumsEl) jarNumsEl.textContent = jarOrdered + ' / ' + jarMax;
+    if(jarFillEl) {
+      jarFillEl.style.width = jarPct + '%';
+      jarFillEl.classList.toggle('over', jarPct >= 80);
+    }
+  }
+
+  // ── WEEKLY SUMMARY ──
+  function renderWeeklySummary() {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const next7 = new Date(today); next7.setDate(today.getDate() + 7);
+    const next7Str = next7.toISOString().split('T')[0];
+    const el = document.getElementById('weeklySum');
+    const footer = document.getElementById('weeklyFooter');
+    const range = document.getElementById('weeklyDateRange');
+    if(range) range.textContent = '(' + todayStr + ' → ' + next7Str + ')';
+    const upcoming = getData().filter(o => o.date >= todayStr && o.date <= next7Str);
+    if(!el) return;
+    if(upcoming.length === 0) {
+      el.innerHTML = '<li class="weekly-item" style="color:var(--muted);font-style:italic">No upcoming orders this week.</li>';
+      if(footer) footer.textContent = '';
+      return;
+    }
+    // Parse total items count
+    let totalItems = 0;
+    upcoming.forEach(o => {
+      const m = (o.items||'').match(/\d+/g);
+      if(m) m.forEach(n => { totalItems += parseInt(n); });
+    });
+    el.innerHTML = upcoming.map(o => `
+      <li class="weekly-item">
+        <span class="weekly-name">${o.name}</span>
+        <span class="weekly-type">${o.type==='micro'?'Pick-Up':'Drop-Off'}</span>
+        <span class="weekly-date">${o.date}</span>
+        <span class="weekly-total">${o.total}</span>
+        ${badgeHtml(o.status)}
+      </li>`).join('');
+    if(footer) footer.innerHTML = `<strong>${upcoming.length}</strong> order${upcoming.length===1?'':'s'} &nbsp;|&nbsp; approx. <strong>${totalItems}</strong> total items to prepare`;
+  }
+
+  // ── PRINT TICKET ──
+  function printTicket(orderId) {
+    const o = getData().find(x => x.id === orderId || x.firestoreId === orderId);
+    if(!o) return;
+    const win = window.open('','_blank');
+    win.document.write(`<!DOCTYPE html><html><head><title>Order Ticket — ${o.name}</title>
+    <style>
+      body{font-family:Georgia,serif;color:#3D2510;margin:2rem;max-width:600px;}
+      h1{color:#7A5540;font-size:1.4rem;border-bottom:2px solid #C9AA72;padding-bottom:0.5rem;margin-bottom:1rem;}
+      .row{display:flex;gap:0.5rem;margin-bottom:0.4rem;font-size:0.9rem;}
+      .lbl{font-weight:bold;min-width:130px;color:#A88070;}
+      .val{color:#3D2510;}
+      .items{background:#FFFBF6;border:1px solid #C9AA72;padding:0.8rem;border-radius:4px;margin:0.8rem 0;font-size:0.9rem;}
+      .notes{background:#fff8f0;border-left:3px solid #C97B5A;padding:0.5rem 0.8rem;margin:0.5rem 0;font-size:0.85rem;}
+      @media print{@page{margin:1.5cm}}
+    </style></head><body>
+    <h1>The Blessed Baker and Son — Order Prep Ticket</h1>
+    <div class="row"><span class="lbl">Order ID</span><span class="val">${o.id||'—'}</span></div>
+    <div class="row"><span class="lbl">Customer</span><span class="val">${o.name}</span></div>
+    <div class="row"><span class="lbl">Phone</span><span class="val">${o.phone||'—'}</span></div>
+    <div class="row"><span class="lbl">Email</span><span class="val">${o.email||'—'}</span></div>
+    <div class="row"><span class="lbl">Order Type</span><span class="val">${o.type==='micro'?'Pick-Up (Micro-Bakery)':'Drop-Off'}</span></div>
+    <div class="row"><span class="lbl">Delivery Date</span><span class="val">${o.date||'—'}</span></div>
+    ${o.school?`<div class="row"><span class="lbl">School</span><span class="val">${o.school}</span></div>`:''}
+    ${o.deliveryWindow?`<div class="row"><span class="lbl">Window</span><span class="val">${o.deliveryWindow}</span></div>`:''}
+    <div class="row"><span class="lbl">Total</span><span class="val"><strong>${o.total}</strong></span></div>
+    <div class="row"><span class="lbl">Status</span><span class="val">${o.status}</span></div>
+    <div class="items"><strong>Items:</strong><br>${(o.items||'—').replace(/,/g,'<br>')}</div>
+    ${o.notes?`<div class="notes"><strong>Customer Notes:</strong> ${o.notes}</div>`:''}
+    ${o.adminNotes?`<div class="notes" style="border-color:#A84C6F"><strong>Admin Notes:</strong> ${o.adminNotes}</div>`:''}
+    <p style="font-size:0.75rem;color:#A88070;margin-top:2rem">Printed: ${new Date().toLocaleString()}</p>
+    <script>window.onload=function(){window.print();}<\/script>
+    </body></html>`);
+    win.document.close();
+  }
+
+  function printAllForDate(dateStr) {
+    const orders = getData().filter(o => o.date === dateStr);
+    if(!orders.length) return;
+    const rows = orders.map(o=>`
+      <div class="ticket">
+        <h2>${o.name} — ${o.type==='micro'?'Pick-Up':'Drop-Off'}</h2>
+        <div class="row"><span class="lbl">Order ID</span><span>${o.id||'—'}</span></div>
+        <div class="row"><span class="lbl">Phone</span><span>${o.phone||'—'}</span></div>
+        <div class="row"><span class="lbl">Email</span><span>${o.email||'—'}</span></div>
+        ${o.school?`<div class="row"><span class="lbl">School</span><span>${o.school}</span></div>`:''}
+        ${o.deliveryWindow?`<div class="row"><span class="lbl">Window</span><span>${o.deliveryWindow}</span></div>`:''}
+        <div class="row"><span class="lbl">Total</span><span><strong>${o.total}</strong></span></div>
+        <div class="items">${(o.items||'—').replace(/,/g,'<br>')}</div>
+        ${o.notes?`<div class="notes">Notes: ${o.notes}</div>`:''}
+        ${o.adminNotes?`<div class="notes" style="border-color:#A84C6F">Admin: ${o.adminNotes}</div>`:''}
+      </div>`).join('<hr style="margin:1.5rem 0;border-color:#C9AA72">');
+    const win = window.open('','_blank');
+    win.document.write(`<!DOCTYPE html><html><head><title>Orders for ${dateStr}</title>
+    <style>
+      body{font-family:Georgia,serif;color:#3D2510;margin:1.5rem;max-width:700px;}
+      h1{color:#7A5540;border-bottom:2px solid #C9AA72;padding-bottom:0.5rem;}
+      h2{color:#7A5540;font-size:1.1rem;margin-bottom:0.5rem;}
+      .ticket{margin-bottom:1rem;}
+      .row{display:flex;gap:0.5rem;font-size:0.86rem;margin-bottom:0.3rem;}
+      .lbl{font-weight:bold;min-width:120px;color:#A88070;}
+      .items{background:#FFFBF6;border:1px solid #C9AA72;padding:0.5rem;margin:0.5rem 0;font-size:0.85rem;}
+      .notes{border-left:3px solid #C97B5A;padding:0.3rem 0.6rem;font-size:0.82rem;}
+      @media print{@page{margin:1cm}.ticket{page-break-inside:avoid;}}
+    </style></head><body>
+    <h1>Orders for ${dateStr} — ${orders.length} order${orders.length===1?'':'s'}</h1>
+    ${rows}
+    <script>window.onload=function(){window.print();}<\/script>
+    </body></html>`);
+    win.document.close();
+  }
+
+  // ── REPEAT CUSTOMER HISTORY ──
+  function showRepeatHistory(email) {
+    const allOrders = getData().filter(o => o.email && o.email.toLowerCase() === email.toLowerCase());
+    const cards = allOrders.map(o => `
+      <div class="modal-order-card" onclick="closeModal();setTimeout(()=>showOrderDetail('${o.id}'),100)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+          <strong>${o.date||'—'}</strong>${badgeHtml(o.status)}
+        </div>
+        <div style="font-size:0.82rem;color:var(--muted)">${o.type==='micro'?'Pick-Up':'Drop-Off'}${o.school?' · '+o.school:''}</div>
+        <div style="font-size:0.82rem;margin-top:0.2rem">${o.items||''}</div>
+        <div style="font-size:0.82rem;font-weight:600">${o.total}</div>
+      </div>`).join('');
+    openModal(`<div class="modal-title">Order History — ${email}</div><p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem">${allOrders.length} order${allOrders.length===1?'':'s'} total</p>${cards}`);
   }
 
   // ── CALENDAR ──
@@ -1210,6 +1563,27 @@
         <div class="report-bar-track"><div class="report-bar-fill" style="width:${Math.round(stCounts[s]/maxSt*100)}%"></div></div>
         <div class="report-bar-val">${stCounts[s]}</div>
       </div>`).join('') : '<p style="font-size:0.82rem;color:var(--muted);font-style:italic">No orders yet.</p>';
+    // Top Customers
+    const emailMap = {};
+    orders.forEach(o=>{
+      if(!o.email) return;
+      const key = o.email.toLowerCase();
+      if(!emailMap[key]) emailMap[key] = {name: o.name, email: o.email, count: 0, revenue: 0};
+      emailMap[key].count++;
+      emailMap[key].revenue += parseInt((o.total||'0').replace(/[^0-9]/g,''));
+    });
+    const topCusts = Object.values(emailMap).sort((a,b)=>b.count-a.count).slice(0,5);
+    const tcEl = document.getElementById('topCustomers');
+    if(tcEl) tcEl.innerHTML = topCusts.length ? topCusts.map((c,i)=>`
+      <div class="report-bar-row" style="flex-wrap:wrap">
+        <div class="report-bar-label" style="width:100%;margin-bottom:0.1rem">
+          <strong>#${i+1} ${c.name}</strong><br>
+          <span style="font-size:0.72rem;color:var(--muted)">${c.email}</span>
+        </div>
+        <div class="report-bar-track" style="flex:1"><div class="report-bar-fill" style="width:${Math.round(c.count/topCusts[0].count*100)}%"></div></div>
+        <div class="report-bar-val">${c.count} order${c.count===1?'':'s'}</div>
+        <div style="font-size:0.78rem;color:var(--muted);width:100%;text-align:right">$${c.revenue} total</div>
+      </div>`).join('') : '<p style="font-size:0.82rem;color:var(--muted);font-style:italic">No data yet.</p>';
   }
 
   // ── SETTINGS ──
@@ -1252,8 +1626,9 @@
     el.innerHTML = ranges.map((r,i)=>{
       // Support both old {date} format and new {from,to} format
       const label = r.from ? (r.from === r.to ? r.from : r.from + ' → ' + r.to) : (r.date || '');
+      const msgLabel = r.message ? `<span style="font-size:0.75rem;color:var(--muted);margin-left:0.6rem;font-style:italic">"${r.message}"</span>` : '';
       return `<div class="dayoff-item">
-        <span>${label}</span>
+        <span>${label}${msgLabel}</span>
         <button class="dayoff-remove" onclick="removeDayOffRange('${type}',${i})">&#10005;</button>
       </div>`;
     }).join('');
@@ -1262,15 +1637,19 @@
   function addDayOffRange(type) {
     const fromInput = document.getElementById(type+'DayoffFrom');
     const toInput = document.getElementById(type+'DayoffTo');
+    const msgInput = document.getElementById(type+'DayoffMsg');
     if(!fromInput.value) { toast('Please select a From date.'); return; }
     const toVal = toInput.value || fromInput.value;
     if(toVal < fromInput.value) { toast('To date must be on or after From date.'); return; }
     const s = getSettings();
     const key = type+'BlockedRanges';
     if(!s[key]) s[key]=[];
-    s[key].push({from:fromInput.value, to:toVal});
+    const rangeObj = {from: fromInput.value, to: toVal};
+    if(msgInput && msgInput.value.trim()) rangeObj.message = msgInput.value.trim();
+    s[key].push(rangeObj);
     saveSettings(s);
     fromInput.value=''; toInput.value='';
+    if(msgInput) msgInput.value='';
     renderDayoffRangeList(type, s[key]);
     toast('Date range blocked!');
   }
@@ -1485,8 +1864,16 @@
   function showOrderDetail(orderId) {
     const o = getData().find(x => x.id === orderId || x.firestoreId === orderId);
     if(!o) return;
+    const allByEmail = getData().filter(x => x.email && o.email && x.email.toLowerCase() === o.email.toLowerCase());
+    const isRepeat = allByEmail.length > 1;
+    const repeatHtml = isRepeat
+      ? `<div style="margin-bottom:0.8rem;padding:0.5rem 0.8rem;background:rgba(168,76,111,0.08);border-radius:3px;font-size:0.84rem;color:var(--berry)">
+           🔁 Repeat Customer — ${allByEmail.length} orders total &nbsp;
+           <button class="action-btn" style="font-size:0.72rem" onclick="showRepeatHistory('${o.email}')">View History</button>
+         </div>` : '';
     openModal(`
       <div class="modal-title">${o.type==='micro'?'Pick-Up':'Drop-Off'} Order — ${o.name}</div>
+      ${repeatHtml}
       <div class="modal-field"><span class="modal-field-label">Status</span><span class="modal-field-value">${badgeHtml(o.status)}</span></div>
       <div class="modal-field"><span class="modal-field-label">Email</span><span class="modal-field-value">${o.email||'—'}</span></div>
       <div class="modal-field"><span class="modal-field-label">Phone</span><span class="modal-field-value">${o.phone||'—'}</span></div>
@@ -1497,7 +1884,28 @@
       <div class="modal-field"><span class="modal-field-label">Total</span><span class="modal-field-value"><strong>${o.total||'—'}</strong></span></div>
       ${o.notes?`<div class="modal-field"><span class="modal-field-label">Notes</span><span class="modal-field-value">${o.notes}</span></div>`:''}
       <div class="modal-field"><span class="modal-field-label">Order ID</span><span class="modal-field-value" style="font-size:0.75rem;color:var(--muted)">${o.id||'—'}</span></div>
+      <div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid rgba(199,167,108,0.2)">
+        <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem">Admin Notes (internal only)</div>
+        <textarea id="adminNotesField" rows="3" style="width:100%;padding:0.6rem 0.8rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream);resize:vertical">${o.adminNotes||''}</textarea>
+        <button class="save-btn" style="margin-top:0.6rem" onclick="saveAdminNotes('${o.id}')">Save Note</button>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:0.6rem">
+        <button class="action-btn printTicket" onclick="printTicket('${o.id}')">🖨 Print Ticket</button>
+      </div>
     `);
+  }
+
+  function saveAdminNotes(orderId) {
+    const ta = document.getElementById('adminNotesField');
+    if(!ta) return;
+    const text = ta.value.trim();
+    db.collection('orders').doc(orderId).update({ adminNotes: text })
+      .then(() => {
+        const o = ordersCache.find(x => x.id === orderId);
+        if(o) o.adminNotes = text;
+        toast('Admin note saved!');
+      })
+      .catch(e => { console.error('Note save failed:', e); toast('Failed to save note.'); });
   }
 
   function showDayOrders(dateStr) {
@@ -1513,7 +1921,12 @@
         <div style="font-size:0.82rem;font-weight:600;margin-top:0.3rem">${o.total}</div>
         <div style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem">Click to view full details</div>
       </div>`).join('');
-    openModal(`<div class="modal-title">Orders for ${dateStr}</div>${cards}`);
+    openModal(`
+      <div class="modal-title">Orders for ${dateStr}</div>
+      <div style="margin-bottom:1rem">
+        <button class="action-btn printTicket" onclick="printAllForDate('${dateStr}')">🖨 Print All for ${dateStr}</button>
+      </div>
+      ${cards}`);
   }
 </script>
 

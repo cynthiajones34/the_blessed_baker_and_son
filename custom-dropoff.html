@@ -301,11 +301,12 @@
     const msg = document.getElementById('availMsg');
     const notice = document.getElementById('availNotice');
     const today = new Date().toISOString().split('T')[0];
-    const blockedToday = (settings.dropoffBlockedRanges || []).some(r => today >= r.from && today <= (r.to || r.from));
+    const blockedRange = (settings.dropoffBlockedRanges || []).find(r => today >= r.from && today <= (r.to || r.from));
+    const blockedToday = !!blockedRange;
     if (!settings.dropoffOpen || blockedToday) {
       dot.className = 'avail-dot closed';
       title.textContent = 'Drop-Off Orders Closed';
-      msg.textContent = settings.dropoffClosedMsg || 'Check back soon.';
+      msg.textContent = (blockedRange && blockedRange.message) || settings.dropoffClosedMsg || 'Check back soon.';
       notice.className = 'avail-notice closed';
       document.getElementById('orderArea').style.opacity = '0.4';
       document.getElementById('orderArea').style.pointerEvents = 'none';
