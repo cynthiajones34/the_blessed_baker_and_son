@@ -317,7 +317,7 @@
       msg.textContent = 'We are currently accepting school drop-off requests. Minimum 2-day lead time required.';
     }
   }
-  db.collection('settings').doc('store').get().then(doc => {
+  db.collection('orders').doc('_settings_').get().then(doc => {
     if (doc.exists) Object.assign(settings, doc.data());
   }).catch(e => {
     console.warn('Could not load settings from Firestore, using defaults:', e);

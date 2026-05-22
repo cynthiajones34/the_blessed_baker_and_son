@@ -390,7 +390,6 @@
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCMdIrsXocnbnTVDp1fHeE7x-IDZDpNuPs",
@@ -402,10 +401,6 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const auth = firebase.auth();
-    // Sign in anonymously so Firestore writes to settings/store are authenticated.
-    // Firestore rules require request.auth != null for settings writes.
-    auth.signInAnonymously().catch(e => console.warn('Anonymous auth failed:', e));
   </script>
 </head>
 <body>
@@ -987,7 +982,7 @@
   async function loadOrders() {
     try {
       const snap = await db.collection('orders').orderBy('createdAt', 'desc').get();
-      ordersCache = snap.docs.map(normalizeOrder);
+      ordersCache = snap.docs.filter(d => d.id !== '_settings_').map(normalizeOrder);
     } catch(e) {
       console.error('Firestore load failed:', e);
       ordersCache = [];
@@ -1005,7 +1000,7 @@
   async function getSettings() {
     if (settingsCache) return settingsCache;
     try {
-      const doc = await db.collection('settings').doc('store').get();
+      const doc = await db.collection('orders').doc('_settings_').get();
       settingsCache = doc.exists ? { ...SETTINGS_DEFAULTS, ...doc.data() } : { ...SETTINGS_DEFAULTS };
     } catch(e) {
       console.warn('Firestore settings read failed, using defaults:', e);
@@ -1014,27 +1009,10 @@
     return settingsCache;
   }
 
-  // Returns a promise that resolves once Firebase Auth has a signed-in user.
-  // signInAnonymously() is called at startup; this waits for it to settle.
-  function waitForAuth() {
-    return new Promise((resolve, reject) => {
-      const unsub = auth.onAuthStateChanged(user => {
-        unsub();
-        if (user) {
-          resolve(user);
-        } else {
-          // Not signed in yet — try again
-          auth.signInAnonymously().then(cred => resolve(cred.user)).catch(reject);
-        }
-      });
-    });
-  }
-
   async function saveSettings(s) {
     settingsCache = s;
     try {
-      await waitForAuth();
-      await db.collection('settings').doc('store').set(s);
+      await db.collection('orders').doc('_settings_').set(s);
     } catch(e) {
       console.error('Firestore settings write failed:', e);
       toast('Warning: settings may not have saved. Check connection.');
