@@ -342,6 +342,40 @@
     .form-group select option { background: var(--white); color: var(--text); }
     #customConfirm { display:none; text-align:center; padding:1.5rem 0; }
 
+    /* ── NEWSLETTER ─────────────────────────────────────────────── */
+    .newsletter-band {
+      background: var(--chocolate); padding: 5rem 4rem; text-align: center;
+    }
+    .newsletter-band .section-tag { color: var(--gold); }
+    .newsletter-band h2 {
+      font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.2rem);
+      color: var(--cream); font-weight: 700; margin: 0.5rem 0 0.8rem;
+    }
+    .newsletter-band h2 em { font-style: italic; color: var(--gold); }
+    .newsletter-band p { color: rgba(255,255,255,0.6); font-size: 0.95rem; margin-bottom: 2rem; }
+    .newsletter-form {
+      display: flex; gap: 0.75rem; max-width: 480px; margin: 0 auto;
+    }
+    .newsletter-form input {
+      flex: 1; padding: 0.85rem 1.1rem; border: 1px solid rgba(201,170,114,0.35);
+      border-radius: 4px; background: rgba(255,255,255,0.07); color: var(--cream);
+      font-size: 0.95rem; outline: none;
+    }
+    .newsletter-form input::placeholder { color: rgba(255,255,255,0.35); }
+    .newsletter-form input:focus { border-color: var(--gold); }
+    .newsletter-form button {
+      padding: 0.85rem 1.6rem; background: var(--gold); color: var(--chocolate);
+      border: none; border-radius: 4px; font-weight: 700; font-size: 0.88rem;
+      letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+      white-space: nowrap; transition: opacity 0.2s;
+    }
+    .newsletter-form button:hover { opacity: 0.85; }
+    #newsletter-msg { margin-top: 1rem; font-size: 0.88rem; color: var(--gold); min-height: 1.2em; }
+    @media (max-width: 600px) {
+      .newsletter-band { padding: 3.5rem 1.5rem; }
+      .newsletter-form { flex-direction: column; }
+    }
+
     /* ── MOBILE RESPONSIVE ─────────────────────────────────────── */
     @media (max-width: 768px) {
       nav { padding: 0.6rem 1.5rem; }
@@ -608,6 +642,44 @@
     </div>
   </div>
 </section>
+
+<section class="newsletter-band fade-up">
+  <p class="section-tag">Stay in the Loop</p>
+  <h2>Get the Weekly <em>Menu</em></h2>
+  <p>Flavors are announced every Saturday. Subscribe to get the menu delivered straight to your inbox.</p>
+  <form class="newsletter-form" id="newsletterForm">
+    <input type="email" id="newsletter-email" placeholder="Your email address" required />
+    <button type="submit">Subscribe</button>
+  </form>
+  <p id="newsletter-msg"></p>
+</section>
+
+<script>
+  document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('newsletter-email').value.trim();
+    const msg = document.getElementById('newsletter-msg');
+    if (!email) return;
+    const cbName = 'mc_nl_' + Date.now();
+    const params = new URLSearchParams({
+      u: 'cea0366781626c4534734ceb4', id: '9b4d43c6fb',
+      EMAIL: email, ORDERTYPE: 'newsletter', c: cbName
+    });
+    const script = document.createElement('script');
+    window[cbName] = function(data) {
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      if (data && data.result === 'success') {
+        msg.textContent = "You're on the list! Watch your inbox each Saturday.";
+        document.getElementById('newsletter-email').value = '';
+      } else {
+        msg.textContent = data && data.msg ? data.msg.split('<')[0] : 'Something went wrong — please try again.';
+      }
+    };
+    script.src = 'https://us2.list-manage.com/subscribe/post-json?' + params.toString();
+    document.body.appendChild(script);
+  });
+</script>
 
 <footer>
   <ul class="footer-links">

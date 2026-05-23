@@ -1286,6 +1286,18 @@
         if (o) o.status = status;
         toast('Order updated to: ' + status);
         renderDashboard();
+        if (status === 'confirmed' && o && o.email) {
+          const name = o.name ? o.name.split(' ')[0] : 'there';
+          const subj = encodeURIComponent('Your Blessed Baker and Son order is confirmed!');
+          const body = encodeURIComponent(
+            'Hi ' + name + ',\n\n' +
+            'Great news — your order has been confirmed and is now in our baking queue!\n\n' +
+            'Order details:\n' + (o.items || '') + '\nEstimated total: ' + (o.total || '') + '\n\n' +
+            'We\u2019ll reach out if we have any questions. Thank you for ordering with us!\n\n' +
+            '\u2014 The Blessed Baker and Son\ninfo@theblessedbakerandson.com'
+          );
+          window.open('mailto:' + o.email + '?subject=' + subj + '&body=' + body);
+        }
       })
       .catch(e => { console.error('Update failed:', e); toast('Update failed — check connection.'); });
   }
