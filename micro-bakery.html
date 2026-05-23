@@ -561,20 +561,6 @@
     btn.textContent = 'Submit Order Request';
   }
 
-  function mailchimpSubscribe(email, fname, lname, orderType) {
-    if (!email) return;
-    const cbName = 'mc_' + Date.now();
-    const params = new URLSearchParams({
-      u: 'cea0366781626c4534734ceb4', id: '9b4d43c6fb',
-      EMAIL: email, FNAME: fname || '', LNAME: lname || '',
-      ORDERTYPE: orderType, c: cbName
-    });
-    const script = document.createElement('script');
-    window[cbName] = function() { delete window[cbName]; if (script.parentNode) script.parentNode.removeChild(script); };
-    script.src = 'https://us2.list-manage.com/subscribe/post-json?' + params.toString();
-    document.body.appendChild(script);
-  }
-
   document.getElementById('orderForm').addEventListener('submit', function(e) {
     e.preventDefault();
     if (Object.keys(cart).length === 0) return;
@@ -596,7 +582,6 @@
           status: 'pending',
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).catch(err => console.error('Firestore write failed:', err));
-        mailchimpSubscribe(fd.get('email'), fd.get('first_name'), fd.get('last_name'), 'pickup');
         document.getElementById('orderArea').style.display = 'none';
         document.getElementById('availNotice').style.display = 'none';
         document.getElementById('confirmScreen').style.display = 'block';
