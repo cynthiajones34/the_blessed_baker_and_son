@@ -200,6 +200,21 @@
     }
     .save-btn:hover{background:var(--berry);}
 
+    /* EMAIL PANEL */
+    .email-filter-btn{
+      padding:0.35rem 0.85rem;border:1px solid rgba(199,167,108,0.35);border-radius:20px;
+      background:var(--white);color:var(--muted);font-size:0.78rem;cursor:pointer;
+      font-family:var(--sans);transition:all 0.15s;
+    }
+    .email-filter-btn:hover{border-color:var(--gold);color:var(--chocolate);}
+    .email-filter-btn.active{background:var(--chocolate);color:var(--cream);border-color:var(--chocolate);}
+    .campaign-row{padding:0.75rem 0;border-bottom:1px solid rgba(199,167,108,0.15);display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;}
+    .campaign-row:last-child{border-bottom:none;}
+    .campaign-badge{font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:10px;}
+    .campaign-badge.sent{background:rgba(90,175,122,0.15);color:#2d7a4d;}
+    .campaign-badge.scheduled{background:rgba(199,167,108,0.2);color:var(--chocolate);}
+    .campaign-badge.cancelled{background:rgba(220,53,69,0.1);color:#c0392b;}
+
     /* CALENDAR */
     .cal-wrap{background:var(--white);border:1px solid rgba(199,167,108,0.2);border-radius:4px;padding:2rem;margin-bottom:2rem;}
     .cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
@@ -435,6 +450,7 @@
       <div class="nav-item" onclick="showPanel('dropoffOrders',this)"><span class="nav-item-icon">🏫</span>Custom Drop-Off Orders</div>
       <div class="sidebar-label">Manage</div>
       <div class="nav-item" onclick="showPanel('reporting',this)"><span class="nav-item-icon">📈</span>Reporting</div>
+      <div class="nav-item" onclick="showPanel('email',this)"><span class="nav-item-icon">✉️</span>Email</div>
       <div class="nav-item" onclick="showPanel('settings',this)"><span class="nav-item-icon">⚙️</span>Settings and Controls</div>
       <div class="sidebar-logout" onclick="doLogout()">&#8594; Sign Out</div>
     </div>
@@ -972,6 +988,115 @@
           </div>
         </div>
       </div>
+
+      <!-- ── EMAIL PANEL ─────────────────────────────────────── -->
+      <div class="panel" id="panel-email">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;">
+
+          <!-- LEFT: Filters + Compose -->
+          <div>
+            <!-- Recipients -->
+            <div class="settings-card" style="margin-bottom:1.5rem;">
+              <div class="settings-card-title">Recipients</div>
+
+              <div style="margin-bottom:1rem;">
+                <label style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.5rem;">Audience</label>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                  <button class="email-filter-btn active" data-filter="audience" data-val="all" onclick="setEmailFilter('audience','all',this)">All Customers</button>
+                  <button class="email-filter-btn" data-filter="audience" data-val="micro-bakery" onclick="setEmailFilter('audience','micro-bakery',this)">Pickup Only</button>
+                  <button class="email-filter-btn" data-filter="audience" data-val="custom-dropoff" onclick="setEmailFilter('audience','custom-dropoff',this)">Drop-Off Only</button>
+                </div>
+              </div>
+
+              <div style="margin-bottom:1rem;">
+                <label style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.5rem;">Order Status</label>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                  <button class="email-filter-btn active" data-filter="status" data-val="all" onclick="setEmailFilter('status','all',this)">All</button>
+                  <button class="email-filter-btn" data-filter="status" data-val="pending" onclick="setEmailFilter('status','pending',this)">Pending</button>
+                  <button class="email-filter-btn" data-filter="status" data-val="confirmed" onclick="setEmailFilter('status','confirmed',this)">Confirmed</button>
+                  <button class="email-filter-btn" data-filter="status" data-val="paid" onclick="setEmailFilter('status','paid',this)">Paid</button>
+                  <button class="email-filter-btn" data-filter="status" data-val="cancelled" onclick="setEmailFilter('status','cancelled',this)">Cancelled</button>
+                </div>
+              </div>
+
+              <div style="margin-bottom:1rem;" id="emailSchoolFilterWrap">
+                <label style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.5rem;">School (Drop-Off)</label>
+                <select id="emailSchoolFilter" onchange="buildEmailRecipients()" style="width:100%;padding:0.5rem 0.75rem;border:1px solid rgba(199,167,108,0.3);border-radius:4px;font-size:0.88rem;background:var(--white);color:var(--text);">
+                  <option value="all">All Schools</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom:1rem;">
+                <label style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.5rem;">Date Range</label>
+                <div style="display:flex;gap:0.5rem;align-items:center;">
+                  <input type="date" id="emailDateFrom" onchange="buildEmailRecipients()" style="flex:1;padding:0.5rem;border:1px solid rgba(199,167,108,0.3);border-radius:4px;font-size:0.85rem;" placeholder="From" />
+                  <span style="color:var(--muted);font-size:0.8rem;">to</span>
+                  <input type="date" id="emailDateTo" onchange="buildEmailRecipients()" style="flex:1;padding:0.5rem;border:1px solid rgba(199,167,108,0.3);border-radius:4px;font-size:0.85rem;" placeholder="To" />
+                </div>
+              </div>
+
+              <div id="emailRecipientCount" style="background:var(--blush);border-radius:4px;padding:0.75rem 1rem;font-size:0.85rem;color:var(--berry);font-weight:600;">
+                0 recipients selected
+              </div>
+            </div>
+
+            <!-- Compose -->
+            <div class="settings-card">
+              <div class="settings-card-title">Compose</div>
+              <div style="margin-bottom:1rem;">
+                <label style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.4rem;">Subject Line</label>
+                <input type="text" id="emailSubject" placeholder="e.g. This week's menu is here!" style="width:100%;padding:0.6rem 0.75rem;border:1px solid rgba(199,167,108,0.3);border-radius:4px;font-size:0.9rem;box-sizing:border-box;" />
+              </div>
+              <div style="margin-bottom:1rem;">
+                <label style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.4rem;">Message</label>
+                <textarea id="emailBody" rows="8" placeholder="Write your message here..." style="width:100%;padding:0.75rem;border:1px solid rgba(199,167,108,0.3);border-radius:4px;font-size:0.9rem;line-height:1.6;resize:vertical;box-sizing:border-box;font-family:inherit;" oninput="renderEmailPreview()"></textarea>
+              </div>
+
+              <!-- Schedule -->
+              <div style="margin-bottom:1.2rem;">
+                <label style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.5rem;">Send Options</label>
+                <div style="display:flex;gap:1rem;margin-bottom:0.75rem;">
+                  <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.88rem;cursor:pointer;">
+                    <input type="radio" name="emailSendTime" value="now" checked onchange="toggleSchedulePicker()" /> Send Now
+                  </label>
+                  <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.88rem;cursor:pointer;">
+                    <input type="radio" name="emailSendTime" value="schedule" onchange="toggleSchedulePicker()" /> Schedule
+                  </label>
+                </div>
+                <div id="emailSchedulePicker" style="display:none;display:flex;gap:0.5rem;">
+                  <input type="date" id="emailScheduleDate" style="flex:1;padding:0.5rem;border:1px solid rgba(199,167,108,0.3);border-radius:4px;font-size:0.85rem;" />
+                  <input type="time" id="emailScheduleTime" style="flex:1;padding:0.5rem;border:1px solid rgba(199,167,108,0.3);border-radius:4px;font-size:0.85rem;" />
+                </div>
+              </div>
+
+              <div style="display:flex;gap:0.75rem;">
+                <button class="save-btn" onclick="sendOrScheduleEmail()" style="flex:1;">Send Email</button>
+                <button class="action-btn" onclick="renderEmailPreview()" style="flex:0 0 auto;">Preview</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Preview + History -->
+          <div>
+            <!-- Preview -->
+            <div class="settings-card" style="margin-bottom:1.5rem;">
+              <div class="settings-card-title">Preview</div>
+              <div id="emailPreviewFrame" style="border:1px solid rgba(199,167,108,0.2);border-radius:4px;overflow:hidden;min-height:200px;background:#F5EDE3;">
+                <div style="padding:2rem;text-align:center;color:var(--muted);font-size:0.88rem;">Your email preview will appear here as you type.</div>
+              </div>
+            </div>
+
+            <!-- Campaign History -->
+            <div class="settings-card">
+              <div class="settings-card-title">Sent & Scheduled</div>
+              <div id="emailCampaignHistory" style="font-size:0.85rem;color:var(--muted);">Loading...</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
     </div>
   </div>
 </div>
@@ -1078,7 +1203,8 @@
     const titles = {
       dashboard:'Dashboard', calendar:'Calendar',
       microOrders:'Micro-Bakery Orders', dropoffOrders:'Custom Drop-Off Orders',
-      reporting:'Reporting & Downloads', settings:'Settings and Controls'
+      reporting:'Reporting & Downloads', settings:'Settings and Controls',
+      email:'Email'
     };
     document.getElementById('panelTitle').textContent = titles[id] || id;
     if(id==='calendar') renderCalendar();
@@ -1087,6 +1213,7 @@
     if(id==='microOrders') renderMicroOrders('all');
     if(id==='dropoffOrders') renderDropoffOrders('all');
     if(id==='dashboard') renderDashboard();
+    if(id==='email') initEmailPanel();
   }
 
   function toast(msg) {
@@ -2050,6 +2177,165 @@
       </div>
       ${cards}`);
   }
+
+  // ── EMAIL PANEL ──────────────────────────────────────────────
+  const emailFilters = { audience: 'all', status: 'all' };
+  let emailRecipients = [];
+
+  function initEmailPanel() {
+    buildEmailSchoolFilter();
+    buildEmailRecipients();
+    loadCampaignHistory();
+    renderEmailPreview();
+  }
+
+  function buildEmailSchoolFilter() {
+    const sel = document.getElementById('emailSchoolFilter');
+    if (!sel) return;
+    const schools = [...new Set(ordersCache.filter(o => o.school).map(o => o.school))].sort();
+    sel.innerHTML = '<option value="all">All Schools</option>' +
+      schools.map(s => `<option value="${s}">${s}</option>`).join('');
+  }
+
+  function setEmailFilter(filter, val, el) {
+    emailFilters[filter] = val;
+    el.closest('div').querySelectorAll('.email-filter-btn[data-filter="' + filter + '"]')
+      .forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    buildEmailRecipients();
+  }
+
+  function buildEmailRecipients() {
+    const audience = emailFilters.audience;
+    const status = emailFilters.status;
+    const school = document.getElementById('emailSchoolFilter')?.value || 'all';
+    const dateFrom = document.getElementById('emailDateFrom')?.value || '';
+    const dateTo = document.getElementById('emailDateTo')?.value || '';
+
+    let filtered = ordersCache.filter(o => {
+      if (audience !== 'all' && o.type !== audience) return false;
+      if (status !== 'all' && o.status !== status) return false;
+      if (school !== 'all' && o.school !== school) return false;
+      if (dateFrom && o.createdAt && o.createdAt < dateFrom) return false;
+      if (dateTo && o.createdAt && o.createdAt > dateTo) return false;
+      return o.email;
+    });
+
+    // Deduplicate by email
+    const seen = new Set();
+    emailRecipients = [];
+    filtered.forEach(o => {
+      if (!seen.has(o.email)) {
+        seen.add(o.email);
+        emailRecipients.push({ email: o.email, name: o.name || '' });
+      }
+    });
+
+    const countEl = document.getElementById('emailRecipientCount');
+    if (countEl) {
+      countEl.textContent = emailRecipients.length === 0
+        ? 'No recipients match these filters'
+        : `${emailRecipients.length} recipient${emailRecipients.length !== 1 ? 's' : ''} selected`;
+    }
+  }
+
+  function toggleSchedulePicker() {
+    const val = document.querySelector('input[name="emailSendTime"]:checked')?.value;
+    const picker = document.getElementById('emailSchedulePicker');
+    if (picker) picker.style.display = val === 'schedule' ? 'flex' : 'none';
+  }
+
+  function renderEmailPreview() {
+    const subject = document.getElementById('emailSubject')?.value || '(no subject)';
+    const body = document.getElementById('emailBody')?.value || '';
+    const frame = document.getElementById('emailPreviewFrame');
+    if (!frame) return;
+    const bodyHtml = body.split('\n').map(l => l ? `<p style="margin:0 0 0.9em;font-size:14px;color:#3B1F0E;line-height:1.7;">${l}</p>` : '<br>').join('');
+    frame.innerHTML = `
+      <div style="background:#F5EDE3;padding:16px;">
+        <div style="max-width:500px;margin:0 auto;background:#fff;border-radius:4px;overflow:hidden;font-family:Georgia,serif;">
+          <div style="background:#3B1F0E;padding:20px;text-align:center;">
+            <img src="https://theblessedbakerandson.com/logo.png" alt="The Blessed Baker and Son" width="100" style="display:block;margin:0 auto;width:100px;height:auto;" />
+          </div>
+          <div style="background:#C9AA72;height:3px;"></div>
+          <div style="padding:24px;">
+            <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9B8275;">Subject: ${subject}</p>
+            <hr style="border:none;border-top:1px solid #F0E8DF;margin:12px 0;">
+            ${bodyHtml || '<p style="color:#9B8275;font-style:italic;font-size:13px;">Start typing your message...</p>'}
+          </div>
+          <div style="background:#F5EDE3;padding:12px;text-align:center;font-size:11px;color:#9B8275;">The Blessed Baker and Son &nbsp;·&nbsp; info@theblessedbakerandson.com</div>
+        </div>
+      </div>`;
+  }
+
+  async function sendOrScheduleEmail() {
+    const subject = document.getElementById('emailSubject')?.value?.trim();
+    const body = document.getElementById('emailBody')?.value?.trim();
+    const sendTime = document.querySelector('input[name="emailSendTime"]:checked')?.value;
+
+    if (!subject) { toast('Please enter a subject line.'); return; }
+    if (!body) { toast('Please write a message.'); return; }
+    if (emailRecipients.length === 0) { toast('No recipients selected.'); return; }
+
+    let scheduledFor = null;
+    if (sendTime === 'schedule') {
+      const date = document.getElementById('emailScheduleDate')?.value;
+      const time = document.getElementById('emailScheduleTime')?.value;
+      if (!date || !time) { toast('Please pick a date and time to schedule.'); return; }
+      scheduledFor = new Date(date + 'T' + time).toISOString();
+    }
+
+    const campaign = {
+      subject,
+      body,
+      recipients: emailRecipients,
+      recipientCount: emailRecipients.length,
+      scheduledFor: scheduledFor || null,
+      status: scheduledFor ? 'scheduled' : 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+      await db.collection('emailCampaigns').add(campaign);
+      toast(scheduledFor ? `Email scheduled for ${scheduledFor.replace('T',' ').slice(0,16)}` : 'Email queued — sending now!');
+      document.getElementById('emailSubject').value = '';
+      document.getElementById('emailBody').value = '';
+      renderEmailPreview();
+      setTimeout(loadCampaignHistory, 2000);
+    } catch(e) {
+      console.error(e);
+      toast('Failed to queue email — check connection.');
+    }
+  }
+
+  function loadCampaignHistory() {
+    const el = document.getElementById('emailCampaignHistory');
+    if (!el) return;
+    db.collection('emailCampaigns').orderBy('createdAt','desc').limit(20).get().then(snap => {
+      if (snap.empty) { el.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">No campaigns yet.</p>'; return; }
+      el.innerHTML = snap.docs.map(doc => {
+        const d = doc.data();
+        const date = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+        const scheduled = d.scheduledFor ? new Date(d.scheduledFor).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : null;
+        const badge = `<span class="campaign-badge ${d.status}">${d.status}</span>`;
+        const cancelBtn = d.status === 'scheduled' ? `<button class="action-btn" style="font-size:0.7rem;padding:0.2rem 0.6rem;margin:0;" onclick="cancelCampaign('${doc.id}')">Cancel</button>` : '';
+        return `<div class="campaign-row">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.88rem;font-weight:600;color:var(--chocolate);margin-bottom:0.2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.subject}</div>
+            <div style="font-size:0.75rem;color:var(--muted);">${d.recipientCount || 0} recipients &nbsp;·&nbsp; ${scheduled ? 'Scheduled: ' + scheduled : date}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0;">${badge}${cancelBtn}</div>
+        </div>`;
+      }).join('');
+    }).catch(() => { el.innerHTML = '<p style="color:var(--muted);">Could not load history.</p>'; });
+  }
+
+  function cancelCampaign(id) {
+    db.collection('emailCampaigns').doc(id).update({ status: 'cancelled' })
+      .then(() => { toast('Campaign cancelled.'); loadCampaignHistory(); })
+      .catch(() => toast('Could not cancel — try again.'));
+  }
+
 </script>
 
 <!-- Modal -->
