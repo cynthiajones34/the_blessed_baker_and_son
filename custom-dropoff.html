@@ -119,6 +119,31 @@
     .qty-btn:hover{background:var(--blush);border-color:var(--rose);}
     .qty-num{font-size:0.9rem;font-weight:600;color:var(--text);min-width:1.5rem;text-align:center;}
 
+    .order-summary{
+      background:var(--white);border:1.5px solid rgba(199,167,108,0.3);
+      border-radius:4px;padding:2rem;
+    }
+    .order-summary h3{
+      font-family:var(--serif);font-size:1.2rem;color:var(--chocolate);
+      margin-bottom:1.4rem;padding-bottom:0.8rem;
+      border-bottom:1px solid rgba(199,167,108,0.2);
+    }
+    .summary-items{min-height:60px;margin-bottom:1.4rem;}
+    .summary-empty{font-size:0.86rem;color:var(--muted);font-style:italic;text-align:center;padding:1rem 0;}
+    .summary-line{
+      display:flex;justify-content:space-between;align-items:center;
+      font-size:0.9rem;padding:0.5rem 0;border-bottom:1px solid rgba(199,167,108,0.1);
+    }
+    .summary-line:last-child{border-bottom:none;}
+    .summary-line-name{color:var(--text);}
+    .summary-line-price{font-weight:600;color:var(--terracotta);}
+    .summary-total{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:0.8rem 0 1.4rem;border-top:1.5px solid rgba(199,167,108,0.25);margin-top:0.4rem;
+    }
+    .summary-total span:first-child{font-weight:600;font-size:0.95rem;color:var(--text);}
+    .summary-total-price{font-family:var(--serif);font-size:1.4rem;color:var(--chocolate);font-weight:700;}
+
     #confirmScreen{
       display:none;background:var(--white);border:1.5px solid rgba(199,167,108,0.3);
       border-radius:4px;padding:4rem 3rem;text-align:center;margin-top:2rem;
@@ -286,9 +311,18 @@
           <textarea name="notes" placeholder="Team colors, allergies, custom themes, etc."></textarea>
         </div>
 
-        <div style="background:var(--blush);border-radius:4px;padding:1.2rem;margin-top:1.5rem;font-size:0.86rem;color:var(--berry);">
-          <strong>Estimated Total: </strong><span id="estimatedTotal">$0</span><br>
-          <span style="font-size:0.78rem;color:var(--muted)">Final total confirmed by Ina. Payment instructions sent via email upon confirmation.</span>
+        <div class="section-divider" style="margin-top:1.5rem;">Order Summary</div>
+        <div class="order-summary" style="margin-bottom:1.5rem;">
+          <div class="summary-items" id="summaryItems">
+            <p class="summary-empty">No items selected yet.</p>
+          </div>
+          <div class="summary-total">
+            <span>Estimated Total</span>
+            <span class="summary-total-price" id="summaryTotal">$0</span>
+          </div>
+          <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;margin-top:0.5rem;">
+            Final total confirmed by Ina at order confirmation. Payment instructions sent via email.
+          </p>
         </div>
 
         <button type="submit" class="btn-primary" id="submitBtn">Submit Drop-Off Order Request</button>
@@ -401,6 +435,7 @@
   function updateTotal() {
     let total = 0;
     let lines = [];
+    let html = '';
     document.querySelectorAll('.item-row').forEach(row => {
       const qEl = row.querySelector('.qty-num');
       if (!qEl) return;
@@ -413,9 +448,13 @@
         const sub = price * q + premium * (q / 12);
         total += sub;
         lines.push(q + 'x ' + name + ' = $' + sub);
+        html += `<div class="summary-line"><span class="summary-line-name">${q}x ${name}</span><span class="summary-line-price">$${sub}</span></div>`;
       }
     });
-    document.getElementById('estimatedTotal').textContent = '$' + total;
+    const summaryItems = document.getElementById('summaryItems');
+    const summaryTotal = document.getElementById('summaryTotal');
+    if (summaryItems) summaryItems.innerHTML = html || '<p class="summary-empty">No items selected yet.</p>';
+    if (summaryTotal) summaryTotal.textContent = '$' + total;
     document.getElementById('orderSummaryInput').value = lines.join('; ');
     document.getElementById('orderTotalInput').value = '$' + total + ' (estimated)';
   }
