@@ -167,6 +167,34 @@ exports.onOrderConfirmed = functions.firestore
     return null;
   });
 
+// ── NEW SUBSCRIBER → welcome email ──────────────────────────────
+exports.onNewSubscriber = functions.firestore
+  .document('subscribers/{subscriberId}')
+  .onCreate(async (snap, context) => {
+    const sub = snap.data();
+    if (!sub || !sub.email) return null;
+
+    const html = baseTemplate(`
+      <h2 style="margin:0 0 6px;font-family:Georgia,serif;font-size:24px;color:#3B1F0E;">You're on the list!</h2>
+      <p style="margin:0 0 24px;font-size:15px;color:#9B8275;line-height:1.6;">Thank you for subscribing to The Blessed Baker and Son. Every Saturday we announce our weekly menu — fresh flavors, made to order.</p>
+      <div style="background:#FDF6EE;border-left:3px solid #C9AA72;padding:20px 24px;border-radius:0 4px 4px 0;margin-bottom:24px;">
+        <p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#C9AA72;">How to order</p>
+        <p style="margin:0;font-size:14px;color:#3B1F0E;line-height:1.7;">Visit <a href="https://theblessedbakerandson.com" style="color:#C9AA72;">theblessedbakerandson.com</a> to place a pickup or school drop-off order. Orders are accepted weekly while supplies last.</p>
+      </div>
+      <p style="margin:0;font-size:13px;color:#9B8275;line-height:1.7;">Questions? Reach us at <a href="mailto:info@theblessedbakerandson.com" style="color:#C9AA72;">info@theblessedbakerandson.com</a>.</p>
+    `);
+
+    await sgMail.send({
+      from: FROM,
+      to: sub.email,
+      subject: 'You\'re subscribed to The Blessed Baker and Son!',
+      text: 'Thank you for subscribing! Every Saturday we announce our weekly menu at theblessedbakerandson.com.',
+      html,
+    });
+
+    return null;
+  });
+
 // ── EMAIL CAMPAIGN → triggered when admin saves a campaign ───────
 exports.onCampaignCreated = functions.firestore
   .document('emailCampaigns/{campaignId}')

@@ -1005,6 +1005,7 @@
                   <button class="email-filter-btn active" data-filter="audience" data-val="all" onclick="setEmailFilter('audience','all',this)">All Customers</button>
                   <button class="email-filter-btn" data-filter="audience" data-val="micro-bakery" onclick="setEmailFilter('audience','micro-bakery',this)">Pickup Only</button>
                   <button class="email-filter-btn" data-filter="audience" data-val="custom-dropoff" onclick="setEmailFilter('audience','custom-dropoff',this)">Drop-Off Only</button>
+                  <button class="email-filter-btn" data-filter="audience" data-val="newsletter" onclick="setEmailFilter('audience','newsletter',this)">Newsletter Subscribers</button>
                 </div>
               </div>
 
@@ -2181,10 +2182,14 @@
   // ── EMAIL PANEL ──────────────────────────────────────────────
   const emailFilters = { audience: 'all', status: 'all' };
   let emailRecipients = [];
+  let newsletterSubscribers = [];
 
   function initEmailPanel() {
     buildEmailSchoolFilter();
-    buildEmailRecipients();
+    db.collection('subscribers').get().then(snap => {
+      newsletterSubscribers = snap.docs.map(d => ({ email: d.data().email, name: '', source: 'newsletter' }));
+      buildEmailRecipients();
+    }).catch(() => buildEmailRecipients());
     loadCampaignHistory();
     renderEmailPreview();
   }
@@ -2212,24 +2217,32 @@
     const dateFrom = document.getElementById('emailDateFrom')?.value || '';
     const dateTo = document.getElementById('emailDateTo')?.value || '';
 
-    let filtered = ordersCache.filter(o => {
-      if (audience !== 'all' && o.type !== audience) return false;
-      if (status !== 'all' && o.status !== status) return false;
-      if (school !== 'all' && o.school !== school) return false;
-      if (dateFrom && o.createdAt && o.createdAt < dateFrom) return false;
-      if (dateTo && o.createdAt && o.createdAt > dateTo) return false;
-      return o.email;
-    });
-
-    // Deduplicate by email
     const seen = new Set();
     emailRecipients = [];
-    filtered.forEach(o => {
-      if (!seen.has(o.email)) {
-        seen.add(o.email);
-        emailRecipients.push({ email: o.email, name: o.name || '' });
+
+    if (audience === 'newsletter') {
+      newsletterSubscribers.forEach(s => {
+        if (!seen.has(s.email)) { seen.add(s.email); emailRecipients.push(s); }
+      });
+    } else {
+      let filtered = ordersCache.filter(o => {
+        if (audience !== 'all' && o.type !== audience) return false;
+        if (status !== 'all' && o.status !== status) return false;
+        if (school !== 'all' && o.school !== school) return false;
+        if (dateFrom && o.createdAt && o.createdAt < dateFrom) return false;
+        if (dateTo && o.createdAt && o.createdAt > dateTo) return false;
+        return o.email;
+      });
+      filtered.forEach(o => {
+        if (!seen.has(o.email)) { seen.add(o.email); emailRecipients.push({ email: o.email, name: o.name || '' }); }
+      });
+      // Include newsletter subscribers in "All Customers"
+      if (audience === 'all') {
+        newsletterSubscribers.forEach(s => {
+          if (!seen.has(s.email)) { seen.add(s.email); emailRecipients.push(s); }
+        });
       }
-    });
+    }
 
     const countEl = document.getElementById('emailRecipientCount');
     if (countEl) {
