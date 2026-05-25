@@ -18,8 +18,8 @@ function baseTemplate(bodyContent) {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
         <tr>
-          <td style="background:#3B1F0E;padding:32px 40px;text-align:center;border-radius:6px 6px 0 0;">
-            <img src="https://theblessedbakerandson.com/logo.png" alt="The Blessed Baker and Son" width="160" style="display:block;margin:0 auto;width:160px;height:auto;" />
+          <td style="background:#F5EDE3;padding:36px 40px 24px;text-align:center;">
+            <img src="https://theblessedbakerandson.com/logo.png" alt="The Blessed Baker and Son" width="180" style="display:block;margin:0 auto;width:180px;height:auto;mix-blend-mode:multiply;" />
           </td>
         </tr>
         <tr><td style="background:#C9AA72;height:3px;"></td></tr>
