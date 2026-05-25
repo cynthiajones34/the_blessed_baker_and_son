@@ -27,13 +27,13 @@
 
 **Micro-Bakery Pickup**
 - Menu drops Saturday. Orders close Sunday at noon. Pickup Friday.
-- Cupcakes sold by the dozen only — no mixed dozens.
-- Cake jars sold in minimums of 12 per flavor.
+- Cupcakes sold by the dozen or half dozen — no mixed dozens.
+- Cake jars sold in minimums of 12 per flavor, in increments of 12.
 - Customer places order → saved to Firestore → admin and customer receive email automatically.
 
 **Custom School Drop-Off**
 - Serves schools managed in the admin panel (default: Lakeside High School cluster).
-- Minimum 2-day lead time required.
+- Minimum 2-day lead time required (enforced by the date picker).
 - Delivery windows: 11:30 AM–12:30 PM or 2:30 PM–4:30 PM.
 - Customer selects school, date, and window when ordering.
 
@@ -45,7 +45,7 @@ Go to **Admin Panel → Settings and Controls**.
 - Add a custom closed message that customers will see.
 - Click **Save** — the change takes effect immediately for all customers across all devices.
 
-You can also block specific date ranges (holidays, vacations) with optional custom messages.
+You can also block specific date ranges (holidays, vacations) with optional custom messages per range.
 
 ### Payment
 
@@ -61,37 +61,35 @@ All products are made in a home kitchen that contains wheat, dairy, eggs, tree n
 
 **URL:** theblessedbakerandson.com/admin.html  
 **Password:** Set in Settings panel (default: `blessed2005`)  
-**Password storage:** Saved in your browser's local storage — stored per device.
+**Password storage:** Saved in browser localStorage (`bb_admin_pw`) — stored per device.
 
 ### Dashboard
 
 Shows at a glance:
-- Total micro-bakery orders
-- Pending drop-off orders
-- Revenue from confirmed and paid orders
+- Total micro-bakery orders, pending drop-off orders, revenue from confirmed/paid orders
 - Order status breakdown (pending / confirmed / paid / cancelled)
+- **Weekly Summary** — lists upcoming 7 days of orders with name, type, date, total, and status badge
 
 ### Orders Panels
 
 Separate panels for **Micro-Bakery Orders** and **Custom Drop-Off Orders**.
 
 Each panel has:
-- A filterable table (date, customer, location, product)
-- Status badges — click to change an individual order's status
-- Checkboxes for bulk status updates
-- Repeat customer indicator (flagged by email)
-
-**Order statuses:** `pending` → `confirmed` → `paid` → `cancelled`
-
-> When you mark an order **Confirmed**, the customer automatically receives a confirmation email — no manual action needed.
+- A filterable table (date range, customer name, school, product type)
+- Status badges — click action buttons to change individual order status (`pending → confirmed → paid → cancelled`)
+- **Repeat customer indicator** — 🔁 icon appears next to any customer whose email appears in more than one order
+- **Checkboxes** for bulk status updates — select any combination, choose a status, apply to all selected
+- Print buttons — print a single prep ticket or all tickets for a specific date
 
 ### Calendar
 
-Visual month-by-month calendar showing which days have orders. Click a date to see orders for that day.
+Visual month-by-month grid showing which days have orders. Click any date to see a list of all orders for that day.
 
 ### Reporting & Downloads
 
-Filter orders by any combination of date, customer, location, product, and order type. Download results as a CSV file.
+Filter orders by any combination of date range, customer name, school, product type, and order status. Export results as:
+- **CSV** — 10 columns: Order ID, Type, Customer, Email, Phone, Items, Total, Delivery Date, School, Status. Filename: `blessed-bakery-orders-YYYY-MM-DD.csv`
+- **PDF** — printable formatted table
 
 ### Email Tab
 
@@ -105,18 +103,18 @@ Send branded emails to customers directly from the admin panel.
 | School | All Schools or a specific school (drop-off only) |
 | Date Range | From / To date pickers |
 
-The recipient count updates live as you change filters. Duplicate emails are automatically removed.
+The recipient count updates live as you change filters. Duplicate emails are automatically removed across order customers and newsletter subscribers.
 
 #### Compose
 - Enter a **subject line** and **message body**
-- Live **preview panel** shows how the email will look in the branded template (logo, gold bar, cream background)
+- Live **preview panel** on the right renders the email in the branded template as you type (logo, gold bar, cream background)
 
 #### Send Options
 - **Send Now** — email goes out immediately
 - **Schedule** — pick a date and time; the system sends automatically (checks every 5 minutes)
 
 #### Campaign History
-Shows all sent and scheduled campaigns with recipient count and status. Scheduled campaigns can be cancelled before they send.
+Shows all sent and scheduled campaigns with subject, recipient count, date, and status. Scheduled campaigns can be cancelled before they send.
 
 ### Settings and Controls
 
@@ -125,16 +123,18 @@ Shows all sent and scheduled campaigns with recipient count and status. Schedule
 |---|---|
 | Orders Open toggle | Opens or closes the micro-bakery order form for all customers |
 | Closed message | Text customers see when orders are closed |
-| Max cupcakes | Capacity limit displayed in the capacity bar |
-| Max jars | Capacity limit displayed in the capacity bar |
-| Blocked date ranges | Block specific dates with an optional custom message |
+| Max cupcakes (dozens) | Sets capacity limit; capacity bar turns orange at ≥80% |
+| Max jars | Sets capacity limit; capacity bar turns orange at ≥80% |
+| Blocked date ranges | Block specific dates with optional per-range custom message |
+
+**Capacity bars** show current capacity used vs. maximum. When a session reaches 80% or more, the bar changes color. Displays remaining quantity (e.g., "15 dozen remaining").
 
 #### Drop-Off Settings
 | Setting | What It Does |
 |---|---|
 | Drop-Off Orders Open toggle | Opens or closes the drop-off order form for all customers |
 | Closed message | Text customers see when drop-off is closed |
-| Blocked date ranges | Block specific dates with an optional custom message |
+| Blocked date ranges | Block specific dates with optional per-range custom message |
 
 #### Drop-Off Schools
 Manage which schools appear in the drop-off order form.
@@ -156,10 +156,10 @@ Update prices for all item tiers. Changes take effect for all customers on next 
 | Premium Jar Surcharge per 12 | $5 | Oreo, Biscoff jars |
 
 #### Manual Order Entry
-Add orders placed by phone or in person directly into the system.
+Add orders placed by phone or in person directly into the system. Supports both micro-bakery and drop-off order types with full field set (name, email, phone, items, school, delivery date, window, notes).
 
 #### Password
-Change the admin password. Minimum 6 characters. Stored in your browser only.
+Change the admin password. Minimum 6 characters. Stored in browser localStorage only — clearing browser data resets to the last saved password.
 
 ---
 
@@ -167,57 +167,65 @@ Change the admin password. Minimum 6 characters. Stored in your browser only.
 
 ### Micro-Bakery Pickup (micro-bakery.html)
 
-1. Page loads → checks Firestore for open/closed status and pricing
+1. Page loads → reads Firestore `_settings_` for open/closed status, blocked dates, and current pricing
 2. If open: availability dot is green, order form is active
-3. If closed: dot turns red, custom message shown, form disabled
-4. Customer selects items using +/− quantity buttons (cupcakes by dozen or half dozen, jars by 12)
-5. Running order summary and total update automatically
-6. Customer enters: first name, last name, email, phone, optional notes
-7. On submit: order saved to Firestore → admin notification email sent → customer receives "order received" email
+3. If closed or date blocked: dot turns red, custom message shown, form is disabled
+4. Customer selects items using +/− buttons:
+   - Cupcakes: in dozens or half dozens per flavor
+   - Cake jars: in increments of 12 per flavor
+   - Premium flavors (Oreo, Biscoff) add a surcharge per set of 12
+5. Running **order summary panel** updates live — shows each line item with quantity and price, plus running total
+6. Customer fills in: first name, last name, email, phone, optional notes
+7. On submit → order saved to Firestore → admin notification email sent → customer receives "order received" email
 8. Customer sees confirmation screen
 
 ### Custom Drop-Off (custom-dropoff.html)
 
-Same as above, plus:
-- Customer selects school from dropdown (populated from admin settings)
-- Customer picks delivery date (2-day minimum enforced)
-- Customer picks delivery window (11:30 AM–12:30 PM or 2:30 PM–4:30 PM)
-- Visible order summary panel shows selected items and running total
-- School, date, and window are stored with the order
+Same item selection and summary as pickup, plus:
+- Customer selects **school** from dropdown (populated dynamically from admin settings)
+- Customer picks **delivery date** (minimum 2 business days from today, enforced by date picker)
+- Customer picks **delivery window** (11:30 AM–12:30 PM or 2:30 PM–4:30 PM)
+- Visible order summary panel shows selected items and running total before submission
+- School, date, and window are stored with the order in Firestore
 
 ### Newsletter Sign-Up (homepage)
 
-- Customer enters email in the "Get the Weekly Menu" section
+- Customer enters email in the "Get the Weekly Menu" section on the homepage
 - Saved to Firestore `subscribers` collection
 - Customer receives a branded welcome email automatically
 - Subscriber appears in admin Email tab under "Newsletter Subscribers"
+
+### Contact Form (contact.html)
+
+Fields: first name, last name, email, phone (optional), subject, message.  
+Submits to Formspree → displays confirmation screen. Also recognizes `?sent=1` URL parameter to show confirmation on direct link.
 
 ---
 
 ## 4. Email Automations
 
-All emails use a branded template: logo on cream background, gold divider bar, white body.
+All emails use a branded template: bakery logo on cream background, gold divider bar, white body, footer with contact info.
 
 ### Automatic Emails
 
 | Trigger | Recipient | Subject |
 |---|---|---|
-| New order placed (pickup) | Admin | "New Pickup Order — [Customer Name]" |
-| New order placed (pickup) | Customer | "We received your order request!" |
-| New order placed (drop-off) | Admin | "New Custom Drop-Off Order — [Customer Name]" |
-| New order placed (drop-off) | Customer | "We received your order request!" |
-| Order status → Confirmed | Customer | "Your order is confirmed! 🎉" |
+| New pickup order placed | Admin | "New Pickup Order — [Customer Name]" |
+| New pickup order placed | Customer | "We received your order request!" |
+| New drop-off order placed | Admin | "New Custom Drop-Off Order — [Customer Name]" |
+| New drop-off order placed | Customer | "We received your order request!" |
+| Order status set to Confirmed | Customer | "Your order is confirmed! 🎉" |
 | Newsletter sign-up | Customer | "You're subscribed to The Blessed Baker and Son!" |
 
 ### Admin-Initiated Emails (Email Tab)
 
-Send custom emails to any segment of your audience — customers by order type/status/school, newsletter subscribers, or all contacts. Supports immediate send or scheduled delivery.
+Send custom emails to any segment — customers filtered by order type, status, school, date range, newsletter subscribers, or all contacts combined. Supports immediate send or future scheduled delivery.
 
 ### Email Provider
 
 - **SendGrid** — free tier (100 emails/day)
 - **From address:** info@theblessedbakerandson.com
-- **Domain authenticated** via CNAME records in GoDaddy DNS
+- **Domain authenticated** via CNAME records in GoDaddy DNS (eliminates spam risk)
 
 ---
 
@@ -249,7 +257,7 @@ No mixed dozens. One flavor per order unit.
 | Oreo Cookies N' Cream | $4 + $5/12 | $8 + $5/12 |
 | Biscoff Cookie Butter | $4 + $5/12 | $8 + $5/12 |
 
-Minimum 12 jars per flavor. Premium flavors (Oreo, Biscoff) add $5 per set of 12.
+Minimum 12 jars per flavor, ordered in multiples of 12. Premium flavors (Oreo, Biscoff) add $5 per set of 12.
 
 ---
 
@@ -257,13 +265,40 @@ Minimum 12 jars per flavor. Premium flavors (Oreo, Biscoff) add $5 per set of 12
 
 | Page | URL | Purpose |
 |---|---|---|
-| Homepage | / | Brand intro, menu overview, newsletter signup, order entry points |
-| Micro-Bakery Orders | /micro-bakery.html | Customer pickup ordering |
-| Custom Drop-Off Orders | /custom-dropoff.html | Customer school drop-off ordering |
-| Contact | /contact.html | General inquiries form |
-| FAQ | /faq.html | Common questions about ordering, payment, allergies |
+| Homepage | / | Brand intro, how it works, menu overview, schools info, story, newsletter signup, order entry points |
+| Micro-Bakery Orders | /micro-bakery.html | Customer pickup ordering with live order summary |
+| Custom Drop-Off Orders | /custom-dropoff.html | Customer school drop-off ordering with live order summary |
+| Contact | /contact.html | 6-field inquiry form (submits via Formspree) |
+| FAQ | /faq.html | 8 accordion-style Q&As covering ordering, schools, payment, allergies, cancellations |
 | Terms | /terms.html | Terms of service, cancellation policy, allergen notice |
 | Admin | /admin.html | Password-protected order and settings management |
+
+### Homepage Sections (in order)
+1. **Hero** — brand name, tagline, CTA buttons, decorative logo
+2. **Intro Band** — brand statement quote
+3. **How It Works** — 3-step ordering process
+4. **Menu** — price list overview with item categories
+5. **Order Types** — two cards: Pickup vs. Drop-Off with links
+6. **Schools** — Lakeside High School cluster listing with school chips
+7. **Story** — brand story with 4 feature cards (faith, frosting, model, community)
+8. **Newsletter** — email sign-up for weekly menu announcements
+9. **Footer** — navigation links and copyright
+
+### FAQ Topics
+1. How do I place a pick-up order?
+2. How do I place a school drop-off order?
+3. Do you offer custom flavors or themes?
+4. What schools do you deliver to?
+5. What payment methods do you accept?
+6. Can I cancel or modify my order?
+7. Do you accommodate allergies?
+8. How do I contact you?
+
+### Shared Elements (all pages)
+- **Favicon** — cupcake emoji 🧁
+- **Footer** — links to all pages + "2026 The Blessed Baker and Son | Designed by The Builders' Ops Studio"
+- **Color palette** — 9 CSS custom properties: cream, blush, rose, terracotta, berry, chocolate, gold, white, muted
+- **Fonts** — Playfair Display (headings), DM Sans (body), Pinyon Script (script accents)
 
 ---
 
@@ -300,7 +335,7 @@ Minimum 12 jars per flavor. Premium flavors (Oreo, Biscoff) add $5 per set of 12
 | `onCampaignCreated` | Firestore: new `emailCampaigns/{id}` doc | Sends immediate email campaigns |
 | `processScheduledCampaigns` | Pub/Sub: every 5 minutes | Sends scheduled campaigns when due |
 
-### Firebase Config (stored via `functions:config`)
+### Firebase Config
 
 | Key | Purpose |
 |---|---|
@@ -308,39 +343,39 @@ Minimum 12 jars per flavor. Premium flavors (Oreo, Biscoff) add $5 per set of 12
 
 ### SendGrid
 
-- **Account:** info@theblessedbakerandson.com  
-- **Domain authentication:** configured via CNAME records in GoDaddy  
-- **Sender:** Verified single sender + domain authenticated  
+- **Account:** info@theblessedbakerandson.com
+- **Domain authentication:** configured via CNAME records in GoDaddy
+- **Sender:** Verified single sender + domain authenticated
 
 ### Formspree Endpoints
 
 | Page | Purpose |
 |---|---|
-| micro-bakery.html | Order form submission (backup admin notification) |
-| custom-dropoff.html | Order form submission (backup admin notification) |
+| micro-bakery.html | Order form backup notification |
+| custom-dropoff.html | Order form backup notification |
 | contact.html | Contact page inquiries |
 
 ### GitHub Repository
 
 `cynthiajones34/the_blessed_baker_and_son`
 
-To deploy: commit and push to `main`. GitHub Pages serves the updated site automatically within a minute or two. Firebase Functions are deployed separately via `firebase deploy --only functions`.
+To deploy site changes: commit and push to `main`. GitHub Pages updates within 1–2 minutes.  
+To deploy function changes: `firebase --project the-blessed-baker-and-son deploy --only functions --force`  
+To deploy Firestore rules: `firebase --project the-blessed-baker-and-son deploy --only firestore:rules`
 
 ### Firestore Security Rules
 
-```
-orders/*       — read/write: public (order forms + admin panel)
-subscribers/*  — create: public, read: public, update/delete: blocked
-emailCampaigns/* — read/write: public (admin panel)
-```
+| Collection | Read | Write |
+|---|---|---|
+| `orders/*` | Public | Public (order forms + admin panel) |
+| `subscribers/*` | Public | Create only (sign-up form); no update/delete |
+| `emailCampaigns/*` | Public | Public (admin panel) |
 
 ---
 
 ## 8. Data Structure
 
-### Firestore Collections
-
-#### `orders` — Customer Orders
+### `orders` Collection — Customer Orders
 
 ```
 {
@@ -359,9 +394,9 @@ emailCampaigns/* — read/write: public (admin panel)
 }
 ```
 
-#### `orders/_settings_` — Store Settings
+### `orders/_settings_` — Store Settings
 
-A reserved document (ID: `_settings_`) inside the `orders` collection. Written by the admin panel, read by customer-facing pages.
+Reserved document (ID: `_settings_`) inside the `orders` collection. Written by the admin panel, read by customer-facing pages on every load.
 
 ```
 {
@@ -389,11 +424,10 @@ A reserved document (ID: `_settings_`) inside the `orders` collection. Written b
 }
 ```
 
-Blocked range format: `{ from: "2026-07-04", to: "2026-07-06", message: "July 4th holiday" }`
+Blocked range format: `{ from: "2026-07-04", to: "2026-07-06", message: "July 4th holiday" }`  
+Use the same date for `from` and `to` to block a single day.
 
-#### `subscribers` — Newsletter Subscribers
-
-Created when a customer signs up via the homepage newsletter form.
+### `subscribers` Collection — Newsletter Subscribers
 
 ```
 {
@@ -403,9 +437,7 @@ Created when a customer signs up via the homepage newsletter form.
 }
 ```
 
-#### `emailCampaigns` — Admin Email Campaigns
-
-Created by the admin Email tab when sending or scheduling a campaign.
+### `emailCampaigns` Collection — Admin Email Campaigns
 
 ```
 {
@@ -416,7 +448,7 @@ Created by the admin Email tab when sending or scheduling a campaign.
   scheduledFor:   String | null, // ISO timestamp or null for immediate
   status:         "pending" | "scheduled" | "sent" | "cancelled",
   createdAt:      Timestamp,
-  sentAt:         String,        // ISO timestamp, set when sent
+  sentAt:         String,        // set when sent
   sentCount:      Number         // set when sent
 }
 ```
