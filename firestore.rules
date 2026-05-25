@@ -7,10 +7,10 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
-    // Newsletter subscribers — public write, no public read
+    // Newsletter subscribers — public write, admin panel read
     match /subscribers/{document=**} {
-      allow create: if true;
-      allow read, update, delete: if false;
+      allow read, create: if true;
+      allow update, delete: if false;
     }
 
     // Email campaigns — admin panel read/write
