@@ -68,6 +68,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { font-family: var(--sans); background: var(--cream); color: var(--text); overflow-x: hidden; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
@@ -673,6 +674,7 @@
   <h2>Get the Weekly <em>Menu</em></h2>
   <p>Flavors are announced every Saturday. Subscribe to get the menu delivered straight to your inbox.</p>
   <form class="newsletter-form" id="newsletterForm">
+    <label for="newsletter-email" class="visually-hidden">Email address</label>
     <input type="email" id="newsletter-email" placeholder="Your email address" required />
     <button type="submit">Subscribe</button>
   </form>
