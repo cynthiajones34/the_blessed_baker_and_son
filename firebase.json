@@ -1,4 +1,16 @@
 {
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "functions/**",
+      "firestore.rules",
+      "SITE_GUIDE.md",
+      "README.md"
+    ]
+  },
   "functions": {
     "source": "functions",
     "runtime": "nodejs22"
