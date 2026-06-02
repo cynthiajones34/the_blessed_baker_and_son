@@ -3,7 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Blessed Baker and Son</title>
+  <title>Custom Cakes &amp; Baked Goods | The Blessed Baker and Son – Tucker, GA</title>
+  <meta name="description" content="Family home bakery in Tucker, GA. Custom cakes, cake jars, and cupcakes with school drop-off delivery to Lakeside, Briarlake, Henderson Mill, and DeKalb County schools. Order online." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://theblessedbakerandson.com/" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://theblessedbakerandson.com/" />
+  <meta property="og:title" content="Custom Cakes &amp; Baked Goods | The Blessed Baker and Son – Tucker, GA" />
+  <meta property="og:description" content="Family home bakery in Tucker, GA. Custom cakes, cake jars, and cupcakes with school drop-off delivery to DeKalb County schools." />
+  <meta property="og:image" content="https://theblessedbakerandson.com/logo.png" />
+  <meta property="og:site_name" content="The Blessed Baker and Son" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Custom Cakes &amp; Baked Goods | The Blessed Baker and Son – Tucker, GA" />
+  <meta name="twitter:description" content="Family home bakery in Tucker, GA. Custom cakes, cake jars, and school drop-off orders." />
+  <meta name="twitter:image" content="https://theblessedbakerandson.com/logo.png" />
+  <!-- LocalBusiness Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Bakery",
+    "name": "The Blessed Baker and Son",
+    "description": "Family-owned home bakery in Tucker, GA specializing in custom cakes, cake jars, and cupcakes with school drop-off delivery to DeKalb County schools.",
+    "url": "https://theblessedbakerandson.com",
+    "email": "info@theblessedbakerandson.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Tucker",
+      "addressRegion": "GA",
+      "addressCountry": "US"
+    },
+    "areaServed": {
+      "@type": "County",
+      "name": "DeKalb County",
+      "addressRegion": "GA"
+    },
+    "servesCuisine": ["Cakes", "Cupcakes", "Pastries"],
+    "priceRange": "$$",
+    "hasMap": "https://www.google.com/maps/search/The+Blessed+Baker+and+Son+Tucker+GA"
+  }
+  </script>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧁</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -420,21 +460,6 @@
     .fade-delay-2 { transition-delay: 0.24s; }
     .fade-delay-3 { transition-delay: 0.36s; }
   </style>
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCMdIrsXocnbnTVDp1fHeE7x-IDZDpNuPs",
-      authDomain: "the-blessed-baker-and-son.firebaseapp.com",
-      projectId: "the-blessed-baker-and-son",
-      storageBucket: "the-blessed-baker-and-son.firebasestorage.app",
-      messagingSenderId: "525937615827",
-      appId: "1:525937615827:web:a3ed16be6959c2459ac526"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-  </script>
 </head>
 <body>
 
@@ -691,7 +716,8 @@
     <li><a href="terms.html">Terms</a></li>
     <li><a href="contact.html">Contact</a></li>
   </ul>
-  <p class="footer-copy">2026 The Blessed Baker and Son &nbsp;|&nbsp; Designed by The Builders' Ops Studio</p>
+  <p class="footer-copy">Tucker, GA &nbsp;|&nbsp; <a href="mailto:info@theblessedbakerandson.com" style="color:inherit;text-decoration:none;">info@theblessedbakerandson.com</a></p>
+  <p class="footer-copy">&copy; 2026 The Blessed Baker and Son &nbsp;|&nbsp; Designed by The Builders' Ops Studio</p>
 </footer>
 
 <script>
@@ -707,5 +733,20 @@
 
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 </script>
+  <!-- Firebase (deferred to end of body for faster page render) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCMdIrsXocnbnTVDp1fHeE7x-IDZDpNuPs",
+      authDomain: "the-blessed-baker-and-son.firebaseapp.com",
+      projectId: "the-blessed-baker-and-son",
+      storageBucket: "the-blessed-baker-and-son.firebasestorage.app",
+      messagingSenderId: "525937615827",
+      appId: "1:525937615827:web:a3ed16be6959c2459ac526"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
 </body>
 </html>
