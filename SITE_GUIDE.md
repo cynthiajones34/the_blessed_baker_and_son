@@ -1,10 +1,12 @@
 # The Blessed Baker and Son — Site Guide
 
 **Website:** theblessedbakerandson.com  
-**Hosting:** GitHub Pages (static site)  
+**Hosting:** Firebase Hosting  
 **Database:** Firebase Firestore  
 **Email:** Firebase Functions + SendGrid  
-**Last Updated:** May 2026
+**Location:** Tucker, GA  
+**Contact:** info@theblessedbakerandson.com  
+**Last Updated:** June 2026
 
 ---
 
@@ -16,8 +18,9 @@
 4. [Email Automations](#4-email-automations)
 5. [Menu & Pricing](#5-menu--pricing)
 6. [Site Pages](#6-site-pages)
-7. [Technical Setup](#7-technical-setup)
-8. [Data Structure](#8-data-structure)
+7. [SEO & Accessibility](#7-seo--accessibility)
+8. [Technical Setup](#8-technical-setup)
+9. [Data Structure](#9-data-structure)
 
 ---
 
@@ -269,9 +272,11 @@ Minimum 12 jars per flavor, ordered in multiples of 12. Premium flavors (Oreo, B
 | Micro-Bakery Orders | /micro-bakery.html | Customer pickup ordering with live order summary |
 | Custom Drop-Off Orders | /custom-dropoff.html | Customer school drop-off ordering with live order summary |
 | Contact | /contact.html | 6-field inquiry form (submits via Formspree) |
-| FAQ | /faq.html | 8 accordion-style Q&As covering ordering, schools, payment, allergies, cancellations |
+| FAQ | /faq.html | 10 accordion-style Q&As covering ordering, schools, payment, allergies, cancellations |
 | Terms | /terms.html | Terms of service, cancellation policy, allergen notice |
-| Admin | /admin.html | Password-protected order and settings management |
+| Admin | /admin.html | Password-protected order and settings management (excluded from search indexing) |
+| Sitemap | /sitemap.xml | XML sitemap submitted to Google Search Console |
+| Robots | /robots.txt | Crawl rules — allows all public pages, blocks /admin.html |
 
 ### Homepage Sections (in order)
 1. **Hero** — brand name, tagline, CTA buttons, decorative logo
@@ -287,22 +292,67 @@ Minimum 12 jars per flavor, ordered in multiples of 12. Premium flavors (Oreo, B
 ### FAQ Topics
 1. How do I place a pick-up order?
 2. How do I place a school drop-off order?
-3. Do you offer custom flavors or themes?
-4. What schools do you deliver to?
-5. What payment methods do you accept?
-6. Can I cancel or modify my order?
-7. Do you accommodate allergies?
-8. How do I contact you?
+3. What is the minimum order for cake jars?
+4. Do you offer custom flavors or themes?
+5. How far in advance should I order?
+6. What schools do you deliver to?
+7. What payment methods do you accept?
+8. Can I cancel or modify my order?
+9. Do you accommodate allergies?
+10. How do I contact you?
 
 ### Shared Elements (all pages)
 - **Favicon** — cupcake emoji 🧁
-- **Footer** — links to all pages + "2026 The Blessed Baker and Son | Designed by The Builders' Ops Studio"
+- **Footer** — location (Tucker, GA), email (info@theblessedbakerandson.com), navigation links, "© 2026 The Blessed Baker and Son | Designed by The Builders' Ops Studio"
 - **Color palette** — 9 CSS custom properties: cream, blush, rose, terracotta, berry, chocolate, gold, white, muted
 - **Fonts** — Playfair Display (headings), DM Sans (body), Pinyon Script (script accents)
+- **Mobile nav** — hamburger menu on homepage (≤768px); sub-pages use a "← Back" link
 
 ---
 
-## 7. Technical Setup
+## 7. SEO & Accessibility
+
+### SEO Implementation
+
+All public pages include:
+- Unique `<title>` tags with business name, location (Tucker, GA), and primary keyword
+- `<meta name="description">` — unique per page, 150–160 characters
+- `<meta name="robots" content="index, follow">`
+- `<link rel="canonical">` pointing to the absolute URL
+- Open Graph tags (`og:title`, `og:description`, `og:image`, `og:url`, `og:site_name`)
+- Twitter Card tags (`twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`)
+
+**Structured Data (JSON-LD)**
+- `index.html` — `@type: "Bakery"` (LocalBusiness subtype) with name, URL, email, Tucker GA address, and DeKalb County service area
+- `faq.html` — `@type: "FAQPage"` with all 10 Question/Answer pairs for Google rich snippets
+
+**Sitemap & Crawling**
+- `sitemap.xml` — lists all 6 public pages with `<changefreq>` and `<priority>`
+- `robots.txt` — allows all crawlers, blocks `/admin.html`, references sitemap
+- Submitted to Google Search Console (verified June 2026)
+
+**Performance**
+- Firebase scripts moved from `<head>` to end of `<body>` on all pages that use Firestore — eliminates render-blocking
+
+### Accessibility
+
+- All image `alt` attributes are descriptive (no generic "Logo" text)
+- All form inputs have associated `<label>` elements with `for`/`id` matching
+- Newsletter email input uses a visually-hidden `<label>` (`.visually-hidden` CSS class)
+- FAQ accordion buttons use `aria-expanded` (updated on open/close)
+- Hamburger menu button uses `aria-expanded`, `aria-label`, and `aria-controls`
+- `<html lang="en">` on all pages
+- One `<h1>` per page
+
+### Google Search Console
+
+- **Property:** theblessedbakerandson.com
+- **Verified:** June 2026 (HTML meta tag method)
+- **Sitemap submitted:** sitemap.xml
+
+---
+
+## 8. Technical Setup
 
 ### Tech Stack
 
@@ -312,8 +362,8 @@ Minimum 12 jars per flavor, ordered in multiples of 12. Premium flavors (Oreo, B
 | Database | Firebase Firestore (compat SDK v10.12.0) |
 | Backend | Firebase Functions (Node.js 22, Gen 1) |
 | Email delivery | SendGrid (free tier, 100/day) |
-| Hosting | GitHub Pages |
-| Domain | GoDaddy DNS → GitHub Pages |
+| Hosting | Firebase Hosting |
+| Domain | GoDaddy DNS → Firebase Hosting |
 | Fonts | Google Fonts — Playfair Display, DM Sans, Pinyon Script |
 
 ### Firebase Project
@@ -359,9 +409,23 @@ Minimum 12 jars per flavor, ordered in multiples of 12. Premium flavors (Oreo, B
 
 `cynthiajones34/the_blessed_baker_and_son`
 
-To deploy site changes: commit and push to `main`. GitHub Pages updates within 1–2 minutes.  
-To deploy function changes: `firebase --project the-blessed-baker-and-son deploy --only functions --force`  
-To deploy Firestore rules: `firebase --project the-blessed-baker-and-son deploy --only firestore:rules`
+**Deploy site changes (HTML/CSS/JS):**
+```
+git add . && git commit -m "your message" && git push origin main
+firebase deploy --only hosting
+```
+
+**Deploy function changes:**
+```
+firebase --project the-blessed-baker-and-son deploy --only functions --force
+```
+
+**Deploy Firestore rules:**
+```
+firebase --project the-blessed-baker-and-son deploy --only firestore:rules
+```
+
+Note: Pushing to GitHub alone does NOT update the live site — Firebase deploy is required.
 
 ### Firestore Security Rules
 
@@ -373,7 +437,7 @@ To deploy Firestore rules: `firebase --project the-blessed-baker-and-son deploy 
 
 ---
 
-## 8. Data Structure
+## 9. Data Structure
 
 ### `orders` Collection — Customer Orders
 
