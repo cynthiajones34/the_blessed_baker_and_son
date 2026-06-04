@@ -18,5 +18,11 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    // Standing orders — customer creates via order form, admin panel reads/updates
+    // Functions use admin SDK (bypasses rules). Hardening deferred to T7.
+    match /standingOrders/{document=**} {
+      allow read, write: if true;
+    }
+
   }
 }
