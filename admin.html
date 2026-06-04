@@ -1325,6 +1325,7 @@
     if (sc) sc.innerHTML = statusInfo.map(si =>
       `<span class="stat-card-dot" style="background:${si.color}"></span>${si.key.charAt(0).toUpperCase()+si.key.slice(1)}: <strong>${orders.filter(o=>o.status===si.key).length}</strong>`
     ).join('<br>');
+    orders.sort((a, b) => (b.date || '') > (a.date || '') ? 1 : (b.date || '') < (a.date || '') ? -1 : 0);
     renderOrdersTable(orders, 'ordersTableBody', true);
     renderCapacityTracker();
     renderWeeklySummary();
