@@ -2261,7 +2261,8 @@
   function buildEmailSchoolFilter() {
     const sel = document.getElementById('emailSchoolFilter');
     if (!sel) return;
-    const schools = [...new Set(ordersCache.filter(o => o.school).map(o => o.school))].sort();
+    const fromOrders = ordersCache.filter(o => o.school).map(o => o.school);
+    const schools = [...new Set([...SETTINGS_DEFAULTS.schools, ...fromOrders])].sort();
     sel.innerHTML = '<option value="all">All Schools</option>' +
       schools.map(s => `<option value="${s}">${s}</option>`).join('');
   }
