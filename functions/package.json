@@ -2,7 +2,8 @@
   "name": "functions",
   "description": "Cloud Functions for The Blessed Baker and Son",
   "scripts": {
-    "deploy": "firebase deploy --only functions"
+    "deploy": "firebase deploy --only functions",
+    "test": "jest"
   },
   "engines": {
     "node": "22"
@@ -13,6 +14,12 @@
     "firebase-admin": "^11.0.1",
     "firebase-functions": "^4.3.1",
     "twilio": "^5.3.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "private": true
 }
