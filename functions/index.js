@@ -457,7 +457,7 @@ exports.twilioWebhook = functions.https.onRequest(async (req, res) => {
   // Validate Twilio request signature — rejects spoofed webhooks
   const authToken = functions.config().twilio.auth_token;
   const signature = req.headers['x-twilio-signature'] || '';
-  const url = `https://${req.headers.host}${req.originalUrl}`;
+  const url = 'https://us-central1-the-blessed-baker-and-son.cloudfunctions.net/twilioWebhook';
   const isValid = twilio.validateRequest(authToken, signature, url, req.body);
   if (!isValid) {
     functions.logger.warn('twilioWebhook: invalid signature rejected', { url });
