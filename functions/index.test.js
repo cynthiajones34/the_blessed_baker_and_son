@@ -266,3 +266,53 @@ describe('onNewOrder', () => {
     expect(sgMail.send).not.toHaveBeenCalled();
   });
 });
+
+// ─────────────────────────────────────────────────────────────────
+// onNewStandingOrder
+// ─────────────────────────────────────────────────────────────────
+
+describe('onNewStandingOrder', () => {
+  test('12. sends admin + customer emails on standing order signup', async () => {
+    const snap = {
+      data: () => ({
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        phone: '+15551234567',
+        items: 'Red Velvet Cupcakes (doz)',
+        total: '$35',
+        frequency: 'weekly',
+        status: 'active',
+      }),
+    };
+    await fn.onNewStandingOrder(snap, {});
+    expect(sgMail.send).toHaveBeenCalledTimes(2);
+    // Admin email
+    expect(sgMail.send).toHaveBeenCalledWith(
+      expect.objectContaining({ subject: 'New Standing Order — Jane Doe' })
+    );
+    // Customer email
+    expect(sgMail.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: 'jane@example.com',
+        subject: 'Your weekly standing order is confirmed!',
+      })
+    );
+  });
+
+  test('13. skips customer email if no email on standing order', async () => {
+    const snap = {
+      data: () => ({
+        name: 'Jane Doe',
+        phone: '+15551234567',
+        items: 'Red Velvet Cupcakes (doz)',
+        total: '$35',
+      }),
+    };
+    await fn.onNewStandingOrder(snap, {});
+    // Only admin email sent, no customer email
+    expect(sgMail.send).toHaveBeenCalledTimes(1);
+    expect(sgMail.send).toHaveBeenCalledWith(
+      expect.objectContaining({ subject: 'New Standing Order — Jane Doe' })
+    );
+  });
+});

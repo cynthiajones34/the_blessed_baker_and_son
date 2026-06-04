@@ -200,6 +200,67 @@ exports.onNewSubscriber = functions.firestore
     return null;
   });
 
+// ── NEW STANDING ORDER → email admin + customer ─────────────────
+exports.onNewStandingOrder = functions.firestore
+  .document('standingOrders/{orderId}')
+  .onCreate(async (snap, context) => {
+    const order = snap.data();
+    if (!order) return null;
+
+    const customerName = order.name || 'Customer';
+    const firstName = customerName.split(' ')[0];
+    const customerEmail = order.email;
+
+    const adminHtml = baseTemplate(`
+      <div style="display:inline-block;background:#FDF6EE;border:1px solid #E8D9C8;border-radius:4px;padding:6px 14px;margin-bottom:24px;">
+        <span style="font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8B3A52;">Standing Order Sign-Up</span>
+      </div>
+      <h2 style="margin:0 0 4px;font-family:Georgia,serif;font-size:22px;color:#3B1F0E;">New Standing Order</h2>
+      <p style="margin:0 0 24px;font-size:14px;color:#9B8275;">A customer has signed up for automatic weekly orders.</p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+        ${detailRow('Customer', order.name)}
+        ${detailRow('Email', order.email)}
+        ${detailRow('Phone', order.phone)}
+        ${detailRow('Frequency', order.frequency || 'weekly')}
+      </table>
+      <p style="margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B8275;">Standing Order Items</p>
+      ${orderTable(order)}
+      <div style="margin-top:28px;text-align:center;">
+        <a href="https://theblessedbakerandson.com/admin.html" style="display:inline-block;background:#3B1F0E;color:#FAF5EE;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:14px 32px;border-radius:4px;">View in Admin Panel</a>
+      </div>
+    `);
+
+    await sgMail.send({
+      from: FROM, to: ADMIN_EMAIL,
+      subject: `New Standing Order — ${customerName}`,
+      text: `${customerName} has signed up for a weekly standing order.`,
+      html: adminHtml,
+    });
+
+    if (!customerEmail) return null;
+
+    const customerHtml = baseTemplate(`
+      <h2 style="margin:0 0 6px;font-family:Georgia,serif;font-size:24px;color:#3B1F0E;">You're signed up for weekly orders!</h2>
+      <p style="margin:0 0 24px;font-size:15px;color:#9B8275;line-height:1.6;">Hi ${firstName}, thank you for signing up for a weekly standing order. We're excited to bake for you every week!</p>
+      <div style="background:#FDF6EE;border-left:3px solid #C9AA72;padding:20px 24px;border-radius:0 4px 4px 0;margin-bottom:24px;">
+        <p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#C9AA72;">How it works</p>
+        <p style="margin:0;font-size:14px;color:#3B1F0E;line-height:1.7;">Every Thursday morning you'll receive a text confirmation for that week's order. Reply <strong>SKIP</strong> to skip a week, or <strong>STOP</strong> to cancel anytime. No action needed to receive your order.</p>
+      </div>
+      <p style="margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B8275;">Your Weekly Order</p>
+      ${orderTable(order)}
+      <p style="margin:24px 0 0;font-size:13px;color:#9B8275;line-height:1.7;">Questions? Reply to this email or reach us at <a href="mailto:info@theblessedbakerandson.com" style="color:#C9AA72;">info@theblessedbakerandson.com</a>.</p>
+    `);
+
+    await sgMail.send({
+      from: FROM, to: customerEmail,
+      subject: 'Your weekly standing order is confirmed!',
+      text: `Hi ${firstName}, you're signed up for weekly orders from The Blessed Baker and Son. Text SKIP to skip a week or STOP to cancel.`,
+      html: customerHtml,
+    });
+
+    return null;
+  });
+
 // ── EMAIL CAMPAIGN → triggered when admin saves a campaign ───────
 exports.onCampaignCreated = functions.firestore
   .document('emailCampaigns/{campaignId}')
