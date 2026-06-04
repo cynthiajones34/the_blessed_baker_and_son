@@ -143,7 +143,24 @@
       footer{flex-direction:column;gap:1.5rem;text-align:center;padding:2.5rem 1.5rem;}
       .footer-links{flex-wrap:wrap;justify-content:center;gap:1rem;}
     }
+  .newsletter-opt{display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:1.4rem;padding:0.9rem 1rem;background:var(--blush,#fdf0e8);border:1.5px solid rgba(199,167,108,0.3);border-radius:4px;}
+  .newsletter-opt input[type="checkbox"]{margin-top:2px;width:17px;height:17px;accent-color:var(--terracotta,#C47D63);flex-shrink:0;cursor:pointer;}
+  .newsletter-opt label{font-size:0.85rem;color:var(--text,#2c1a0e);line-height:1.5;cursor:pointer;}
+  .newsletter-opt label strong{font-weight:600;}
   </style>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey: "AIzaSyCMdIrsXocnbnTVDp1fHeE7x-IDZDpNuPs",
+      authDomain: "the-blessed-baker-and-son.firebaseapp.com",
+      projectId: "the-blessed-baker-and-son",
+      storageBucket: "the-blessed-baker-and-son.firebasestorage.app",
+      messagingSenderId: "525937615827",
+      appId: "1:525937615827:web:a3ed16be6959c2459ac526"
+    });
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
 
@@ -193,6 +210,11 @@
       <div class="form-group">
         <label for="message">Message</label>
         <textarea id="message" name="message" placeholder="Tell us what's on your mind..." required></textarea>
+      </div>
+
+      <div class="newsletter-opt">
+        <input type="checkbox" id="newsletterOptIn" name="newsletter_opt_in" value="yes">
+        <label for="newsletterOptIn"><strong>Send me the weekly menu!</strong> Get Ina's menu delivered to your inbox every week so you never miss a fresh batch.</label>
       </div>
 
       <button type="submit" class="btn-primary" id="submitBtn">Send Message</button>
@@ -248,6 +270,17 @@
         headers: { 'Accept': 'application/json' }
       });
       if (response.ok) {
+        if (document.getElementById('newsletterOptIn').checked) {
+          const fd2 = new FormData(form);
+          const email = fd2.get('email') || '';
+          const name = ((fd2.get('firstName') || '') + ' ' + (fd2.get('lastName') || '')).trim();
+          if (email) {
+            db.collection('subscribers').add({
+              email, name, source: 'contact-form',
+              subscribedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(() => {});
+          }
+        }
         form.style.display = 'none';
         confirmScreen.classList.add('visible');
       } else {

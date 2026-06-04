@@ -972,10 +972,16 @@
                 <label style="font-size:0.67rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">School</label>
                 <select id="manualSchool" style="width:100%;padding:0.7rem;border:1.5px solid rgba(199,167,108,0.35);border-radius:2px;font-family:var(--sans);font-size:0.86rem;outline:none;background:var(--cream)">
                   <option value="">Select school…</option>
-                  <option value="Johnson's Learning Center">Johnson's Learning Center</option>
-                  <option value="Henderson Mill">Henderson Mill</option>
+                  <option value="Briarlake">Briarlake</option>
+                  <option value="Evansdale">Evansdale</option>
+                  <option value="Hawthorne">Hawthorne</option>
                   <option value="Henderson">Henderson</option>
+                  <option value="Henderson Mill">Henderson Mill</option>
+                  <option value="Johnson's Learning Center">Johnson's Learning Center</option>
                   <option value="Lakeside">Lakeside</option>
+                  <option value="Oak Grove">Oak Grove</option>
+                  <option value="Pleasantdale">Pleasantdale</option>
+                  <option value="Sagamore Hills">Sagamore Hills</option>
                 </select>
               </div>
               <div style="display:flex;flex-direction:column;gap:0.25rem;grid-column:1/-1">
@@ -1013,6 +1019,16 @@
             <div class="stat-card-label">Cancelled This Month</div>
             <div class="stat-card-value" id="so-stat-cancelled">—</div>
             <div class="stat-card-sub">via STOP reply</div>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-bar-row">
+            <div class="filter-group"><label>Customer</label><input type="text" class="filter-input wide" id="so-customer" placeholder="Search name or phone…"></div>
+            <div class="filter-group"><label>Items</label><input type="text" class="filter-input wide" id="so-items" placeholder="Item keyword…"></div>
+            <div class="filter-actions">
+              <button class="filter-apply" onclick="applyStandingFilters()">Apply</button>
+              <button class="filter-reset" onclick="resetStandingFilters()">Reset</button>
+            </div>
           </div>
         </div>
         <div class="table-wrap">
@@ -2400,6 +2416,8 @@
   // ── STANDING ORDERS ──
   let standingCache = [];
   let standingFilterActive = 'all';
+  let standingSearchCustomer = '';
+  let standingSearchItems = '';
 
   async function loadStandingOrders() {
     try {
@@ -2432,6 +2450,20 @@
     renderStandingTable();
   }
 
+  function applyStandingFilters() {
+    standingSearchCustomer = (document.getElementById('so-customer').value || '').trim();
+    standingSearchItems = (document.getElementById('so-items').value || '').trim();
+    renderStandingTable();
+  }
+
+  function resetStandingFilters() {
+    document.getElementById('so-customer').value = '';
+    document.getElementById('so-items').value = '';
+    standingSearchCustomer = '';
+    standingSearchItems = '';
+    renderStandingTable();
+  }
+
   async function renderStandingOrders(filter) {
     standingFilterActive = filter || 'all';
     await loadStandingOrders();
@@ -2452,6 +2484,14 @@
   function renderStandingTable() {
     const tbody = document.getElementById('standingTableBody');
     let rows = standingFilterActive === 'all' ? standingCache : standingCache.filter(s => s.status === standingFilterActive);
+    if (standingSearchCustomer) {
+      const q = standingSearchCustomer.toLowerCase();
+      rows = rows.filter(s => (s.name || '').toLowerCase().includes(q) || (s.phone || '').includes(q));
+    }
+    if (standingSearchItems) {
+      const q = standingSearchItems.toLowerCase();
+      rows = rows.filter(s => (s.items || '').toLowerCase().includes(q));
+    }
     if (rows.length === 0) {
       tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem;">No standing orders found.</td></tr>';
       return;
