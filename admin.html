@@ -448,6 +448,7 @@
       <div class="sidebar-label">Orders</div>
       <div class="nav-item" onclick="showPanel('microOrders',this)"><span class="nav-item-icon">🧁</span>Micro-Bakery Orders</div>
       <div class="nav-item" onclick="showPanel('dropoffOrders',this)"><span class="nav-item-icon">🏫</span>Custom Drop-Off Orders</div>
+      <div class="nav-item" onclick="showPanel('standingOrders',this)"><span class="nav-item-icon">🔄</span>Standing Orders</div>
       <div class="sidebar-label">Manage</div>
       <div class="nav-item" onclick="showPanel('reporting',this)"><span class="nav-item-icon">📈</span>Reporting</div>
       <div class="nav-item" onclick="showPanel('email',this)"><span class="nav-item-icon">✉️</span>Email</div>
@@ -989,6 +990,44 @@
         </div>
       </div>
 
+      <!-- ── STANDING ORDERS PANEL ──────────────────────────── -->
+      <div class="panel" id="panel-standingOrders">
+        <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="stat-card">
+            <div class="stat-card-label">Active Standing Orders</div>
+            <div class="stat-card-value" id="so-stat-active">—</div>
+            <div class="stat-card-sub">customers auto-billed weekly</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Guaranteed Weekly Revenue</div>
+            <div class="stat-card-value" id="so-stat-revenue">—</div>
+            <div class="stat-card-sub">from active standing orders</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Cancelled This Month</div>
+            <div class="stat-card-value" id="so-stat-cancelled">—</div>
+            <div class="stat-card-sub">via STOP reply</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Standing Orders</h3>
+            <div class="table-filter">
+              <button class="filter-btn active" onclick="filterStanding('all',this)">All</button>
+              <button class="filter-btn" onclick="filterStanding('active',this)">Active</button>
+              <button class="filter-btn" onclick="filterStanding('paused',this)">Paused</button>
+              <button class="filter-btn" onclick="filterStanding('cancelled',this)">Cancelled</button>
+            </div>
+          </div>
+          <table>
+            <thead><tr>
+              <th>Customer</th><th>Phone</th><th>Email</th><th>Items</th><th>Est. Total</th><th>Frequency</th><th>Last Processed</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="standingTableBody"><tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem;">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- ── EMAIL PANEL ─────────────────────────────────────── -->
       <div class="panel" id="panel-email">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;">
@@ -1204,6 +1243,7 @@
     const titles = {
       dashboard:'Dashboard', calendar:'Calendar',
       microOrders:'Micro-Bakery Orders', dropoffOrders:'Custom Drop-Off Orders',
+      standingOrders:'Standing Orders',
       reporting:'Reporting & Downloads', settings:'Settings and Controls',
       email:'Email'
     };
@@ -1215,6 +1255,7 @@
     if(id==='dropoffOrders') renderDropoffOrders('all');
     if(id==='dashboard') renderDashboard();
     if(id==='email') initEmailPanel();
+    if(id==='standingOrders') renderStandingOrders('all');
   }
 
   function toast(msg) {
@@ -2346,6 +2387,95 @@
   function cancelCampaign(id) {
     db.collection('emailCampaigns').doc(id).update({ status: 'cancelled' })
       .then(() => { toast('Campaign cancelled.'); loadCampaignHistory(); })
+      .catch(() => toast('Could not cancel — try again.'));
+  }
+
+  // ── STANDING ORDERS ──
+  let standingCache = [];
+  let standingFilterActive = 'all';
+
+  async function loadStandingOrders() {
+    try {
+      const snap = await db.collection('standingOrders').orderBy('createdAt', 'desc').get();
+      standingCache = snap.docs.map(doc => {
+        const d = doc.data();
+        return {
+          id: doc.id,
+          name: d.name || '',
+          phone: d.phone || '',
+          email: d.email || '',
+          items: d.items || '',
+          total: d.total || '',
+          frequency: d.frequency || 'weekly',
+          status: d.status || 'active',
+          lastProcessedWeek: d.lastProcessedWeek || '—',
+          createdAt: d.createdAt
+        };
+      });
+    } catch(e) {
+      console.error('Standing orders load failed:', e);
+      standingCache = [];
+    }
+  }
+
+  function filterStanding(status, el) {
+    standingFilterActive = status;
+    document.querySelectorAll('#panel-standingOrders .filter-btn').forEach(b => b.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderStandingTable();
+  }
+
+  async function renderStandingOrders(filter) {
+    standingFilterActive = filter || 'all';
+    await loadStandingOrders();
+    renderStandingStats();
+    renderStandingTable();
+  }
+
+  function renderStandingStats() {
+    const active = standingCache.filter(s => s.status === 'active');
+    const thisMonth = new Date().toISOString().slice(0, 7);
+    const cancelled = standingCache.filter(s => s.status === 'cancelled' && (s.cancelledAt || '').slice(0, 7) === thisMonth);
+    const revenue = active.reduce((sum, s) => sum + parseInt((s.total || '0').replace(/[^0-9]/g, '')), 0);
+    document.getElementById('so-stat-active').textContent = active.length;
+    document.getElementById('so-stat-revenue').textContent = revenue > 0 ? '$' + revenue : '$0';
+    document.getElementById('so-stat-cancelled').textContent = cancelled.length;
+  }
+
+  function renderStandingTable() {
+    const tbody = document.getElementById('standingTableBody');
+    let rows = standingFilterActive === 'all' ? standingCache : standingCache.filter(s => s.status === standingFilterActive);
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem;">No standing orders found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(s => {
+      const statusBadge = s.status === 'active'
+        ? '<span class="badge badge-confirmed">Active</span>'
+        : s.status === 'paused'
+          ? '<span class="badge badge-pending">Paused</span>'
+          : '<span class="badge badge-cancelled">Cancelled</span>';
+      const cancelBtn = s.status !== 'cancelled'
+        ? `<button class="action-btn danger" onclick="cancelStandingOrder('${s.id}')">Cancel</button>`
+        : '';
+      return `<tr>
+        <td>${s.name}</td>
+        <td>${s.phone || '—'}</td>
+        <td>${s.email || '—'}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${s.items}">${s.items || '—'}</td>
+        <td>${s.total || '—'}</td>
+        <td>${s.frequency}</td>
+        <td>${s.lastProcessedWeek}</td>
+        <td>${statusBadge}</td>
+        <td>${cancelBtn}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function cancelStandingOrder(id) {
+    if (!confirm('Cancel this standing order? The customer will no longer receive weekly orders.')) return;
+    db.collection('standingOrders').doc(id).update({ status: 'cancelled', cancelledAt: new Date().toISOString() })
+      .then(() => { toast('Standing order cancelled.'); renderStandingOrders(standingFilterActive); })
       .catch(() => toast('Could not cancel — try again.'));
   }
 

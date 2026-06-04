@@ -425,6 +425,15 @@
               Final total confirmed by Ina at order confirmation. Payment instructions sent via email.
             </p>
           </div>
+          <div class="standing-order-toggle" id="standingOrderSection" style="background:var(--cream,#fdf6ee);border:1.5px solid var(--chocolate,#5c3d2e);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem;">
+            <label style="display:flex;align-items:flex-start;gap:0.75rem;cursor:pointer;font-weight:600;color:var(--chocolate,#5c3d2e);">
+              <input type="checkbox" id="standingOrderToggle" style="margin-top:3px;width:18px;height:18px;accent-color:var(--chocolate,#5c3d2e);flex-shrink:0;">
+              <span>Make this a standing weekly order</span>
+            </label>
+            <p id="standingOrderDesc" style="font-size:0.82rem;color:var(--muted,#888);margin:0.5rem 0 0 2.25rem;line-height:1.55;display:none;">
+              Ina will prepare your order every Thursday. You'll get a text to confirm. Reply <strong>SKIP</strong> to skip a week, or <strong>STOP</strong> to cancel anytime.
+            </p>
+          </div>
           <button type="submit" class="btn-primary" id="submitBtn" disabled>Add Items to Order First</button>
         </form>
       </div>
@@ -576,27 +585,43 @@
     btn.textContent = 'Submit Order Request';
   }
 
+  document.getElementById('standingOrderToggle').addEventListener('change', function() {
+    document.getElementById('standingOrderDesc').style.display = this.checked ? 'block' : 'none';
+  });
+
   document.getElementById('orderForm').addEventListener('submit', function(e) {
     e.preventDefault();
     if (Object.keys(cart).length === 0) return;
     const fd = new FormData(this);
+    const isStanding = document.getElementById('standingOrderToggle').checked;
     fetch(this.action, {
       method: 'POST',
       body: fd,
       headers: { 'Accept': 'application/json' }
     }).then(r => {
       if (r.ok) {
-        db.collection('orders').add({
-          type: 'micro-bakery',
-          name: ((fd.get('first_name') || '') + ' ' + (fd.get('last_name') || '')).trim(),
-          email: fd.get('email') || '',
-          phone: fd.get('phone') || '',
-          items: fd.get('order_summary') || '',
-          total: fd.get('order_total') || '',
-          notes: fd.get('notes') || '',
-          status: 'pending',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).catch(err => console.error('Firestore write failed:', err));
+        const name = ((fd.get('first_name') || '') + ' ' + (fd.get('last_name') || '')).trim();
+        const email = fd.get('email') || '';
+        const phone = fd.get('phone') || '';
+        const items = fd.get('order_summary') || '';
+        const total = fd.get('order_total') || '';
+        const notes = fd.get('notes') || '';
+        if (isStanding) {
+          db.collection('standingOrders').add({
+            name, email, phone, items, total, notes,
+            orderType: 'micro-bakery',
+            status: 'active',
+            frequency: 'weekly',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }).catch(err => console.error('Firestore standingOrders write failed:', err));
+        } else {
+          db.collection('orders').add({
+            type: 'micro-bakery',
+            name, email, phone, items, total, notes,
+            status: 'pending',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }).catch(err => console.error('Firestore orders write failed:', err));
+        }
         document.getElementById('orderArea').style.display = 'none';
         document.getElementById('availNotice').style.display = 'none';
         document.getElementById('confirmScreen').style.display = 'block';
