@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const sgMail = require('@sendgrid/mail');
+const twilio = require('twilio');
 
 admin.initializeApp();
 
@@ -70,6 +71,10 @@ exports.onNewOrder = functions.firestore
   .onCreate(async (snap, context) => {
     const order = snap.data();
     if (!order || order.type === undefined) return null;
+    // Standing-order-created orders: Ina sees them in the Standing Orders admin
+    // tab. Suppress the "New Order Received" admin email and "We got your order"
+    // customer email — they would fire for every customer every Thursday morning.
+    if (order.source === 'standing-order') return null;
 
     const isPickup = order.type === 'micro-bakery';
     const typeLabel = isPickup ? 'Pickup' : 'Custom Drop-Off';
@@ -249,3 +254,115 @@ async function sendCampaign(ref, campaign) {
 
   await ref.update({ status: 'sent', sentAt: new Date().toISOString(), sentCount: recipients.length });
 }
+
+// ── ISO WEEK HELPER ─────────────────────────────────────────────
+// Returns a string like "2026-W23" for the given date.
+function getISOWeek(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+}
+
+// ── PROCESS STANDING ORDERS (Thursday 9 AM ET) ──────────────────
+//
+// Data flow:
+//
+//   standingOrders (active, status='active')
+//          │
+//          ▼ for each doc
+//   check lastProcessedWeek === currentWeek?  ──YES──► skip (idempotent)
+//          │ NO
+//          ▼
+//   check microBlockedRanges (from _settings_)
+//    ├── BLOCKED ──► send "paused" SMS ──► update lastProcessedWeek
+//    └── OPEN    ──► create orders/{id} (source:'standing-order')
+//                    ──► send "confirmed, reply SKIP" SMS
+//                    ──► update lastProcessedWeek + lastOrderDate
+//
+// Failures are per-customer (try/catch inside loop) — one bad phone
+// number doesn't block the rest of the batch.
+//
+exports.processStandingOrders = functions.pubsub
+  .schedule('0 9 * * 4')
+  .timeZone('America/New_York')
+  .onRun(async (context) => {
+    const db = admin.firestore();
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10); // YYYY-MM-DD
+    const currentWeek = getISOWeek(now);
+
+    // Load settings to check for blocked date ranges
+    const settingsSnap = await db.collection('orders').doc('_settings_').get();
+    const settings = settingsSnap.exists ? settingsSnap.data() : {};
+    const blockedRanges = settings.microBlockedRanges || [];
+    const isBlocked = blockedRanges.some(r => today >= r.from && today <= (r.to || r.from));
+
+    // Load all active standing orders
+    const standingSnap = await db.collection('standingOrders')
+      .where('status', '==', 'active')
+      .get();
+
+    if (standingSnap.empty) return null;
+
+    const twilioClient = twilio(
+      functions.config().twilio.account_sid,
+      functions.config().twilio.auth_token
+    );
+    const TWILIO_FROM = functions.config().twilio.phone_number;
+
+    for (const doc of standingSnap.docs) {
+      const standing = doc.data();
+
+      // Idempotency: skip if already processed this week
+      if (standing.lastProcessedWeek === currentWeek) continue;
+
+      const firstName = (standing.name || 'Friend').split(' ')[0];
+
+      try {
+        if (isBlocked) {
+          await twilioClient.messages.create({
+            body: `Hi ${firstName}! The Blessed Baker and Son is taking a short break this week — your standing order is paused. We'll be back next week!`,
+            from: TWILIO_FROM,
+            to: standing.phone,
+          });
+        } else {
+          // Create the order document (onNewOrder will skip emails due to source flag)
+          const orderRef = db.collection('orders').doc();
+          await orderRef.set({
+            name: standing.name || '',
+            email: standing.email || '',
+            phone: standing.phone || '',
+            items: standing.items || '',
+            total: standing.total || '',
+            type: standing.orderType || 'micro-bakery',
+            status: 'pending',
+            notes: standing.notes || '',
+            source: 'standing-order',
+            standingOrderId: doc.id,
+            createdAt: now.toISOString(),
+          });
+
+          await twilioClient.messages.create({
+            body: `Hi ${firstName}! Your usual order from The Blessed Baker and Son is confirmed for Friday pickup. Reply SKIP to skip this week or STOP to cancel your standing order.`,
+            from: TWILIO_FROM,
+            to: standing.phone,
+          });
+        }
+
+        await doc.ref.update({
+          lastProcessedWeek: currentWeek,
+          lastOrderDate: today,
+        });
+      } catch (err) {
+        functions.logger.error('processStandingOrders: failed for standing order', {
+          standingOrderId: doc.id,
+          error: err.message,
+        });
+      }
+    }
+
+    return null;
+  });
