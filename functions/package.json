@@ -9,6 +9,7 @@
   },
   "main": "index.js",
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "firebase-admin": "^11.0.1",
     "firebase-functions": "^4.3.1",
     "nodemailer": "^6.9.7"
