@@ -366,3 +366,106 @@ exports.processStandingOrders = functions.pubsub
 
     return null;
   });
+
+// ── TWILIO INBOUND WEBHOOK ───────────────────────────────────────
+//
+// Handles SMS replies from standing order customers.
+//
+// Request flow:
+//
+//   Twilio POST
+//    └── validate X-Twilio-Signature ──INVALID──► 403
+//        │ VALID
+//        ▼
+//   parse From (phone) + Body (keyword)
+//    ├── SKIP
+//    │    └── look up active standingOrder by phone
+//    │         ├── not found ──────────────────► "no standing order" reply
+//    │         └── found
+//    │              └── find this-week pending order by standingOrderId
+//    │                   ├── status='confirmed' ──► "already confirmed" reply
+//    │                   ├── order exists ────────► delete order doc ──► "skipped" reply
+//    │                   └── no order yet ────────► "skipped" reply
+//    ├── STOP
+//    │    └── look up active standingOrder by phone
+//    │         ├── not found ──────────────────► "no standing order" reply
+//    │         └── found ──► mark cancelled ──► "cancelled" reply
+//    └── other ──► "did you mean SKIP or STOP?" reply
+//
+exports.twilioWebhook = functions.https.onRequest(async (req, res) => {
+  // Validate Twilio request signature — rejects spoofed webhooks
+  const authToken = functions.config().twilio.auth_token;
+  const signature = req.headers['x-twilio-signature'] || '';
+  const url = `https://${req.headers.host}${req.originalUrl}`;
+  const isValid = twilio.validateRequest(authToken, signature, url, req.body);
+  if (!isValid) {
+    functions.logger.warn('twilioWebhook: invalid signature rejected', { url });
+    res.status(403).send('Forbidden');
+    return;
+  }
+
+  const from = req.body.From || '';
+  const keyword = (req.body.Body || '').trim().toUpperCase();
+  const db = admin.firestore();
+
+  function twimlReply(text) {
+    res.set('Content-Type', 'text/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?><Response><Message>${text}</Message></Response>`);
+  }
+
+  // Resolve the standing order for this phone number
+  const standingSnap = await db.collection('standingOrders')
+    .where('phone', '==', from)
+    .where('status', '==', 'active')
+    .limit(1)
+    .get();
+
+  if (keyword === 'SKIP') {
+    if (standingSnap.empty) {
+      twimlReply("We don't have an active standing order for your number. Questions? Email info@theblessedbakerandson.com");
+      return;
+    }
+    const standingDoc = standingSnap.docs[0];
+
+    // Find the most recent standing-order-created order for this customer.
+    // Query by standingOrderId only (single-field index, no composite needed)
+    // then filter in code — at most 1-2 docs at any time with idempotency in place.
+    const ordersSnap = await db.collection('orders')
+      .where('standingOrderId', '==', standingDoc.id)
+      .get();
+
+    const pending = ordersSnap.docs
+      .filter(d => d.data().source === 'standing-order')
+      .sort((a, b) => (b.data().createdAt || '').localeCompare(a.data().createdAt || ''));
+
+    if (pending.length > 0) {
+      const orderDoc = pending[0];
+      if (orderDoc.data().status === 'confirmed') {
+        // Ina already confirmed — can't silently delete
+        twimlReply("Your order was already confirmed by the baker — please email info@theblessedbakerandson.com to make changes. 🎂");
+        return;
+      }
+      await orderDoc.ref.delete();
+    }
+
+    await standingDoc.ref.update({ lastSkippedWeek: getISOWeek(new Date()) });
+    twimlReply("Got it! We'll skip your order this week. See you next Friday! 🎂");
+    return;
+  }
+
+  if (keyword === 'STOP') {
+    if (standingSnap.empty) {
+      twimlReply("We don't have an active standing order for your number. Questions? Email info@theblessedbakerandson.com");
+      return;
+    }
+    await standingSnap.docs[0].ref.update({
+      status: 'cancelled',
+      cancelledAt: new Date().toISOString(),
+    });
+    twimlReply("Your standing order has been cancelled. Thank you for being a customer — you can always place a one-time order at theblessedbakerandson.com! 🎂");
+    return;
+  }
+
+  // Unknown keyword
+  twimlReply("Hi! Reply SKIP to skip this week's order, or STOP to cancel your standing order. Questions? Email info@theblessedbakerandson.com");
+});
