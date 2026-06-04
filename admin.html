@@ -1195,6 +1195,7 @@
     const d = doc.data();
     const typeRaw = d.type || '';
     const type = typeRaw === 'micro-bakery' ? 'micro' : typeRaw === 'custom-dropoff' ? 'dropoff' : typeRaw;
+    const createdAtMs = d.createdAt ? d.createdAt.toDate().getTime() : 0;
     const dateStr = d.deliveryDate || (d.createdAt ? d.createdAt.toDate().toISOString().split('T')[0] : '');
     return {
       id: doc.id,
@@ -1206,6 +1207,7 @@
       items: d.items || '',
       total: d.total || '$0',
       date: dateStr,
+      createdAtMs,
       school: d.school || '',
       deliveryWindow: d.deliveryWindow || '',
       status: d.status || 'pending',
@@ -1341,7 +1343,7 @@
     if (sc) sc.innerHTML = statusInfo.map(si =>
       `<span class="stat-card-dot" style="background:${si.color}"></span>${si.key.charAt(0).toUpperCase()+si.key.slice(1)}: <strong>${orders.filter(o=>o.status===si.key).length}</strong>`
     ).join('<br>');
-    orders.sort((a, b) => (b.date || '') > (a.date || '') ? 1 : (b.date || '') < (a.date || '') ? -1 : 0);
+    orders.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
     renderOrdersTable(orders, 'ordersTableBody', true);
     renderCapacityTracker();
     renderWeeklySummary();
