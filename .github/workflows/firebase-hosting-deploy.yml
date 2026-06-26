@@ -1,0 +1,32 @@
+name: Deploy to Firebase Hosting (live)
+
+# Publishes the site to Firebase Hosting whenever code lands on main.
+# Hosting only — Cloud Functions and Firestore rules are NOT touched by this
+# workflow (the action runs `firebase deploy --only hosting`). Deploy those
+# separately and intentionally.
+
+on:
+  push:
+    branches:
+      - main
+
+# Avoid overlapping deploys if two merges land close together; the newest wins.
+concurrency:
+  group: firebase-hosting-live
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy_live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Firebase Hosting live channel
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: the-blessed-baker-and-son
