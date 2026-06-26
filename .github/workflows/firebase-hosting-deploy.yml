@@ -9,6 +9,18 @@ on:
   push:
     branches:
       - main
+    # Only deploy when files Firebase Hosting actually serves change. This keeps
+    # functions-only / docs-only merges from triggering a no-op deploy that the
+    # action reports as a (false) failure.
+    paths:
+      - '**.html'
+      - 'images/**'
+      - '*.png'
+      - 'robots.txt'
+      - 'sitemap.xml'
+      - 'CNAME'
+      - 'firebase.json'
+      - '.github/workflows/firebase-hosting-deploy.yml'
 
 # Avoid overlapping deploys if two merges land close together; the newest wins.
 concurrency:
