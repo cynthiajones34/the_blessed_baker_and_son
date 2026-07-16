@@ -152,6 +152,7 @@
       pointer-events: none;
     }
     .hero-left {
+      flex: 1;
       display: flex; flex-direction: column; justify-content: center;
       padding: 5rem 3rem 5rem 4rem;
     }
@@ -186,15 +187,16 @@
     .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
 
     .hero-right {
-      background: var(--white); display: flex; flex-direction: column;
-      align-items: center; justify-content: center; padding: 4rem 2rem; position: relative; width: 100%;
+      flex: 1; position: relative; overflow: hidden; min-height: 500px; padding: 0;
     }
     .hero-logo-wrap {
       width: 85%; max-width: 780px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
       margin-bottom: 0;
     }
-    .hero-logo-wrap img {
-      width: 100%; height: auto; mix-blend-mode: multiply; filter: brightness(1.08);
+    .hero-right .photo-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(255,248,240,0.18) 0%, rgba(61,37,16,0.32) 100%);
+      pointer-events: none;
     }
     .hero-tagline {
       font-family: var(--script); font-size: clamp(2.4rem, 4vw, 3.4rem); color: var(--berry);
@@ -470,8 +472,12 @@
       .footer-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
       .section-title { font-size: clamp(1.6rem, 5vw, 2rem); }
     }
+    @media (min-width: 769px) and (max-width: 960px) {
+      .flavors-grid { grid-template-columns: repeat(3, 1fr); }
+    }
     @media (max-width: 480px) {
-      .hero-logo-wrap { width: 80%; }
+      .arch-frame { width: 140px; height: 170px; border-radius: 70px 70px 6px 6px; }
+      .hero-tagline { font-size: 1.8rem; }
       .how, .menu, .order-types { padding: 3rem 1rem; }
       .story-section { padding: 3rem 1rem; }
       .menu-item { min-width: unset; }
@@ -516,17 +522,6 @@
     <p class="hero-tagline">Feel blessed<br>in every bite.</p>
   </div>
 </section>
-
-<!-- INTRO BAND -->
-<div class="intro-band fade-up">
-  <div class="intro-band-text">
-    <p class="hero-eyebrow" style="margin-bottom:0.8rem; justify-content:center;">An Atlanta Cottage Micro-Bakery</p>
-    <p style="font-family:var(--serif); font-size:1.5rem; font-weight:700; color:var(--chocolate); line-height:1.2; margin-bottom:0.3rem;">Baked with <em>love,</em><br>delivered with</p>
-    <p style="font-family:var(--script); font-size:1.8rem; color:var(--gold); line-height:1; margin-bottom:1rem;">a blessing.</p>
-    <p style="font-size:0.95rem; line-height:1.8; color:var(--muted); margin-bottom:1.2rem;">Every cupcake and cake jar from The Blessed Baker and Son is made to order with cream cheese frosting like you have never tasted before.</p>
-    <p style="font-size:0.85rem; color:var(--berry); margin-bottom:1.2rem;"><strong style="display:block; font-family:var(--serif);">20+ Years of Blessed Baking</strong>Proudly serving the Lakeside High School Cluster and Atlanta families since 2005.</p>
-  </div>
-</div>
 
 <!-- HOW IT WORKS -->
 <section class="how fade-up" id="how">
@@ -584,6 +579,35 @@
       <div class="how-step-num">4</div>
       <h3>Drop-Off Delivery</h3>
       <p>Ina delivers directly to your school or community location on the confirmed date.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FLAVORS GALLERY -->
+<section class="flavors-section fade-up">
+  <p class="section-tag">Our Flavors</p>
+  <h2 class="section-title">Our <em>Cupcakes</em></h2>
+  <p class="section-sub">Flavors rotate weekly, announced each Saturday. Here is a taste of what you might find.</p>
+  <div class="flavors-grid">
+    <div class="flavor-card">
+      <div class="arch-frame"><img src="images/stroopwafel.jpg" alt="Stroopwafel cupcake" /></div>
+      <p class="flavor-name">Stroopwafel</p>
+    </div>
+    <div class="flavor-card">
+      <div class="arch-frame"><img src="images/chocolate.jpg" alt="Double Chocolate cupcake" /></div>
+      <p class="flavor-name">Double Chocolate</p>
+    </div>
+    <div class="flavor-card">
+      <div class="arch-frame"><img src="images/oreo.jpg" alt="Cookies and Cream cupcake" /></div>
+      <p class="flavor-name">Cookies &amp; Cream</p>
+    </div>
+    <div class="flavor-card">
+      <div class="arch-frame"><img src="images/strawberry.jpg" alt="Strawberry cupcake" /></div>
+      <p class="flavor-name">Strawberry</p>
+    </div>
+    <div class="flavor-card">
+      <div class="arch-frame"><img src="images/red-velvet.jpg" alt="Red Velvet cupcake" /></div>
+      <p class="flavor-name">Red Velvet</p>
     </div>
   </div>
 </section>

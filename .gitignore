@@ -1,0 +1,8 @@
+# gstack browse tooling + local QA reports
+.gstack/
+
+# Conductor workspace scratch
+.context/
+
+# macOS
+.DS_Store
