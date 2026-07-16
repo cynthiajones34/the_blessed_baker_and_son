@@ -1,0 +1,53 @@
+name: Deploy to Firebase Hosting (live)
+
+# Publishes the site to Firebase Hosting whenever code lands on main.
+# Hosting only — Cloud Functions and Firestore rules are NOT touched by this
+# workflow (the action runs `firebase deploy --only hosting`). Deploy those
+# separately and intentionally.
+
+on:
+  push:
+    branches:
+      - main
+    # Only deploy when files Firebase Hosting actually serves change. This keeps
+    # functions-only / docs-only merges from triggering a no-op deploy that the
+    # action reports as a (false) failure.
+    paths:
+      - '**.html'
+      - 'images/**'
+      - '*.png'
+      - 'robots.txt'
+      - 'sitemap.xml'
+      - 'CNAME'
+      - 'firebase.json'
+      - '.github/workflows/firebase-hosting-deploy.yml'
+
+# Avoid overlapping deploys if two merges land close together; the newest wins.
+concurrency:
+  group: firebase-hosting-live
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy_live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Firebase Hosting live channel
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > /tmp/sa.json
+          output=$(GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json npx firebase-tools@latest deploy --only hosting --project the-blessed-baker-and-son 2>&1)
+          exit_code=$?
+          echo "$output"
+          # Firebase returns 400 when the content hash matches the current live
+          # version — the site is already up to date, treat it as success.
+          if [ $exit_code -ne 0 ] && echo "$output" | grep -q "is the current active version"; then
+            echo "Content already live — no-op, treating as success."
+            exit 0
+          fi
+          exit $exit_code
