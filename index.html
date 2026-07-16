@@ -205,6 +205,28 @@
       text-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
 
+    /* FLAVORS */
+    .flavors-section { background: var(--white); padding: 6rem 4rem; text-align: center; }
+    .flavors-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      gap: 2rem; max-width: 1040px; margin: 2.5rem auto 0;
+    }
+    .flavor-card { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+    .arch-frame {
+      width: 180px; height: 220px;
+      border-radius: 90px 90px 8px 8px; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(61,37,16,0.13); background: var(--blush); flex-shrink: 0;
+    }
+    .arch-frame img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center 20%;
+      display: block; transition: transform 0.4s ease;
+    }
+    .flavor-card:hover .arch-frame img { transform: scale(1.04); }
+    .flavor-name {
+      font-family: var(--serif); font-size: 0.95rem;
+      color: var(--chocolate); font-weight: 600; line-height: 1.3;
+    }
+
     /* GOLD RULE */
     .gold-rule { width: 48px; height: 1px; background: var(--gold); opacity: 0.55; margin: 0 auto 1.2rem; }
     .gold-rule-left { margin: 0 0 1.2rem; }
@@ -562,6 +584,35 @@
       <div class="how-step-num">4</div>
       <h3>Drop-Off Delivery</h3>
       <p>Ina delivers directly to your school or community location on the confirmed date.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FLAVORS GALLERY -->
+<section class="flavors-section fade-up">
+  <p class="section-tag">Our Flavors</p>
+  <h2 class="section-title">Our <em>Cupcakes</em></h2>
+  <p class="section-sub">Flavors rotate weekly, announced each Saturday. Here is a taste of what you might find.</p>
+  <div class="flavors-grid">
+    <div class="flavor-card">
+      <div class="arch-frame"><img src="images/stroopwafel.jpg" alt="Stroopwafel cupcake" /></div>
+      <p class="flavor-name">Stroopwafel</p>
+    </div>
+    <div class="flavor-card">
+      <div class="arch-frame"><img src="images/chocolate.jpg" alt="Double Chocolate cupcake" /></div>
+      <p class="flavor-name">Double Chocolate</p>
+    </div>
+    <div class="flavor-card">
+      <div class="arch-frame"><img src="images/oreo.jpg" alt="Cookies and Cream cupcake" /></div>
+      <p class="flavor-name">Cookies &amp; Cream</p>
+    </div>
+    <div class="flavor-card">
+      <div class="arch-frame"><img src="images/strawberry.jpg" alt="Strawberry cupcake" /></div>
+      <p class="flavor-name">Strawberry</p>
+    </div>
+    <div class="flavor-card">
+      <div class="arch-frame"><img src="images/red-velvet.jpg" alt="Red Velvet cupcake" /></div>
+      <p class="flavor-name">Red Velvet</p>
     </div>
   </div>
 </section>
