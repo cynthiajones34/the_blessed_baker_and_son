@@ -187,16 +187,12 @@
     .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
 
     .hero-right {
-      flex: 1; position: relative; overflow: hidden; min-height: 500px; padding: 0;
+      background: var(--white); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 4rem 2rem; position: relative; width: 100%;
     }
     .hero-logo-wrap {
       width: 85%; max-width: 780px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
       margin-bottom: 0;
-    }
-    .hero-right .photo-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to bottom, rgba(255,248,240,0.18) 0%, rgba(61,37,16,0.32) 100%);
-      pointer-events: none;
     }
     .hero-tagline {
       font-family: var(--script); font-size: clamp(2.4rem, 4vw, 3.4rem); color: var(--berry);
