@@ -185,6 +185,13 @@
     .hero-legacy-text { font-size: 0.88rem; color: var(--berry); line-height: 1.5; }
     .hero-legacy-text strong { display: block; font-family: var(--serif); font-size: 1rem; }
     .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .hero-order-btn {
+      display: inline-block; background: var(--text); color: #fff;
+      font-family: var(--sans); font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none;
+      padding: 1rem 2.4rem; border-radius: 2px; transition: background 0.2s;
+    }
+    .hero-order-btn:hover { background: var(--chocolate); }
 
     .hero-right {
       flex: 1; position: relative; overflow: hidden; min-height: 500px; padding: 0;
@@ -516,10 +523,12 @@
 <section class="hero">
   <div class="hero-left fade-up">
     <p class="hero-eyebrow" style="margin-bottom:1.2rem;">An Atlanta Cottage Micro-Bakery</p>
-    <p style="font-family:var(--serif); font-size:2.8rem; font-weight:700; color:var(--chocolate); line-height:1.25; margin-bottom:0.5rem;">Baked with <em>love,</em><br>delivered with</p>
-    <p style="font-family:var(--script); font-size:3.2rem; color:var(--gold); line-height:1; margin-bottom:1.8rem;">a blessing.</p>
-    <p style="font-size:1.2rem; line-height:1.9; color:var(--muted); max-width:460px; margin-bottom:1.8rem;">Every cupcake and cake jar from The Blessed Baker and Son is made to order with cream cheese frosting like you have never tasted before.</p>
-    <p style="font-size:1.05rem; line-height:1.7; color:var(--berry); margin-bottom:1.2rem;"><strong style="display:block; font-family:var(--serif); font-size:1.3rem; margin-bottom:0.2rem;">20+ Years of Blessed Baking</strong>Proudly serving the Lakeside High School Cluster and Atlanta families since 2005.</p>
+    <p style="font-family:var(--serif); font-size:clamp(2.8rem,4.5vw,4.4rem); font-weight:700; color:var(--chocolate); line-height:1.15; margin-bottom:0.4rem;">Baked with <em>love,</em><br>delivered with</p>
+    <p style="font-family:var(--script); font-size:clamp(3rem,4.8vw,4.8rem); color:var(--gold); line-height:1; margin-bottom:2rem;">a blessing.</p>
+    <p style="font-size:1.2rem; line-height:1.85; color:var(--muted); max-width:480px; margin-bottom:2rem;">Every cupcake and cake jar is made to order with cream cheese frosting like you've never tasted before.</p>
+    <hr style="border:none; border-top:1px solid rgba(180,120,90,0.25); margin-bottom:1.8rem;" />
+    <p style="font-size:1.05rem; line-height:1.7; color:var(--berry); margin-bottom:2rem;"><strong style="display:block; font-family:var(--serif); font-size:1.3rem; margin-bottom:0.3rem;">20+ Years of Blessed Baking</strong>Proudly serving the Lakeside High School Cluster since 2005.</p>
+    <a href="#order" class="hero-order-btn">Order Now</a>
   </div>
   <div class="hero-right">
     <img class="bakery-photo" src="images/bakery-view.jpg" alt="The Blessed Baker and Son bakery display" />
